@@ -1,0 +1,961 @@
+<apex:page sidebar="false" showHeader="false" standardStylesheets="false">
+    <html>
+
+    <head>
+        <style>
+            .stepper-wrapper {
+                margin-top: auto;
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 20px;
+            }
+
+            .stepper-item {
+                position: relative;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                flex: 1;
+
+                @media (max-width: 768px) {
+                    font-size: 12px;
+                }
+            }
+
+            .stepper-item::before {
+                position: absolute;
+                content: "";
+                border-bottom: 2px solid #ccc;
+                width: 100%;
+                top: 20px;
+                left: -50%;
+                z-index: 2;
+            }
+
+            .stepper-item::after {
+                position: absolute;
+                content: "";
+                border-bottom: 2px solid #ccc;
+                width: 100%;
+                top: 20px;
+                left: 50%;
+                z-index: 2;
+            }
+
+            .stepper-item .step-counter {
+                position: relative;
+                z-index: 5;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                background: #ccc;
+                margin-bottom: 6px;
+            }
+
+            .stepper-item.active {
+                font-weight: bold;
+            }
+
+            .stepper-item.completed .step-counter {
+                background-color: #4bb543;
+            }
+
+            .stepper-item.completed::after {
+                position: absolute;
+                content: "";
+                border-bottom: 2px solid #4bb543;
+                width: 100%;
+                top: 20px;
+                left: 50%;
+                z-index: 3;
+            }
+
+            .stepper-item:first-child::before {
+                content: none;
+            }
+
+            .stepper-item:last-child::after {
+                content: none;
+            }
+
+            * {
+                margin: 0;
+                padding: 0
+            }
+
+            html {
+                height: 100%
+            }
+
+            p {
+                color: grey
+            }
+
+            #heading {
+                text-transform: uppercase;
+                color: #673AB7;
+                font-weight: normal
+            }
+
+            #msform {
+                text-align: center;
+                position: relative;
+                margin-top: 20px
+            }
+
+            #msform fieldset {
+                background: white;
+                border: 0 none;
+                border-radius: 0.5rem;
+                box-sizing: border-box;
+                width: 100%;
+                margin: 0;
+                padding-bottom: 20px;
+                position: relative
+            }
+
+            .form-card {
+                text-align: left
+            }
+
+            #msform fieldset:not(:first-of-type) {
+                display: none
+            }
+
+            #msform input,
+            #msform textarea {
+                padding: 8px 15px 8px 15px;
+                border: 1px solid #ccc;
+                border-radius: 0px;
+                margin-bottom: 25px;
+                margin-top: 2px;
+                width: 100%;
+                box-sizing: border-box;
+                font-family: montserrat;
+                color: #2C3E50;
+                background-color: #ECEFF1;
+                font-size: 16px;
+                letter-spacing: 1px
+            }
+
+            #msform input:focus,
+            #msform textarea:focus {
+                -moz-box-shadow: none !important;
+                -webkit-box-shadow: none !important;
+                box-shadow: none !important;
+                border: 1px solid #673AB7;
+                outline-width: 0
+            }
+
+            #msform .action-button {
+                width: 100px;
+                background: #673AB7;
+                font-weight: bold;
+                color: white;
+                border: 0 none;
+                border-radius: 0px;
+                cursor: pointer;
+                padding: 10px 5px;
+                margin: 10px 0px 10px 5px;
+                float: right
+            }
+
+            #msform .action-button:hover,
+            #msform .action-button:focus {
+                background-color: #311B92
+            }
+
+            #msform .action-button-previous {
+                width: 100px;
+                background: #616161;
+                font-weight: bold;
+                color: white;
+                border: 0 none;
+                border-radius: 0px;
+                cursor: pointer;
+                padding: 10px 5px;
+                margin: 10px 5px 10px 0px;
+                float: right
+            }
+
+            #msform .action-button-previous:hover,
+            #msform .action-button-previous:focus {
+                background-color: #000000
+            }
+
+            .card {
+                z-index: 1;
+                border: none;
+                position: relative;
+                border: 1px solid rgba(0, 0, 0, .125) !important;
+            }
+
+            .fs-title {
+                font-size: 25px;
+                color: #673AB7;
+                margin-bottom: 15px;
+                font-weight: normal;
+                text-align: left
+            }
+
+            .purple-text {
+                color: #673AB7;
+                font-weight: normal
+            }
+
+            .steps {
+                font-size: 25px;
+                color: gray;
+                margin-bottom: 10px;
+                font-weight: normal;
+                text-align: right
+            }
+
+            .fieldlabels {
+                color: gray;
+                text-align: left
+            }
+
+            #progressbar {
+                margin-bottom: 30px;
+                overflow: hidden;
+                color: lightgrey
+            }
+
+            #progressbar .active {
+                color: #673AB7
+            }
+
+            #progressbar li {
+                list-style-type: none;
+                font-size: 15px;
+                width: 25%;
+                float: left;
+                position: relative;
+                font-weight: 400
+            }
+
+            #progressbar #Applied:before {
+                font-family: FontAwesome;
+                content: "\f13e"
+            }
+
+            #progressbar #InterviewScheduled:before {
+                font-family: FontAwesome;
+                content: "\f007"
+            }
+
+            #progressbar #Selected:before {
+                font-family: FontAwesome;
+                content: "\f030"
+            }
+
+            #progressbar #Placed:before {
+                font-family: FontAwesome;
+                content: "\f00c"
+            }
+
+            #progressbar li:before {
+                width: 50px;
+                height: 50px;
+                line-height: 45px;
+                display: block;
+                font-size: 20px;
+                color: #ffffff;
+                background: lightgray;
+                border-radius: 50%;
+                margin: 0 auto 10px auto;
+                padding: 2px
+            }
+
+            #progressbar li:after {
+                content: '';
+                width: 100%;
+                height: 2px;
+                background: lightgray;
+                position: absolute;
+                left: 0;
+                top: 25px;
+                z-index: -1
+            }
+
+            #progressbar li.active:before,
+            #progressbar li.active:after {
+                background: #46b846
+            }
+
+            .progress {
+                height: 20px
+            }
+
+            .progress-bar {
+                background-color: #4bc84b
+            }
+
+            .fit-image {
+                width: 100%;
+                object-fit: cover
+            }
+
+            .progress-wrapper {
+                margin-bottom: 15px;
+            }
+
+            .float-right {
+                float: right;
+            }
+
+            .progress {
+                height: 10px;
+                overflow: hidden;
+                display: flex;
+                font-size: .75rem;
+                background: rgba(0, 0, 0, 0.05);
+                border-radius: .25rem;
+                box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+            }
+
+            .dropzone-wrapper {
+                border: 2px dashed #91b0b3;
+                color: #92b0b3;
+                position: relative;
+                height: 150px;
+            }
+
+            .dropzone-desc {
+                position: absolute;
+                margin: 0 auto;
+                left: 0;
+                right: 0;
+                text-align: center;
+                width: 40%;
+                top: 50px;
+                font-size: 16px;
+            }
+
+            .dropzone,
+            .dropzone:focus {
+                position: absolute;
+                outline: none !important;
+                width: 100%;
+                height: 150px;
+                cursor: pointer;
+                opacity: 0;
+            }
+
+            .dropzone-wrapper:hover,
+            .dropzone-wrapper.dragover {
+                background: #ecf0f5;
+            }
+
+            .loadingBackground {
+                position: fixed;
+                height: 100%;
+                width: 100%;
+                background: #F6F6F6;
+                z-index: 11111;
+                opacity: 0.7;
+                top: 0px;
+                left: 0;
+                bottom: 0;
+                right: 0;
+            }
+
+            .loading {
+                top: 50%;
+                left: 50%;
+                margin: -50px 0px 0px -50px;
+                z-index: 111111;
+                position: fixed;
+            }
+
+            .card-padding {
+                padding-bottom: unset;
+            }
+
+            .viewBtn {
+                width: 100%;
+                display: flex;
+            }
+
+            .viewBtn>* {
+                width: 49%;
+            }
+
+            .mobilePadding {
+                padding-left: unset;
+            }
+
+            .full {
+                display: table;
+            }
+
+            .mobile {
+                display: none;
+            }
+
+            @media only screen and (max-width:1300px) {
+                .mobileFiltersBtn {
+                    width: 100%;
+                }
+            }
+
+            @media only screen and (max-width:600px) {
+
+                .mobile {
+                    display: block;
+                }
+                .full {
+                    display: none;
+                }
+                .mobileBlock {
+                    display: block !important;
+                }
+                .mobilePadding {
+                    padding: unset;
+                }
+                .p5mobilePadding {
+                    padding: 1rem!important;
+                }
+            }
+
+            .fullSearch {}
+
+            @media only screen and (max-width:1300px) {
+
+                .fullSearch {
+                    width: 100%;
+                }
+
+            }
+
+            @media only screen and (max-width:335px) {
+                .mobileView {
+                    padding-left: 0.5rem;
+                    padding-right: 0.5rem;
+                }
+                .mobileView>.justify-content-center {
+                    flex-direction: column;
+
+                }
+            }
+
+            .shadowHover:hover {
+                box-shadow: none !important;
+            }
+
+            .danger {
+                background: red !important;
+            }
+
+            .mobileApply {
+                display: flex;
+                justify-content: space-between;
+
+            }
+
+            @media only screen and (max-width:800px) {
+                .fullBtn {
+                    display: none;
+                }
+                
+            }
+
+            @media only screen and (max-width:700px) {
+                .d-block-mobile {
+                    display: block !important;
+                }
+                .smallEye {
+                    width: 30% !important;
+                }
+            }
+
+            @media only screen and (max-width:491px) {
+                nav.navbar.navbar-expand-lg.navbar-light>.container-fluid {
+                    display: block !important;
+                }
+                ul.navbar-nav.me-auto.mb-2.mb-lg-0{
+                    width: 100%;
+                }
+
+            }
+            .scollable-controlls{
+                max-height: 700px;
+                overflow-y:auto; 
+            }
+        
+        </style>
+       
+    </head>
+
+    <body>
+        <div ng-controller="cp_alljobs_ctrl">
+            <div class="container mt-3 mb-2" ng-init="getAllJobs()">
+                <div class="loadingSection" id="spinner" ng-if="showSpinner">
+                    <div class="loadingBackground"></div>
+                    <div>
+                        <apex:image url="{!$Resource.Loading}" styleClass="loading" />
+                    </div>
+                </div>
+                <!-- Modal -->
+                <div class="modal fade" id="fileUploadModel" tabindex="-1" aria-labelledby="fileUploadModel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Uplaod Document</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-1">
+
+                                    </div>
+                                    <div class="col-10">
+                                        <div class="dropzone-wrapper">
+                                            <div class="dropzone-desc">
+                                                <i class="glyphicon glyphicon-download-alt"></i>
+                                                <p>Choose an PDF file or drag it here.</p>
+                                            </div>
+                                            <input type="file" name="img_logo" class="dropzone" accept="application/pdf" id="attachmentFile" />
+                                        </div>
+                                        <div id="file-upload-filename"></div>
+                                    </div>
+                                    <div class="col-1">
+
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary danger" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-warning m-1" ng-Click="uploadFileToUserDoc('attachment')">Uplaod</button>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+
+
+
+                <div class="shadow " style="padding-left: none !important;padding-right: none !important;">
+                    <div class=" network_wrapper col-sm">
+                        <div class="card">
+
+                            <div class="card-header">
+                                <h5 class="card-title d-flex justify-content-center m-0 ondontefontColor">
+                                    <p class="ondontefontColor mb-3">Permanent Jobs</p>
+                                </h5>
+                                <hr style="margin-top:unset;" />
+                                <ul class="nav nav-tabs card-header-tabs" data-bs-tabs="tabs">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" aria-current="true" data-bs-toggle="tab" href="#dhcp">All Job's</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-bs-toggle="tab" href="#static">My Job's</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <form class="card-body tab-content">
+                                <div class="tab-pane active" id="dhcp">
+                                    <div ng-hide="showAllJobsDetails">
+                                        <div class="row" >
+                                            <!--<div class="col-8">
+                                                <button type="button" class="badge rounded-pill bg-warning text-dark" disabled="true" style="color:f4a52e">
+                                                    Requisitions <!--<span class="badge bg-danger">({{jobCount}}) </span>
+                                                </button>
+                                            </div>-->
+                                        </div>
+                                        <div class="row" ng-hide="">
+                                            <div class="col-sm-3 mobileFiltersBtn p-0">
+                                                <div class="card-body card shadowHover" style="border: unset !important;">
+                                                    <button class="btn btn-primary " style="width:100%;" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample"
+                                                        aria-expanded="false" aria-controls="collapseExample">
+                                                        Add Filters&nbsp;
+                                                        <i class="fa fa-filter" aria-hidden="true"></i>
+                                                    </button>
+    
+                                                </div>
+                                                <div class="card-body">
+                                                    <!--<div>
+                                                        
+                                                        <button class="btn btn-primary " type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false"
+                                                                aria-controls="collapseExample">
+                                                            Add Filters&nbsp;
+                                                            <i class="fa fa-filter" aria-hidden="true"></i>
+                                                        </button>
+                                                    </div>-->
+                                                    <div class="collapse" id="collapseExample">
+                                                        <div class="card card-body ">
+    
+                                                            <div class="accordion accordion-flush" id="accordionFlushExample">
+                                                                <div class="row">
+                                                                    <div class="col-sm-12">
+                                                                        <label class=" control-label">Job Title</label>
+    
+                                                                        <input type="text" class="form-control" placeholder="Job Type" ng-model="filterJobName" />
+                                                                    </div>
+                                                                    <div class="col-sm-12">
+                                                                        <label class=" control-label">Job City</label>
+                                                                        <input type="text" class="form-control" placeholder="City" ng-model="filterJobCity" />
+                                                                    </div>
+                                                                </div>
+                                                                <br/>
+                                                                <div class="row">
+                                                                    <div class="col-sm-12">
+                                                                        <label class=" control-label">Start Date:</label>
+                                                                        <div class="input-group">
+                                                                            <input type="date" Class="form-control" name="birthday" ng-model="filterJobsDate" />&nbsp;&nbsp;
+                                                                        </div>
+    
+                                                                    </div>
+                                                                    <div class="col-sm-12">
+                                                                        <label class=" control-label">End Date:</label>
+                                                                        <div class="input-group">
+                                                                            <input type="date" Class="form-control" name="birthday" ng-model="filterJobeDate" />&nbsp;&nbsp;
+                                                                        </div>
+    
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <br/>
+                                                            <button type="button" class="btn btn-primary" style="width:100%;" ng-click="getFilterdJobs()">Apply Filter</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-9 fullSearch p-3 " ng-class="{'scollable-controlls':showPermanent && allJobReq.length>0}">
+    
+    
+                                                <div ng-repeat="job in allJobReq" >
+                                                    <div class="card mb-2 fullSearch ">
+                                                        <div class="card-header d-flex justify-content-between">
+                                                            <p class="card-title" style="margin-top: 0.5rem;">
+                                                                <b class="ondontefontColor">Job Name :</b>
+                                                                <span style="color:black;">{{job.Name}}</span>
+                                                            </p>
+                                                           <!-- <button type="button" class="btn btn-primary fullBtn" style="width:15%;" ng-click="showJobDetails(job)">View</button>
+                                                            <button type="button" class="btn btn-primary fullBtn" style="width:15%;" ng-click="submitApplication($index,job.Id)">Apply</button>-->
+                                                        </div>
+                                                        <div class="card-body ">
+    
+                                                            <!-- card-padding -->
+                                                            <div class="d-flex justify-content-between mobileBlock">
+                                                                <p style="width: 50%;">
+                                                                    <b class="ondontefontColor">Start Date: </b>
+                                                                    <span style="color:black;">{{job.Expected_Start_Date__c | date:'MM/dd/yyyy'}}</span>
+                                                                </p>
+                                                                <p style="width: 50%;">
+                                                                    <b class="ondontefontColor">End Date: </b>
+                                                                    <span style="color:black;">{{job.Expected_End_Date__c | date:'MM/dd/yyyy'}}</span>
+                                                                </p>
+                                                            </div>
+                                                            <p class="card-text">
+                                                                <b class="ondontefontColor">Description :</b>
+                                                                <span style="color:black;">{{job.Description__c}}</span>
+                                                            </p>
+    
+                                                        </div>
+                                                        <div class="card-footer mobileApply">
+                                                            <!--<button type="button" class="btn btn-primary " style="width:100%;" ng-click="submitApplication($index,job.Id)">Apply</button>-->
+                                                            <button type="button" class="btn btn-primary " style="width:49%;" ng-click="showJobDetails(job)">View</button>
+                                                            <button type="button" class="btn btn-primary " style="width:49%;" ng-click="submitApplication($index,job.Id)">Apply</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                            </div>
+                                        </div>
+                                        <div class="row" ng-hide="">
+                                            <div class="col-sm-3 fullSearch">
+                                                <!--<div class="card-body">
+                                                    
+                                                    <div class="collapse" id="collapseExample">
+                                                        <div class="card card-body ">
+    
+                                                            <div class="accordion accordion-flush" id="accordionFlushExample">
+                                                                <div class="row">
+                                                                    <div class="col-sm-12">
+                                                                        <label class=" control-label">Job Title</label>
+    
+                                                                        <input type="text" class="form-control" placeholder="Job Type" ng-model="filterJobName" />
+                                                                    </div>
+                                                                    <div class="col-sm-12">
+                                                                        <label class=" control-label">Job City</label>
+                                                                        <input type="text" class="form-control" placeholder="City" ng-model="filterJobCity" />
+                                                                    </div>
+                                                                </div>
+                                                                <br/>
+                                                                <div class="row">
+                                                                    <div class="col-sm-12">
+                                                                        <label class=" control-label">Start Date:</label>
+                                                                        <div class="input-group">
+                                                                            <input type="date" Class="form-control" name="birthday" ng-model="filterJobsDate" />&nbsp;&nbsp;
+                                                                        </div>
+    
+                                                                    </div>
+                                                                    <div class="col-sm-12">
+                                                                        <label class=" control-label">End Date:</label>
+                                                                        <div class="input-group">
+                                                                            <input type="date" Class="form-control" name="birthday" ng-model="filterJobeDate" />&nbsp;&nbsp;
+                                                                        </div>
+    
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <br/>
+                                                            <button type="button" class="btn btn-primary" style="width:100%;" ng-click="getFilterdJobs()">Apply Filter</button>
+                                                        </div>
+                                                    </div>
+                                                </div>-->
+                                            </div>
+    
+    
+    
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 scollable-controlls" ng-show="showAllJobsDetails">
+                                        <div>
+                                            <div class="card mb-3">
+                                                <div class="card-header d-flex justify-content-between">
+                                                    <p class="card-title" style="margin-top:0.5rem;">
+                                                        <b class="ondontefontColor">Job Name : </b>
+                                                        <span style="color:black;">{{selectedJobReq.Name}}</span>
+                                                    </p>
+                                                    <a class="btn btn-primary smallEye" ng-click="hideJobDetails()" style="width:10%;">
+                                                        <i class="fa fa-arrow-left"></i>
+                                                    </a>
+                                                </div>
+                                                <div class="card-body ">
+                                                    <div class="d-flex justify-content-between d-block-mobile">
+                                                        <div style="width: 50%;">
+                                                            <b class="ondontefontColor">Start Date:&nbsp;</b>
+                                                            <span style="color:black;">{{selectedJobReq.Expected_Start_Date__c | date:'MM/dd/yyyy'}}</span>
+                                                        </div>
+                                                        <div style="width: 50%;">
+                                                            <b class="ondontefontColor">End Date:&nbsp;</b>
+                                                            <span style="color:black;">{{selectedJobReq.Expected_End_Date__c | date:'MM/dd/yyyy'}}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="d-flex justify-content-between">
+
+                                                        <p class="card-subtitle mb-2 mt-2 col-sm-12 text-muted">
+                                                            <b class="ondontefontColor">Job Requisition : </b>
+                                                            <span style="color:black;">{{selectedJobReq.Name}}</span>
+                                                        </p>
+                                                    </div>
+
+
+
+                                                    <p class="card-text p-1" style="padding-left:unset !important;">
+                                                        <b class="ondontefontColor">Description : </b>
+                                                        <span style="color:black;">{{selectedJobReq.Description__c}}</span>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="tab-pane" id="static">
+                                    <div class="row" ng-hide="jobDetailPage">
+
+                                        <div class="col-sm-12 scollable-controlls">
+                                            <div ng-repeat="job in myJobs">
+                                                <div class="card mb-3">
+                                                    <div class="card-header d-flex justify-content-between">
+                                                        <p class="card-title" style="margin-top:0.5rem;">
+                                                            <b class="ondontefontColor">Job Name : </b>
+                                                            <span style="color:black;">{{job.Name}}</span>
+                                                        </p>
+                                                        <a class="btn btn-primary smallEye" ng-click="viewJobDetails(job)" style="width:10%;">
+                                                            <i class="fa fa-eye"></i>
+                                                        </a>
+                                                    </div>
+                                                    <div class="card-body ">
+                                                        <div class="d-flex justify-content-between d-block-mobile">
+                                                            <div style="width: 50%;">
+                                                                <b class="ondontefontColor">Start Date:&nbsp;</b>
+                                                                <span style="color:black;">{{job.Job_Requisition__r.Expected_Start_Date__c | date:'MM/dd/yyyy'}}</span>
+                                                            </div>
+                                                            <div style="width: 50%;">
+                                                                <b class="ondontefontColor">End Date:&nbsp;</b>
+                                                                <span style="color:black;">{{job.Job_Requisition__r.Expected_End_Date__c | date:'MM/dd/yyyy'}}</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="d-flex justify-content-between">
+
+                                                            <p class="card-subtitle mb-2 mt-2 col-sm-12 text-muted">
+                                                                <b class="ondontefontColor">Job Requisition : </b>
+                                                                <span style="color:black;">{{job.Job_Requisition__r.Name}}</span>
+                                                            </p>
+                                                        </div>
+
+
+
+                                                        <p class="card-text p-1" style="padding-left:unset !important;">
+                                                            <b class="ondontefontColor">Description : </b>
+                                                            <span style="color:black;">{{job.Job_Requisition__r.Description__c}}</span>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+
+                                    </div>
+                                    <div class="row" ng-show="jobDetailPage">
+                                        <div class="col-md-12 ">
+                                            <form id="msform">
+
+
+                                            </form>
+                                            <div class="card">
+                                                <div>
+                                                    <div style="" class="p-3 p5mobilePadding d-flex justify-content-start">
+                                                        <div class="">
+                                                            <p>
+                                                                <b class="ondontefontColor">Job Name : </b>
+                                                                <span style="color:black;">{{jobDetails.Name}}</span>
+                                                            </p>
+                                                            <p class="text-muted">
+                                                                <b class="ondontefontColor"> Requisition : </b>
+                                                                <span style="color:black;">{{jobDetails.Job_Requisition__r.Name}}</span>
+                                                            </p>
+                                                            <p>
+                                                                <b class="ondontefontColor">Description : </b>
+                                                                <span style="color:black;">{{jobDetails.Job_Requisition__r.Description__c}}</span>
+                                                            </p>
+                                                        </div>
+                                                    </div>
+
+                                                    <form id="msform">
+
+                                                        <ul id="progressbar" class="mt-5 mobilePadding">
+
+                                                            <li class="active" id="Applied">
+                                                                <strong>Applied</strong>
+                                                            </li>
+
+                                                            <li class="" id="InterviewScheduled">
+                                                                <strong>Interview Scheduled</strong>
+                                                            </li>
+
+                                                            <li class="" id="Selected">
+                                                                <strong>Selected</strong>
+                                                            </li>
+
+                                                            <li class="" id="Placed">
+                                                                <strong>Placed</strong>
+                                                            </li>
+
+                                                        </ul>
+                                                    </form>
+
+
+                                                    <div class="container mobilePadding">
+                                                        <div class="row">
+
+                                                        </div>
+
+                                                        <div>
+
+                                                            <div class="row">
+                                                                <div class="col-sm-12">
+                                                                    <table class="table full">
+                                                                        <thead>
+                                                                            <tr>
+                                                                                <th scope="col" class="ondontefontColor">#</th>
+                                                                                <th scope="col" class="ondontefontColor">Document Name</th>
+                                                                                <th scope="col" class="ondontefontColor">Document Status</th>
+                                                                                <th scope="col" class="d-flex justify-content-center ondontefontColor">Action</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                            <tr ng-repeat="doc in userDoc">
+                                                                                <th scope="row">{{$index+1}}</th>
+                                                                                <td>{{doc.userDocument.Name}}</td>
+                                                                                <td>{{doc.userDocument.Status__c}}</td>
+                                                                                <td class="viewBtn justify-content-between" ng-show="doc.userDocument.Status__c == 'Uploaded' || doc.userDocument.Status__c == 'Approved'">
+                                                                                    <button type="button" class="btn btn-primary" ng-click="viewDocument(doc.contentVersion.Id)" href="">
+                                                                                        <i class="fa fa-eye"></i>
+                                                                                    </button>
+                                                                                    <button type="button" class="btn btn-secondary" ng-click="selUserDocId(doc.userDocument.Id,doc.contentVersion.Id)" data-bs-toggle="modal"
+                                                                                        data-bs-target="#fileUploadModel">
+                                                                                        <i class="fa fa-edit"></i>
+                                                                                    </button>
+                                                                                </td>
+                                                                                <td ng-show="doc.userDocument.Status__c == 'Rejected' || doc.userDocument.Status__c == 'Pending'">
+                                                                                    <button type="button" class="btn btn-secondary" style="width:100%;" data-bs-toggle="modal" data-bs-target="#fileUploadModel"
+                                                                                        ng-click="selUserDocId(doc.userDocument.Id,'')">
+                                                                                        <i class="fa fa-upload" />
+                                                                                    </button>
+
+                                                                                </td>
+                                                                            </tr>
+
+                                                                        </tbody>
+                                                                    </table>
+
+                                                                    <div class="card mobile" ng-repeat="doc in userDoc">
+
+                                                                        <div class="card-body">
+                                                                            <p class="card-title">
+                                                                                <b class="ondontefontColor">Document Name :</b>{{doc.userDocument.Name}}</p>
+                                                                            <p class="card-text">
+                                                                                <b class="ondontefontColor">Document Status : </b>{{doc.userDocument.Status__c}}</p>
+                                                                            <div ng-show="doc.userDocument.Status__c == 'Uploaded' || doc.userDocument.Status__c == 'Approved'" class="col-sm-12" style="width: 100%">
+                                                                                <button type="button" class="btn btn-primary col-sm-6" ng-click="viewDocument(doc.contentVersion.Id)" style="width: 49%">
+                                                                                    <i class="fa fa-eye" />
+                                                                                </button>
+                                                                                <button type="button" class="btn btn-secondary col-sm-6" style="width: 49%" ng-click="selUserDocId(doc.userDocument.Id,doc.contentVersion.Id)"
+                                                                                    data-bs-toggle="modal" data-bs-target="#fileUploadModel">
+                                                                                    <i class="fa fa-edit" />
+                                                                                </button>
+                                                                            </div>
+                                                                            <div ng-show="doc.userDocument.Status__c == 'Rejected' || doc.userDocument.Status__c == 'Pending'" class="col-sm-12" style="width: 100%">
+                                                                                <button type="button" class="btn btn-secondary col-sm-12" style="width: 100%" data-bs-toggle="modal" data-bs-target="#fileUploadModel"
+                                                                                    ng-click="selUserDocId(doc.userDocument.Id,'')">
+                                                                                    <i class="fa fa-upload" />
+                                                                                </button>
+
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+
+                                                    </div>
+                                                </div>
+                                                <div class="card-footer mobileView">
+                                                    <div class="d-flex justify-content-center">
+                                                        <button type="button" ng-hide="jobDetails.Application_Stage__c == 'Placed'|| jobDetails.Application_Stage__c == 'Final Candidate Selected' || jobDetails.Application_Stage__c == 'Withdrawn by Candidate' || jobDetails.Application_Stage__c == 'Rejected by Client'"
+                                                            class="btn btn-primary danger " style="width:50%;" ng-click="withdrawApplication(jobDetails.Id)">Withdraw Application</button>&nbsp;&nbsp;
+                                                        <button type="button" class="btn btn-secondary float-end" style="width: 50%;" ng-click="backFromJobDetails()">Back</button>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                </div>
+            </div>
+        </div>
+    </body>
+
+    </html>
+
+</apex:page>

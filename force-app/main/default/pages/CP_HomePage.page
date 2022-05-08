@@ -1,0 +1,40 @@
+<apex:page sidebar="false" showHeader="false" standardStylesheets="false">
+
+  <style>
+    @media only screen and (max-width:491px) {
+      nav.navbar.navbar-expand-lg.navbar-light>.container-fluid {
+        display: block !important;
+      }
+      ul.navbar-nav.me-auto.mb-2.mb-lg-0 {
+        width: 100%;
+      }
+    }
+  </style>
+  <div ng-controller='cp_home_ctrl'>
+    <div class="row">
+      <div class="col-md-2"></div>
+      <div class="col-md-8 mt-2 mb-2">
+
+        <div class="card mb-3">
+          <img src="https://www.ondonte.com/wp-content/uploads/2016/05/Untitled-4.jpg" class="card-img-top" alt="..." />
+          <div class="card-body">
+            <h5 class="card-title ondontefontColor">Resources from Ondonte</h5>
+            <p class="card-text">Ondonte Dental Staffing strives to be a resource for both dental practices and those seeking temporary or permanent
+              employment in a dental practice. Our “Resources” page is here to offer a portal to those interested in exploring
+              the possibilities that a career in dentistry offers.</p>
+            <p class="card-text">
+              <b class="ondontefontColor">Dental Careers Exploratorium:&nbsp;</b>Ondonte Dental Staffing strives to be a resource for both dental practices
+              and those seeking temporary or permanent employment in a dental practice. Our “Resources” page is here to offer
+              a portal to those interested in exploring the possibilities that a career in dentistry offers.</p>
+            <p class="card-text">
+              <b class="ondontefontColor">Dental Professional Associations:&nbsp;</b>Here we offer links to the various National, State and local professional
+              Dental Associations.</p>
+
+          </div>
+        </div>
+      </div>
+      <div class="col-md-2"></div>
+    </div>
+
+  </div>
+</apex:page>

@@ -1,0 +1,11 @@
+<!--
+@purpose : This page is used as a redirect URL for goolge login 
+for Student/Alumni/Facilitator profile page which is hosted on Sites
+-->
+<apex:page sidebar="false" showHeader="false" controller="CP_LoginPage_Controller" action="{!redirectProfilePage}"> 
+    <script>
+    debugger;
+    debugger;
+    console.warn('gauth Page----');
+    </script>
+</apex:page>

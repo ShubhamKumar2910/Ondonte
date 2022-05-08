@@ -1,0 +1,832 @@
+<apex:page showHeader="false" sidebar="false" docType="html-5.0" controller="CP_SchedulePlannerController" standardStylesheets="false" lightningStylesheets="false">
+<html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <head>
+        <apex:slds />
+        <meta charset='utf-8' />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <script>
+            let candidateId = '{!candidateId}';
+            let candidateName = '{!candidateRecord.Name}';
+            let profilePicUrl = '{!candidateRecord.Profile_Picture_URL__c}';
+        </script>
+        <apex:stylesheet value="{!URLFOR($Resource.Calendar, '/FullCalendarJS/fullcalendar.min.css')}"/>    
+        <apex:includeScript value="{!URLFOR($Resource.Calendar, '/FullCalendarJS/moment.min.js')}"/>
+        <apex:includeScript value="{!URLFOR($Resource.Calendar, '/FullCalendarJS/jquery.min.js')}"/>
+        <apex:includeScript value="{!URLFOR($Resource.Calendar, '/FullCalendarJS/theme.js')}"/>
+        <apex:includeScript value="{!URLFOR($Resource.Calendar, '/FullCalendarJS/jquery-ui.min.js')}"/>
+        <apex:includeScript value="{!URLFOR($Resource.Calendar, '/FullCalendarJS/fullcalendar.min.js')}"/>
+        <apex:includeScript value="{!URLFOR($Resource.Calendar, '/FullCalendarJS/jquery.ui.touch-punch.min.js')}"/>
+        <apex:includeScript value="{!URLFOR($Resource.CP_SchedulePlanner)}"/>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/js/bootstrap.bundle.min.js"></script>
+        <style>
+            body {
+                overflow-x: hidden;
+                font-size: 14px;
+                /* background: rgba(235, 234, 232, 0.459) !important; */
+                background-color: rgb(203 213 225);
+
+                font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif !important;
+            }
+    
+            #external-events h4 {
+                font-size: 16px;
+                margin-top: 0;
+                padding-top: 1em;
+            }
+    
+            #external-events .fc-event {
+                margin: 10px 0;
+                cursor: pointer;
+                padding: 5px;
+                background-color: #5a6ccc !important;
+                border: #5a6ccc !important;
+            }
+    
+            .fc-day-grid-event {
+                border-color: #000000 !important;
+                background-color: #000000 !important;
+            }
+            
+            .slds-scope a {
+                color: #5a6ccc !important;
+            }
+    
+            #external-events p {
+                margin: 1.5em 0;
+                font-size: 11px;
+                color: #666;
+            }
+    
+            #external-events p input {
+                margin: 0;
+                vertical-align: middle;
+            }
+            /* #calendar {
+                float: right;
+                width: 900px;
+            } */
+            .fc-content {
+                background: #5a6ccc;
+                color: white;
+            }
+    
+            button:disabled,
+            button[disabled]{
+                background-color: #cccccc !important;
+            }
+            
+            .circular-event-status {
+                width: 20px;
+                height: 20px;
+                border-radius: 50%;
+            }
+            .vertical-center {
+              margin: 0;
+              position: absolute;
+              top: 50%;
+              -ms-transform: translateY(-50%);
+              transform: translateY(-50%);
+            }
+
+        </style>
+    </head>
+    <body class="slds-scope"> 
+        <c:CP_NavigationBar cid="{!candidateId}" username="{!candidateRecord.LastName}" profilePictureId="{!candidateRecord.Profile_Pic_Attachment_Id__c}" hashcode="{!hashCode}"/>
+        <div class="slds-spinner_container" id="spinner">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+        <div id="wrap" class="slds-grid slds-gutters" style="padding: 1% !important;">
+            <div id="external-events" class="slds-col slds-size_1-of-5">
+                <article class="slds-card">
+                    <div>
+                        <img id="profile-pic" src="https://www.pngfind.com/pngs/m/610-6104451_image-placeholder-png-user-profile-placeholder-image-png.png"
+                            alt="Profile Pic..." />
+                    </div>
+                    <div class="slds-card__header slds-grid">
+                        <header class="slds-media slds-media_center slds-has-flexi-truncate">
+        
+                            <div class="slds-media__figure">
+                                <span class="slds-icon_container slds-icon-standard-task" title="task">
+                                    <svg class="slds-icon slds-icon_small" aria-hidden="true" style="background: #5a6ccc;">
+                                        <use xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/standard-sprite/svg/symbols.svg#user')}"></use>
+                                    </svg>
+                                    <span class="slds-assistive-text">Manage day's avilable</span>
+                                </span>
+                            </div>
+                            <div class="slds-media__body">
+                                <h2 class="slds-card__header-title">
+                                    <a href="javascript:void(0);" class="slds-card__header-link slds-truncate" title="Slots">
+                                        <span>{!candidateRecord.Name}</span>
+                                    </a>
+                                </h2>
+                            </div>
+                            <div id="shift-info" class="slds-no-flex" style="cursor:pointer;">
+                                <svg class="slds-icon slds-icon_small" aria-hidden="true" style="fill:#5a6ccc;">
+                                    <use xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#info')}"></use>
+                                </svg>
+                            </div>
+                        </header>
+                    </div>
+                    <div class="slds-card__body slds-card__body_inner">
+                        <button id="btn-edit-slot" class="slds-button slds-button_success">Create New Shift</button>
+                        <button id="upsert-shifts" class="slds-button slds-button_success" style="cursor:pointer !important;display:none;">Save Changes</button>
+                    </div>
+                </article>
+            </div>
+            <div class="slds-col slds-size_4-of-5">
+        
+                <article class="slds-card" id="calendar-card">
+                    <div class="slds-card__header slds-grid">
+                        <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                            <div class="slds-media__figure">
+                                <span class="slds-icon_container slds-icon-standard-task" title="Calendar">
+                                    <svg class="slds-icon slds-icon_small" aria-hidden="true" style="background: #5a6ccc;">
+                                        <use xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/standard-sprite/svg/symbols.svg#date_input')}"></use>
+                                    </svg>
+                                    <span class="slds-assistive-text">Calendar</span>
+                                </span>
+                            </div>
+                            <div class="slds-media__body">
+                                <h2 class="slds-card__header-title">
+                                    <a href="javascript:void(0);" class="slds-card__header-link slds-truncate" title="Calendar">
+                                        <span>Calendar</span>
+                                    </a>
+                                </h2>
+                            </div>
+                        </header>
+                    </div>
+                    <div class="slds-card__body slds-card__body_inner" id="no-shifts" style="display:none;">
+                        <div class="slds-text-heading_small">There are no shift's assigned to {!candidateRecord.Name}</div>
+                    </div>
+                    <div class="slds-card__body slds-card__body_inner" id="calendar-container">
+                        <div id='calendar'></div>
+                    </div>
+                </article>
+        
+        
+            </div>
+        </div>
+        <!-- Modal -->
+        <div id="event-modal" style="display:none;">
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1"
+                class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <button class="close-modal slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                            <svg class="slds-button__icon slds-button__icon_large" aria-hidden="true">
+                                <use xlink:href="{!URLFOR($Asset.SLDS, '/assets/icons/utility-sprite/svg/symbols.svg#close')}"></use>
+                            </svg>
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+                        <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate"></h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-col">
+                                <div class="slds-form-element">
+                                    <div class="slds-form-element__control">
+                                        <b>Shift No: </b>
+                                        <a id="shift-no" target="_blank" href=""></a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col">
+                                <div class="slds-form-element">
+                                    <!-- <label class="slds-form-element__label" for="selected-shift-status">Status</label>
+                                                                    <div class="slds-form-element__control">
+                                                                        <div class="slds-select_container">
+                                                                            <select class="slds-select" id="selected-shift-status">
+                                                                                <option>Open</option>
+                                                                                <option>Filled</option>
+                                                                                <option>Cancelled</option>
+                                                                                <option>Could not Fill</option>
+                                                                            </select>
+                                                                        </div>
+                                                                    </div> -->
+                                    <div class="slds-form-element">
+                                        <div class="slds-form-element__control">
+                                            <b>Status: </b>
+                                            <span id="shift-status"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-col">
+                                <div class="slds-form-element">
+                                    <div class="slds-form-element__control">
+                                        <b>Start Time: </b>
+                                        <span id="shift-st"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col">
+                                <div class="slds-form-element">
+                                    <div class="slds-form-element__control">
+                                        <b>End Time: </b>
+                                        <span id="shift-et"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br/>
+                        <p id="not_avail_msg">Click on
+                            <b style="color:red;">Not Available</b> to mark this shift as not available.</p>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <button class="close-modal slds-button slds-button_neutral">Cancel</button>
+                        <button id="delete-event" class="slds-button slds-button_destructive">Not Available</button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </div>
+        
+        <!--Slot Modal -->
+        <div id="slot-modal" style="display:none;">
+            <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_medium" aria-labelledby="modal-heading-01"
+                aria-modal="true">
+                <div class="slds-modal__container">
+        
+                    <div class="slds-modal__header">
+                        <button class="close-slot-modal slds-button slds-button_icon slds-modal__close slds-button_icon-inverse">
+                            <svg class="slds-button__icon slds-button__icon_large" aria-hidden="true">
+                                <use xlink:href="{!URLFOR($Asset.SLDS, '/assets/icons/utility-sprite/svg/symbols.svg#close')}"></use>
+                            </svg>
+                            <span class="slds-assistive-text">Cancel and close</span>
+                        </button>
+                        <h1 id="slot-modal-heading" class="slds-modal__title slds-hyphenate">Plan {!candidateRecord.Name}'s Days</h1>
+                    </div>
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="height:100%;">
+                        <!--New slots component-->
+                        <div id="new-slot" class="slds-form">
+        
+                            <div class="slds-grid slds-wrap slds-p-around_large slds-gutters">
+                                <div class="slds-col slds-size_1-of-2">
+                                    <div class="slds-form-element">
+                                        <label class="slds-form-element__label" for="form-element-01">
+                                            <abbr class="slds-required" title="required">* </abbr>Start Date</label>
+                                        <div class="slds-form-element__control">
+                                            <input type="date" id="start-date" name="birthday" class="slds-input" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2">
+                                    <div class="slds-form-element">
+                                        <label class="slds-form-element__label" for="form-element-01">
+                                            <abbr class="slds-required" title="required">* </abbr>End Date</label>
+                                        <div class="slds-form-element__control">
+                                            <input type="date" id="end-date" name="birthday" class="slds-input" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2">
+                                    <div class="slds-form-element">
+                                        <label class="slds-form-element__label" for="form-element-01">
+                                            <abbr class="slds-required" title="required">* </abbr>Start time</label>
+                                        <div class="slds-form-element__control">
+                                            <input type="time" id="start-time" name="start time" class="slds-input" />
+                                        </div>
+                                    </div>
+        
+                                </div>
+                                <div class="slds-col slds-size_1-of-2">
+                                    <div class="slds-form-element">
+                                        <label class="slds-form-element__label" for="form-element-01">
+                                            <abbr class="slds-required" title="required">* </abbr>End time</label>
+                                        <div class="slds-form-element__control">
+                                            <input type="time" id="end-time" name="end-time" class="slds-input" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Frequency -->
+                            <div id="slot-error-pannel" class="slds-align_absolute-center" style="color:red;display:none;">ERROR: Please select all necessary details</div>
+                            <div class="slds-grid slds-wrap slds-p-around_large slds-gutters" style="background-color:#eeeeee;">
+                                <div class="slds-col slds-size_1-of-4"></div>
+                                <div class="slds-col slds-size_1-of-4">
+                                    <div class="slds-var-p-around_xxx-small">
+                                        <fieldset class="slds-form-element">
+                                            <legend class="slds-form-element__legend slds-form-element__label">
+                                                <abbr class="slds-required" title="required">*</abbr>Frequency</legend>
+                                            <div class="slds-form-element__control">
+                                                <span class="slds-radio">
+                                                    <input type="radio" id="weekly" value="weekly" name="shift-type" checked="true" />
+                                                    <label class="slds-radio__label" for="weekly">
+                                                        <span class="slds-radio_faux"></span>
+                                                        <span class="slds-form-element__label">Weekly</span>
+                                                    </label>
+                                                </span>
+                                                <span class="slds-radio">
+                                                    <input type="radio" id="monthly" value="monthly" name="shift-type" />
+                                                    <label class="slds-radio__label" for="monthly">
+                                                        <span class="slds-radio_faux"></span>
+                                                        <span class="slds-form-element__label">Monthly</span>
+                                                    </label>
+                                                </span>
+                                            </div>
+                                        </fieldset>
+                                    </div>
+                                </div>
+                                <div class="weekly-div slds-col slds-size_2-of-4">
+                                    <div class="slds-p-around_small" style="background-color:#fff;">
+                                        <div>
+                                            Recurs every week on:
+        
+                                            <div class="slds-m-top_xx-small slds-form-element slds-m-bottom_xx-small">
+                                                <div class="slds-form-element__control">
+                                                    <div class="slds-checkbox">
+                                                        <input type="checkbox" name="select-all-week" id="select-all-week" value="select-all" checked="" />
+                                                        <label class="slds-checkbox__label" for="select-all-week">
+                                                            <span class="slds-checkbox_faux"></span>
+                                                            <span class="slds-form-element__label">Select All</span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+        
+                                            <hr style="margin:0px;margin-top: 2%" />
+                                            <div class="slds-grid slds-gutters">
+                                                <div class="slds-col slds-size_1-of-4">
+                                                    <div class="slds-m-top_medium slds-form-element">
+                                                        <div class="slds-form-element__control">
+                                                            <div class="slds-checkbox">
+                                                                <input type="checkbox" name="weekday" id="sunday-check" value="Sun" checked="" />
+                                                                <label class="slds-checkbox__label" for="sunday-check">
+                                                                    <span class="slds-checkbox_faux"></span>
+                                                                    <span class="slds-form-element__label">Sunday</span>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="slds-col slds-size_1-of-4">
+                                                    <div class="slds-m-top_medium slds-form-element">
+                                                        <div class="slds-form-element__control">
+                                                            <div class="slds-checkbox">
+                                                                <input type="checkbox" name="allday" id="sunday-allday" value="Sun" checked="" />
+                                                                <label class="slds-checkbox__label" for="sunday-allday">
+                                                                    <span class="slds-checkbox_faux"></span>
+                                                                    <span class="slds-form-element__label">All day</span>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="slds-col slds-size_1-of-4">
+                                                    <div class="slds-form-element">
+                                                        <label class="slds-form-element__label" for="form-element-01">
+                                                            <abbr class="slds-required" title="required">* </abbr>Start time</label>
+                                                        <div class="slds-form-element__control">
+                                                            <input type="time" id="sunday-start-time" name="start time" class="slds-input" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="slds-col slds-size_1-of-4">
+                                                    <div class="slds-form-element">
+                                                        <label class="slds-form-element__label" for="form-element-01">
+                                                            <abbr class="slds-required" title="required">* </abbr>End time</label>
+                                                        <div class="slds-form-element__control">
+                                                            <input type="time" id="sunday-end-time" name="end time" class="slds-input" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+        
+                                            </div>
+                                            <hr style="margin:0px;margin-top: 2%" />
+                                            <div class="slds-grid slds-gutters">
+                                                <div class="slds-col slds-size_1-of-4">
+                                                    <div class="slds-m-top_medium slds-form-element">
+                                                        <div class="slds-form-element__control">
+                                                            <div class="slds-checkbox">
+                                                                <input type="checkbox" name="weekday" id="monday-check" value="Mon" checked="" />
+                                                                <label class="slds-checkbox__label" for="monday-check">
+                                                                    <span class="slds-checkbox_faux"></span>
+                                                                    <span class="slds-form-element__label">Monday</span>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="slds-col slds-size_1-of-4">
+                                                    <div class="slds-m-top_medium slds-form-element">
+                                                        <div class="slds-form-element__control">
+                                                            <div class="slds-checkbox">
+                                                                <input type="checkbox" name="allday" id="monday-allday" value="Mon" checked="" />
+                                                                <label class="slds-checkbox__label" for="monday-allday">
+                                                                    <span class="slds-checkbox_faux"></span>
+                                                                    <span class="slds-form-element__label">All day</span>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="slds-col slds-size_1-of-4">
+                                                    <div class="slds-form-element">
+                                                        <label class="slds-form-element__label" for="form-element-01">
+                                                            <abbr class="slds-required" title="required">* </abbr>Start time</label>
+                                                        <div class="slds-form-element__control">
+                                                            <input type="time" id="monday-start-time" name="start time" class="slds-input" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="slds-col slds-size_1-of-4">
+                                                    <div class="slds-form-element">
+                                                        <label class="slds-form-element__label" for="form-element-01">
+                                                            <abbr class="slds-required" title="required">* </abbr>End time</label>
+                                                        <div class="slds-form-element__control">
+                                                            <input type="time" id="monday-end-time" name="end time" class="slds-input" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <hr style="margin:0px;margin-top: 2%" />
+                                            <div class="slds-grid slds-gutters">
+                                                <div class="slds-col slds-size_1-of-4">
+                                                    <div class="slds-m-top_medium slds-form-element">
+                                                        <div class="slds-form-element__control">
+                                                            <div class="slds-checkbox">
+                                                                <input type="checkbox" name="weekday" id="tuesday-check" value="Tue" checked="" />
+                                                                <label class="slds-checkbox__label" for="tuesday-check">
+                                                                    <span class="slds-checkbox_faux"></span>
+                                                                    <span class="slds-form-element__label">Tuesday</span>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="slds-col slds-size_1-of-4">
+                                                    <div class="slds-m-top_medium slds-form-element">
+                                                        <div class="slds-form-element__control">
+                                                            <div class="slds-checkbox">
+                                                                <input type="checkbox" name="allday" id="tuesday-allday" value="Tue" checked="" />
+                                                                <label class="slds-checkbox__label" for="tuesday-allday">
+                                                                    <span class="slds-checkbox_faux"></span>
+                                                                    <span class="slds-form-element__label">All day</span>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="slds-col slds-size_1-of-4">
+                                                    <div class="slds-form-element">
+                                                        <label class="slds-form-element__label" for="form-element-01">
+                                                            <abbr class="slds-required" title="required">* </abbr>Start time</label>
+                                                        <div class="slds-form-element__control">
+                                                            <input type="time" id="tuesday-start-time" name="start time" class="slds-input" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="slds-col slds-size_1-of-4">
+                                                    <div class="slds-form-element">
+                                                        <label class="slds-form-element__label" for="form-element-01">
+                                                            <abbr class="slds-required" title="required">* </abbr>End time</label>
+                                                        <div class="slds-form-element__control">
+                                                            <input type="time" id="tuesday-end-time" name="end time" class="slds-input" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <hr style="margin:0px;margin-top: 2%" />
+                                            <div class="slds-grid slds-gutters">
+                                                <div class="slds-col slds-size_1-of-4">
+                                                    <div class="slds-m-top_medium slds-form-element">
+                                                        <div class="slds-form-element__control">
+                                                            <div class="slds-checkbox">
+                                                                <input type="checkbox" name="weekday" id="wednesday-check" value="Wed" checked="" />
+                                                                <label class="slds-checkbox__label" for="wednesday-check">
+                                                                    <span class="slds-checkbox_faux"></span>
+                                                                    <span class="slds-form-element__label">Wednesday</span>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="slds-col slds-size_1-of-4">
+                                                    <div class="slds-m-top_medium slds-form-element">
+                                                        <div class="slds-form-element__control">
+                                                            <div class="slds-checkbox">
+                                                                <input type="checkbox" name="allday" id="wednesday-allday" value="Wed" checked="" />
+                                                                <label class="slds-checkbox__label" for="wednesday-allday">
+                                                                    <span class="slds-checkbox_faux"></span>
+                                                                    <span class="slds-form-element__label">All day</span>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="slds-col slds-size_1-of-4">
+                                                    <div class="slds-form-element">
+                                                        <label class="slds-form-element__label" for="form-element-01">
+                                                            <abbr class="slds-required" title="required">* </abbr>Start time</label>
+                                                        <div class="slds-form-element__control">
+                                                            <input type="time" id="wednesday-start-time" name="start time" class="slds-input" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="slds-col slds-size_1-of-4">
+                                                    <div class="slds-form-element">
+                                                        <label class="slds-form-element__label" for="form-element-01">
+                                                            <abbr class="slds-required" title="required">* </abbr>End time</label>
+                                                        <div class="slds-form-element__control">
+                                                            <input type="time" id="wednesday-end-time" name="end time" class="slds-input" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <hr style="margin:0px;margin-top: 2%" />
+                                            <div class="slds-grid slds-gutters">
+                                                <div class="slds-col slds-size_1-of-4">
+                                                    <div class="slds-m-top_medium slds-form-element">
+                                                        <div class="slds-form-element__control">
+                                                            <div class="slds-checkbox">
+                                                                <input type="checkbox" name="weekday" id="thrusday-check" value="Thu" checked="" />
+                                                                <label class="slds-checkbox__label" for="thrusday-check">
+                                                                    <span class="slds-checkbox_faux"></span>
+                                                                    <span class="slds-form-element__label">Thrusday</span>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="slds-col slds-size_1-of-4">
+                                                    <div class="slds-m-top_medium slds-form-element">
+                                                        <div class="slds-form-element__control">
+                                                            <div class="slds-checkbox">
+                                                                <input type="checkbox" name="allday" id="thrusday-allday" value="Thu" checked="" />
+                                                                <label class="slds-checkbox__label" for="thrusday-allday">
+                                                                    <span class="slds-checkbox_faux"></span>
+                                                                    <span class="slds-form-element__label">All day</span>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="slds-col slds-size_1-of-4">
+                                                    <div class="slds-form-element">
+                                                        <label class="slds-form-element__label" for="form-element-01">
+                                                            <abbr class="slds-required" title="required">* </abbr>Start time</label>
+                                                        <div class="slds-form-element__control">
+                                                            <input type="time" id="thrusday-start-time" name="start time" class="slds-input" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="slds-col slds-size_1-of-4">
+                                                    <div class="slds-form-element">
+                                                        <label class="slds-form-element__label" for="form-element-01">
+                                                            <abbr class="slds-required" title="required">* </abbr>End time</label>
+                                                        <div class="slds-form-element__control">
+                                                            <input type="time" id="thrusday-end-time" name="end time" class="slds-input" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <hr style="margin:0px;margin-top: 2%" />
+                                            <div class="slds-grid slds-gutters">
+                                                <div class="slds-col slds-size_1-of-4">
+                                                    <div class="slds-m-top_medium slds-form-element">
+                                                        <div class="slds-form-element__control">
+                                                            <div class="slds-checkbox">
+                                                                <input type="checkbox" name="weekday" id="friday-check" value="Fri" checked="" />
+                                                                <label class="slds-checkbox__label" for="friday-check">
+                                                                    <span class="slds-checkbox_faux"></span>
+                                                                    <span class="slds-form-element__label">Friday</span>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="slds-col slds-size_1-of-4">
+                                                    <div class="slds-m-top_medium slds-form-element">
+                                                        <div class="slds-form-element__control">
+                                                            <div class="slds-checkbox">
+                                                                <input type="checkbox" name="allday" id="friday-allday" value="Fri" checked="" />
+                                                                <label class="slds-checkbox__label" for="friday-allday">
+                                                                    <span class="slds-checkbox_faux"></span>
+                                                                    <span class="slds-form-element__label">All day</span>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="slds-col slds-size_1-of-4">
+                                                    <div class="slds-form-element">
+                                                        <label class="slds-form-element__label" for="form-element-01">
+                                                            <abbr class="slds-required" title="required">* </abbr>Start time</label>
+                                                        <div class="slds-form-element__control">
+                                                            <input type="time" id="friday-start-time" name="start time" class="slds-input" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="slds-col slds-size_1-of-4">
+                                                    <div class="slds-form-element">
+                                                        <label class="slds-form-element__label" for="form-element-01">
+                                                            <abbr class="slds-required" title="required">* </abbr>End time</label>
+                                                        <div class="slds-form-element__control">
+                                                            <input type="time" id="friday-end-time" name="end time" class="slds-input" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <hr style="margin:0px;margin-top: 2%" />
+                                            <div class="slds-grid slds-gutters">
+                                                <div class="slds-col slds-size_1-of-4">
+                                                    <div class="slds-m-top_medium slds-form-element">
+                                                        <div class="slds-form-element__control">
+                                                            <div class="slds-checkbox">
+                                                                <input type="checkbox" name="weekday" id="saturday-check" value="Sat" checked="" />
+                                                                <label class="slds-checkbox__label" for="saturday-check">
+                                                                    <span class="slds-checkbox_faux"></span>
+                                                                    <span class="slds-form-element__label">Saturday</span>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="slds-col slds-size_1-of-4">
+                                                    <div class="slds-m-top_medium slds-form-element">
+                                                        <div class="slds-form-element__control">
+                                                            <div class="slds-checkbox">
+                                                                <input type="checkbox" name="allday" id="saturday-allday" value="Sun" checked="" />
+                                                                <label class="slds-checkbox__label" for="saturday-allday">
+                                                                    <span class="slds-checkbox_faux"></span>
+                                                                    <span class="slds-form-element__label">All day</span>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="slds-col slds-size_1-of-4">
+                                                    <div class="slds-form-element">
+                                                        <label class="slds-form-element__label" for="form-element-01">
+                                                            <abbr class="slds-required" title="required">* </abbr>Start time</label>
+                                                        <div class="slds-form-element__control">
+                                                            <input type="time" id="saturday-start-time" name="start time" class="slds-input" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="slds-col slds-size_1-of-4">
+                                                    <div class="slds-form-element">
+                                                        <label class="slds-form-element__label" for="form-element-01">
+                                                            <abbr class="slds-required" title="required">* </abbr>End time</label>
+                                                        <div class="slds-form-element__control">
+                                                            <input type="time" id="saturday-end-time" name="end time" class="slds-input" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+        
+                                    </div>
+        
+                                </div>
+                                <div class="weekly-div slds-col slds-size_1-of-4"></div>
+                                <!-- Monthly div -->
+                                <div class="monthly-div slds-col slds-size_2-of-4 slds-p-around_small" style="background-color:#fff;display:none;">
+                                    <div>
+                                        <div>
+                                            <span class="slds-radio">
+                                                <input type="radio" id="on-month" value="on-month" name="month-frequency-type" />
+                                                <label class="slds-radio__label" for="on-month">
+                                                    <span class="slds-radio_faux"></span>
+                                                    <span class="slds-form-element__label">On</span>
+                                                </label>
+                                            </span>
+                                            <select name="day-of-month" id="day-of-month">
+                                                <option value="1">1</option>
+                                                <option value="2">2</option>
+                                                <option value="3">3</option>
+                                                <option value="4">4</option>
+                                                <option value="5">5</option>
+                                                <option value="6">6</option>
+                                                <option value="7">7</option>
+                                                <option value="8">8</option>
+                                                <option value="9">9</option>
+                                                <option value="10">10</option>
+                                                <option value="11">11</option>
+                                                <option value="12">12</option>
+                                                <option value="13">13</option>
+                                                <option value="14">14</option>
+                                                <option value="15">15</option>
+                                                <option value="16">16</option>
+                                                <option value="17">17</option>
+                                                <option value="18">18</option>
+                                                <option value="19">19</option>
+                                                <option value="20">20</option>
+                                                <option value="21">21</option>
+                                                <option value="22">22</option>
+                                                <option value="23">23</option>
+                                                <option value="24">24</option>
+                                                <option value="25">25</option>
+                                                <option value="26">26</option>
+                                                <option value="27">27</option>
+                                                <option value="28">28</option>
+                                                <option value="29">29</option>
+                                                <option value="30">30</option>
+                                                <option value="31">31</option>
+                                            </select>
+                                            Of every month
+                                        </div>
+                                        <div>
+                                            <span class="slds-radio">
+                                                <input type="radio" id="on-week" value="on-week" name="month-frequency-type" />
+                                                <label class="slds-radio__label" for="on-week">
+                                                    <span class="slds-radio_faux"></span>
+                                                    <span class="slds-form-element__label">On</span>
+                                                </label>
+                                            </span>
+                                            <select name="week-of-month" id="week-of-month">
+                                                <option value="1">the 1st</option>
+                                                <option value="2">the 2nd</option>
+                                                <option value="3">the 3rd</option>
+                                                <option value="4">the 4th</option>
+                                                <option value="last">the last</option>
+                                            </select>
+                                            <select name="day-of-week" id="day-of-week">
+                                                <option value="Sun">Sunday</option>
+                                                <option value="Mon">Monday</option>
+                                                <option value="Tue">Tuesday</option>
+                                                <option value="Wed">Wednesday</option>
+                                                <option value="Thu">Thrusday</option>
+                                                <option value="Fri">Friday</option>
+                                                <option value="Sat">Saturday</option>
+                                            </select>
+                                            Of every month
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-modal__footer">
+                        <button class="close-slot-modal slds-button slds-button_neutral" aria-label="Cancel and close">Cancel</button>
+                        <button class="slds-button slds-button_brand" id="create-new-slot" value="Create New Plan">Create New Shift</button>
+                    </div>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+        </div>
+        
+        <!-- Info Model -->
+        <div id="info-modal" style="display:none">
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1"
+                class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <button class="close-info-modal slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                            <svg class="slds-button__icon slds-button__icon_large" aria-hidden="true">
+                                <use xlink:href="{!URLFOR($Asset.SLDS, '/assets/icons/utility-sprite/svg/symbols.svg#close')}"></use>
+                            </svg>
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+                        <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Days available info</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        <p>
+                            Event colors that are represented in the chart denote the following status.
+                        </p>
+                        <div class="slds-grid slds-gutters slds-m-top_small">
+                            <div class="slds-col">
+                                <div style="display:flex">
+                                    <div class="circular-event-status slds-m-right_xx-small" style="display:inline-block;background-color:#5a6ccc" />
+                                    <h1>Available</h1>
+                                </div>
+                            </div>
+                            <div class="slds-col">
+                                <div style="display:flex">
+                                    <div class="circular-event-status slds-m-right_xx-small" style="display:inline-block;background-color:#15c05c" />
+                                    <h1>Assigned</h1>
+                                </div>
+                            </div>
+                            <div class="slds-col">
+                                <div style="display:flex">
+                                    <div class="circular-event-status slds-m-right_xx-small" style="display:inline-block;background-color:#4a4a4a" />
+                                    <h1>Allocated</h1>
+                                </div>
+                            </div>
+                            <div class="slds-col">
+                                <div style="display:flex">
+                                    <div class="circular-event-status slds-m-right_xx-small" style="display:inline-block;background-color:red" />
+                                    <h1>Not Available</h1>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <button class="close-info-modal slds-button slds-button_neutral">Close</button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </div>
+    </body>
+</html>
+
+</apex:page>

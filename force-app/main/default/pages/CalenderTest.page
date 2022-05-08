@@ -1,0 +1,20 @@
+<apex:page sidebar="false" showHeader="false" standardStylesheets="false" docType="html-5.0">
+<head>
+                <c:Libraries />
+                <script src="{!$Resource.CP_Calendar}"/>
+
+    <script> 
+        var app = angular.module('myApp', ['calendarDemoApp']);
+        app.controller('myCtrl', function($scope) {
+            debugger;
+        $scope.firstName = "John";
+        $scope.lastName = "Doe";
+        });
+        </script>
+        
+</head>
+<body ng-app="myApp" ng-controller="myCtrl"> 
+    <div ui-calendar="uiConfig.calendar" class="span8 calendar" ng-model="eventSources"></div> 
+<div>shubbu shubbu</div>
+</body>
+</apex:page>

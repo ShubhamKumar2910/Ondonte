@@ -1,0 +1,39 @@
+<template>
+
+    <div>
+        <!-- Modal/Popup Box LWC header here -->
+        <header class="slds-modal__container">
+            <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">List of all fields in Resume</h2>
+        </header>
+        <!-- Modal/Popup Box LWC body starts here -->
+        <div class="slds-modal__content slds-var-p-around_medium" id="modal-content-id-1">
+            <lightning-card>
+
+                <lightning-accordion allow-multiple-sections-open active-section-name="Rijwan"
+                    onsectiontoggle={handleaccordion}>
+
+                    <template for:each={data} for:item="item" for:index="index">
+                        <lightning-accordion-section key={item.name} name={item.name} label={item.name}>
+                            <div class="demo-only demo-only--sizing slds-grid slds-wrap">
+                                <div class="slds-size_1-of-3">
+                                    <template for:each={item} for:item="itemvar">
+
+                                        <!-- <lightning-input key={item.id} label={itemvar.key} value={itemvar.value}></lightning-input> -->
+
+                                    </template>
+                                </div>
+                            </div>
+                        </lightning-accordion-section>
+                    </template>
+
+                </lightning-accordion>
+
+            </lightning-card>
+        </div>
+
+        <footer class="slds-modal__footer">
+            <!-- sldsValidatorIgnoreNextLine -->
+            <button class="slds-button slds-button_neutral" onclick={closeModalPop} title="Save Details">Cancel</button>
+        </footer>
+    </div>
+</template>

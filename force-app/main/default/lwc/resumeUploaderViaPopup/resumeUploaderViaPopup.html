@@ -1,0 +1,20 @@
+<template>
+    <!--Use template if:true to display/hide popup based on isModalOpen value-->
+    <template if:true={isModalOpenFirstChild}>
+
+        <c-resume-uploader rec-id={recordId} onchild={handleChild}></c-resume-uploader>
+
+    </template>
+
+    <!--<template if:false={isModalOpenFirstChild}>
+        
+    </template> -->
+
+
+     <template if:true={isModalOpenSecondChild}>
+
+        <c-create-editable-form-new onsecondchild={handleSecondChild}></c-create-editable-form-new>
+
+    </template>
+
+</template>

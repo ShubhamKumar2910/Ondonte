@@ -1,0 +1,547 @@
+<template>
+    <template if:true={loaded}>
+
+    <template if:true={jobSelected}>
+        <div class="slds-card" style="padding:2%;">
+            <div class="slds-grid slds-gutters " style="margin-bottom:1%;">
+                <lightning-icon icon-name="standard:contact" style="width:3%; height: 6%;"></lightning-icon>
+                <div style="width:100%" class="slds-col">
+                    <div class="slds-row" style="margin-left: -10px;">
+                        <a>
+            
+                            <b style="color: rgb(8, 8, 8); font-size:15px; margin-left: 15px; margin-top: 8px;"
+                                onclick={openJobDetailPage}>
+                                JOB :
+                                {job.Name}</b>
+                        </a><br>
+                        <template if:true={showActive}>
+                            <b style="color: rgb(8, 8, 8); font-size:12px; margin-left: 15px;">Status :</b><b
+                                style="color: rgb(33, 165, 0); font-size:12px; margin-left: 5px; margin-top: -1%;">
+                                {job.Status__c}</b>
+                        </template>
+                        <template if:false={showActive}>
+                            <b style="color: rgb(8, 8, 8); font-size:12px; margin-left: 15px;">Status :</b>
+                            <b style="color: rgb(255, 10, 10); font-size:12px; margin-left: 5px; margin-top: -1%;">
+                                {job.Status__c}</b>
+                        </template>
+                    </div>
+                </div>
+                <div style="display: flex; justify-content:end;">
+                    <lightning-icon icon-name="action:refresh" onclick={notifyParent} size="small" style="cursor: pointer; margin-right:5px" title="Refresh"></lightning-icon>
+                    <lightning-icon icon-name="action:edit" onclick={editJobRequistion} size="small" style="cursor: pointer; margin-right:5px; --sds-c-icon-color-foreground-default: #54698D;" title="Edit Job"></lightning-icon>
+
+                    <div class="slds-float_left">
+                        
+                    </div>
+                    <lightning-badge label={reqPosMsg}></lightning-badge>
+                    <lightning-badge label={currentApplicantsCount}></lightning-badge>
+                    <!-- <lightning-badge label="Shifts(0)"></lightning-badge> -->
+                    <lightning-badge label={openSpotMsg}></lightning-badge>
+
+                    <!-- <lightning-button class="slds-p-right_small" label="Refresh" onclick={notifyParent}></lightning-button>
+                    <lightning-button label="Edit" slot="actions" onclick={editJobRequistion}></lightning-button> -->
+                    <!-- <lightning-button label="Clone" slot="actions"></lightning-button> -->
+                </div>
+            </div>
+            <template if:true={job.Staff_Type__c}>
+                <b style="color:rgb(151, 151, 151); margin-bottom:2%"><span style="color: rgb(8, 8, 8);">Staff Type:- </span>
+                    {job.Staff_Type__c}</b>
+                <br />
+            </template>
+            <template if:true={job.Desired_Skills__c}>
+                <b style="color:rgb(151, 151, 151); margin-bottom:2%"><span style="color: rgb(8, 8, 8);">Skill:- </span>
+                    {job.Desired_Skills__c}</b>
+                <br />
+            </template>
+            
+            <template if:true={job.Description__c}>
+                <b style="color:rgb(151, 151, 151); margin-top:2%"><span style="color: rgb(8, 8, 8);">Description:- </span>
+                    {job.Description__c}</b>
+            </template>
+
+
+            
+            <hr style="height:4px; margin-top: 1%;"/>
+    
+            <div class="slds-clearfix" style="margin-top: -20px; margin-bottom: 20px; margin-left: 1%; margin-right: 1%;">
+                <!-- <div class="slds-float_left">
+                    <lightning-badge label={reqPosMsg}></lightning-badge>
+                    <lightning-badge label={currentApplicantsCount}></lightning-badge>
+                    <lightning-badge label={openSpotMsg}></lightning-badge>
+                </div> -->
+                <div class="slds-float_right">
+                    <lightning-button variant="brand" label="Send SMS" title="Filter action" data-id="submit" onclick={bulkSmsHandler}
+                        class="slds-m-left_x-small" icon-name="utility:sms" style="margin-right: 1px; cursor: pointer;">
+                    </lightning-button>
+
+                    <lightning-button variant="brand" label="Request Interview Feedback" title="Request Interview Feedback"
+                        data-id="requestinterview" onclick={requestInterview} class="slds-m-left_x-small" icon-name="utility:check"
+                        disabled={registerBlockerActive}>
+                    </lightning-button>
+                    <lightning-button variant="brand" label="Selected By Recruiter" title="Selected By Recruiter" data-id="requestinterview"
+                        onclick={selectedByRecruiter} class="slds-m-left_x-small" icon-name="utility:check"
+                        disabled={registerBlockerActive}>
+                    </lightning-button>
+                    <lightning-button variant="brand" label="Submit candidates" title="Filter action" data-id="submit"
+                        onclick={submitToClient} class="slds-m-left_x-small" icon-name="utility:check" disabled={registerBlockerActive}>
+                    </lightning-button>
+                    <lightning-button variant="brand" label="Create Placement" title="Create Placement" class="slds-m-left_x-small"
+                        icon-name="utility:check" onclick={createPlacement} disabled={registerBlockerActive}>
+                    </lightning-button>
+                </div>
+            </div>
+
+            <template if:true={smsPopup}>
+                <!-- Modal/Popup Box LWC starts here -->
+                <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_medium"
+                    aria-labelledby="modal-heading-01" aria-modal="true">
+                    <div class="slds-modal__container">
+            
+            
+                        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-5" style="padding:0%">
+                            <iframe src={smsUrl} width="100%" height="700" style="border:none;">
+                            </iframe>
+                        </div>
+                        <div class="slds-modal__footer">
+            
+                            <button class="slds-button slds-button_neutral" aria-label="Cancel and close" onclick={closeSMSPopup}
+                                style="margin-left: 5px;">Close</button>
+            
+                        </div>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </template>
+
+            <template if:true={showInterviewPopup}>
+                <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_medium"
+                    aria-labelledby="modal-heading-01" aria-modal="true">
+                    <div class="slds-modal__container">
+                        <div class="slds-modal__header">
+                            <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Schedule Interview</h1>
+                        </div>
+                        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-7" style="padding:0%">
+
+                            <lightning-record-edit-form
+                                object-api-name="Job_Application__c"
+                                record-id={interviewSchedulerAppId}
+                                onsuccess={handleInterviewUpdateSuccess}
+                            >
+                                <div class="slds-grid" style="padding: 2%;">
+                                    <div class="slds-col slds-size_1-of-1">
+                                        <lightning-input-field field-name="Interview_Type__c" style="font-weight: bold;"> </lightning-input-field>
+                                        <lightning-input-field field-name="Interview_Scheduled_On__c"> </lightning-input-field>
+                                    </div>
+                                </div>
+                                <div class="slds-var-m-top_medium">
+                                    <div class="slds-modal__footer">
+                                        <lightning-button variant="brand" type="submit" label="Save">
+                                        </lightning-button>
+                                        <lightning-button class="slds-m-top_small" label="Cancel" onclick={closeInterviewPopup} style="margin-left: 5px;"></lightning-button>
+                                        <!-- <button class="slds-button slds-button_neutral" aria-label="Cancel and close" onclick={handleInterviewUpdateSuccess}
+                                            style="margin-left: 5px;">Close</button> -->
+                                    </div>
+                                </div>
+                            </lightning-record-edit-form>
+                        </div>
+                        
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </template>
+            <!-- ShowInterviewUpdateStaus -->
+            <template if:true={showUpdateInterview}>
+                <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_medium"
+                    aria-labelledby="modal-heading-12" aria-modal="true">
+                    <div class="slds-modal__container">
+                        <div class="slds-modal__header">
+                            <h1 id="modal-heading-14" class="slds-modal__title slds-hyphenate">Update Interview Status</h1>
+                        </div>
+                        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-71" style="padding:0%">
+            
+                            <div style="padding:2%">
+                                <lightning-combobox name="Status" label="Status" value={updateInterviewStatusCheced} options={eventActions}
+                                    onchange={handleEventUpdateStatusInterview}></lightning-combobox>
+                            </div>
+
+                                <div class="slds-var-m-top_medium">
+                                    <div class="slds-modal__footer">
+                                        <lightning-button variant="brand" type="submit" label="Save" onclick={updateInterviewStatus}>
+                                        </lightning-button>
+                                        <lightning-button class="slds-m-top_small" label="Cancel" onclick={closeUpdateInterview}
+                                            style="margin-left: 5px;"></lightning-button>
+                                        <!-- <button class="slds-button slds-button_neutral" aria-label="Cancel and close" onclick={handleInterviewUpdateSuccess}
+                                                                                        style="margin-left: 5px;">Close</button> -->
+                                    </div>
+                                </div>
+                        </div>
+            
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </template>
+    
+            <template if:true={hasLoaded}>
+                <div style="padding: 1%;">
+                    <div style="display: flex; justify-content:space-between; align-items:center; margin-top:-30px; width: 100%;">
+                        <h3 class="slds-text-heading_large" style="display: flex; justify-content: start;">
+                            <b style="color: slategrey; font-size:15px; "> Application submitted {createApplication.length} </b>
+                        </h3>
+
+                        <div style="display: flex; align-items:center; margin-right: -25px;">
+                         
+                            <lightning-input type="text" placeholder="Search" style="margin-top:-15px; margin-left: 20px;" onchange={searchHandler}>
+                            </lightning-input>
+                            <div class="slds-float_right slds-p-right_large" style="padding: 0%;">
+                                <div class="slds-p-around_large">
+                                    <div class="slds-button-group " role="group">
+                                        <lightning-button variant="neutral" title="first" label="First" class="slds-float_left"
+                                            icon-name="utility:chevronleft" icon-position="left" onclick={handleClick}>
+                                        </lightning-button>
+                                        <lightning-button variant="neutral" title="Previous" label="Previous" class="slds-float_left"
+                                            icon-name="utility:chevronleft" icon-position="left" onclick={handleClick}>
+                                        </lightning-button>
+                                        <lightning-button-group>
+                                            <template for:each={pagelinks} for:item="page">
+                                                <lightning-button key={page} label={page} onclick={handlePage}></lightning-button>
+                                            </template>
+                                        </lightning-button-group>
+                                        <lightning-button variant="neutral" title="next" class="slds-float_right" label="Next"
+                                            icon-name="utility:chevronright" icon-position="right" onclick={handleClick}>
+                                        </lightning-button>
+                                        <lightning-button variant="neutral" title="last" class="slds-float_right" label="Last"
+                                            icon-name="utility:chevronright" icon-position="right" onclick={handleClick}>
+                                        </lightning-button>
+                                        <div class="slds-dropdown-trigger slds-dropdown-trigger_click slds-button_last"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                   
+                    <div style="margin-top: -1%;" class="slds-scrollable_x">
+                        <table aria-multiselectable="true"
+                            class="slds-table slds-table_bordered slds-table_fixed-layout slds-table_resizable-cols" role="grid"
+                            aria-label="Example advanced table of Opportunities in actionable mode with row selected">
+                            <thead>
+                                <tr class="slds-line-height_reset">
+                                    <th class="slds-text-align_right slds-cell_action-mode" scope="col" style="width:3rem">
+                                        <span id="column-group-header3" class="slds-assistive-text">Choose a row</span>
+                                        <div class="slds-th__action slds-th__action_form">
+                                            <div class="slds-checkbox">
+                                                <input type="checkbox" name="choose-all" id="checkbox-unique-id-296"
+                                                    value="checkbox-unique-id-297" checked={isAllApplicationSelected} tabindex="0"
+                                                    aria-labelledby="check-select-all-label column-group-header"
+                                                    onchange={selectAllApplication} />
+                                                <label class="slds-checkbox__label" for="checkbox-unique-id-296" id="check-select-all-label3">
+                                                    <span class="slds-checkbox_faux"></span>
+                                                    <span class="slds-form-element__label slds-assistive-text">Select All</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th class="slds-text-align_right slds-cell_action-mode" scope="col" style="width:4rem">
+                                        <a class="slds-th__action slds-text-link_reset" href="#" role="button" tabindex="0">
+                                            <span class="slds-assistive-text">Sort by: </span>
+                                            <div class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate">
+                                                <span class="slds-truncate" title="Name">Pic</span>
+                                            </div>
+                                        </a>
+                                        <!-- <div class="slds-resizable">
+                                            <input type="range" aria-label="Name column width" class="slds-resizable__input slds-assistive-text"
+                                                id="cell-resize-handle-540" max="1000" min="10" tabindex="0" />
+                                            <span class="slds-resizable__handle">
+                                                <span class="slds-resizable__divider"></span>
+                                            </span>
+                                        </div> -->
+                                    </th>
+                                    <th class="slds-text-align_right slds-cell_action-mode" scope="col" style="width:8rem">
+                                        <a class="slds-th__action slds-text-link_reset" href="#" role="button" tabindex="0">
+                                            <span class="slds-assistive-text">Sort by: </span>
+                                            <div class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate">
+                                                <span class="slds-truncate" title="Account Name">Candidate</span>
+                                                <span class="slds-icon_container slds-icon-utility-arrowdown">
+                                                    <svg class="slds-icon slds-icon-text-default slds-is-sortable__icon " aria-hidden="true">
+                                                        <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#arrowdown"></use>
+                                                    </svg>
+                                                </span>
+                                            </div>
+                                        </a>
+                                        <div class="slds-resizable">
+                                            <input type="range" aria-label="Account Name column width"
+                                                class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-552" max="1000"
+                                                min="20" tabindex="0" />
+                                            <span class="slds-resizable__handle">
+                                                <span class="slds-resizable__divider"></span>
+                                            </span>
+                                        </div>
+                                    </th>
+                                    <th class="slds-text-align_right slds-cell_action-mode" scope="col" style="width:13rem">
+                                        <a class="slds-th__action slds-text-link_reset" href="#" role="button" tabindex="0">
+                                            <span class="slds-assistive-text">Sort by: </span>
+                                            <div class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate">
+                                                <span class="slds-truncate" title="Account Name">Email</span>
+                                                <span class="slds-icon_container slds-icon-utility-arrowdown">
+                                                    <svg class="slds-icon slds-icon-text-default slds-is-sortable__icon " aria-hidden="true">
+                                                        <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#arrowdown"></use>
+                                                    </svg>
+                                                </span>
+                                            </div>
+                                        </a>
+                                        <div class="slds-resizable">
+                                            <input type="range" aria-label="Account Name column width"
+                                                class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-email" max="1000"
+                                                min="20" tabindex="0" />
+                                            <span class="slds-resizable__handle">
+                                                <span class="slds-resizable__divider"></span>
+                                            </span>
+                                        </div>
+                                    </th>
+                                    <th class="slds-text-align_right slds-cell_action-mode" scope="col" style="width:8rem">
+                                        <a class="slds-th__action slds-text-link_reset" href="#" role="button" tabindex="0">
+                                            <span class="slds-assistive-text">Sort by: </span>
+                                            <div class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate">
+                                                <span class="slds-truncate" title="Account Name">Phone</span>
+                                                <span class="slds-icon_container slds-icon-utility-arrowdown">
+                                                    <svg class="slds-icon slds-icon-text-default slds-is-sortable__icon " aria-hidden="true">
+                                                        <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#arrowdown"></use>
+                                                    </svg>
+                                                </span>
+                                            </div>
+                                        </a>
+                                        <div class="slds-resizable">
+                                            <input type="range" aria-label="Account Name column width"
+                                                class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-phone2" max="1000"
+                                                min="20" tabindex="0" />
+                                            <span class="slds-resizable__handle">
+                                                <span class="slds-resizable__divider"></span>
+                                            </span>
+                                        </div>
+                                    </th>
+                                    <!-- <th class="slds-text-align_right slds-cell_action-mode" scope="col" style="width:10rem">
+                                        <a class="slds-th__action slds-text-link_reset" href="#" role="button" tabindex="0">
+                                            <span class="slds-assistive-text">Sort by: </span>
+                                            <div class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate">
+                                                <span class="slds-truncate" title="Close Date">CreatedDate</span>
+                                                <span class="slds-icon_container slds-icon-utility-arrowdown">
+                                                    <svg class="slds-icon slds-icon-text-default slds-is-sortable__icon " aria-hidden="true">
+                                                        <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#arrowdown"></use>
+                                                    </svg>
+                                                </span>
+                                            </div>
+                                        </a>
+                                        <div class="slds-resizable">
+                                            <input type="range" aria-label="Close Date column width"
+                                                class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-562" max="1000"
+                                                min="20" tabindex="0" />
+                                            <span class="slds-resizable__handle">
+                                                <span class="slds-resizable__divider"></span>
+                                            </span>
+                                        </div>
+                                    </th> -->
+                                    <th class="slds-text-align_right slds-cell_action-mode" scope="col" style="width:7rem">
+                                        <a class="slds-th__action slds-text-link_reset" href="#" role="button" tabindex="0">
+                                            <span class="slds-assistive-text">Sort by: </span>
+                                            <div class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate">
+                                                <span class="slds-truncate" title="Stage">ApplicationName</span>
+                                                <span class="slds-icon_container slds-icon-utility-arrowdown">
+                                                    <svg class="slds-icon slds-icon-text-default slds-is-sortable__icon " aria-hidden="true">
+                                                        <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#arrowdown"></use>
+                                                    </svg>
+                                                </span>
+                                            </div>
+                                        </a>
+                                        <div class="slds-resizable">
+                                            <input type="range" aria-label="Stage column width"
+                                                class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-543" max="1000"
+                                                min="20" tabindex="0" />
+                                            <span class="slds-resizable__handle">
+                                                <span class="slds-resizable__divider"></span>
+                                            </span>
+                                        </div>
+                                    </th>
+
+                                    <th class="slds-text-align_right slds-cell_action-mode" scope="col" style="width:10rem">
+                                        <a class="slds-th__action slds-text-link_reset" href="#" role="button" tabindex="0">
+                                            <span class="slds-assistive-text">Sort by: </span>
+                                            <div class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate">
+                                                <span class="slds-truncate" title="Stage">Stage</span>
+                                                <span class="slds-icon_container slds-icon-utility-arrowdown">
+                                                    <svg class="slds-icon slds-icon-text-default slds-is-sortable__icon " aria-hidden="true">
+                                                        <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#arrowdown"></use>
+                                                    </svg>
+                                                </span>
+                                            </div>
+                                        </a>
+                                        <div class="slds-resizable">
+                                            <input type="range" aria-label="Stage column width" class="slds-resizable__input slds-assistive-text"
+                                                id="cell-resize-handle-546" max="1000" min="20" tabindex="0" />
+                                            <span class="slds-resizable__handle">
+                                                <span class="slds-resizable__divider"></span>
+                                            </span>
+                                        </div>
+                                    </th>
+
+                                    <th class="slds-text-align_right slds-cell_action-mode" scope="col" style="width:8rem">
+                                        <a class="slds-th__action slds-text-link_reset" href="#" role="button" tabindex="0">
+                                            <span class="slds-assistive-text">Sort by: </span>
+                                            <div class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate">
+                                                <span class="slds-truncate" title="Feedback Requested">Feedback Requested</span>
+                                                <span class="slds-icon_container slds-icon-utility-arrowdown">
+                                                    <svg class="slds-icon slds-icon-text-default slds-is-sortable__icon " aria-hidden="true">
+                                                        <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#arrowdown"></use>
+                                                    </svg>
+                                                </span>
+                                            </div>
+                                        </a>
+                                        <div class="slds-resizable">
+                                            <input type="range" aria-label="Stage column width" class="slds-resizable__input slds-assistive-text"
+                                                id="cell-resize-handle-576" max="1000" min="20" tabindex="0" />
+                                            <span class="slds-resizable__handle">
+                                                <span class="slds-resizable__divider"></span>
+                                            </span>
+                                        </div>
+                                    </th>
+
+                                    <th class="slds-text-align_right slds-cell_action-mode" scope="col" style="width:8rem">
+                                        <a class="slds-th__action slds-text-link_reset" href="#" role="button" tabindex="0">
+                                            <span class="slds-assistive-text">Sort by: </span>
+                                            <div class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate">
+                                                <span class="slds-truncate" title="Confidence">Action</span>
+                                            </div>
+                                        </a>
+                                        <div class="slds-resizable">
+                                            <input type="range" aria-label="Confidence column width" class="slds-resizable__input slds-assistive-text"
+                                                id="cell-resize-handle-554" max="1000" min="20" tabindex="0" />
+                                            <span class="slds-resizable__handle">
+                                                <span class="slds-resizable__divider"></span>
+                                            </span>
+                                        </div>
+                                    </th>
+                                </tr>
+                            </thead>
+                        
+                            <tbody class="slds-table slds-table_cell-buffer slds-table_bordered">
+                                <template for:each={recordsToDisplay} for:item="con">
+                                    <tr class="slds-table slds-table_cell-buffer slds-table_bordered" key={con.Id}>
+                                        <th class="slds-cell_action-mode" scope="col">
+                                            <div>
+                                                <lightning-input type="checkbox" data-id={con.Id} checked={con.checked}
+                                                    onchange={applicationTableRowListener}></lightning-input>
+                                            </div>
+                                        </th>
+                                        <th class="slds-cell_action-mode" scope="col">
+                                            <div>
+                                                <img style="width: 40px; height:40px; border-radius: 50%;" src={con.profile}>
+                                            </div>
+                                        </th>
+                                        <th class="slds-cell_action-mode" scope="col">
+                                            <a data-id={con.conId} onclick={openCanidateDetailPage}>{con.Name}</a>
+                                        </th>
+                                        <th class="slds-cell_action-mode" scope="col">
+                                            <div>{con.email}</div>
+                                        </th>
+                                        <th class="slds-cell_action-mode" scope="col">
+                                            <lightning-click-to-dial value={con.phone} record-id={con.conId}></lightning-click-to-dial>
+                                        </th>
+                                        <th class="slds-cell_action-mode" scope="col">
+                                            <a data-id={con.Id} onclick={applicationNavigation}>{con.ApplicationName}</a>
+                                        </th>
+
+                                        <th class="slds-cell_action-mode" scope="col">
+                                            <div>{con.Application_Stage__c}</div>
+                                        </th>
+                                        <th class="slds-cell_action-mode" scope="col">
+                                            <div style="display:flex; justify-content:center">
+                                                <lightning-input type="checkbox" data-id={con.Id} checked={con.Request_Interview_Feedback__c} disabled>
+                                                </lightning-input>
+                                            </div>
+                                        </th>
+                                        <th class="slds-cell_action-mode" scope="col">
+                                            <div style="display: flex; justify-content:center;">
+                                                <lightning-button-icon onclick={openSendSmSPopup} data-id={con.conId} icon-name="utility:sms" alternative-text="close"
+                                                     variant="brand" style="cursor: pointer; --sds-c-icon-color-foreground-default: #0676CF;" title="Send SMS"></lightning-button-icon>
+                                                    <template if:true={con.interviewVisible}>
+                                                        <lightning-button-icon onclick={openInterviewPopup} data-id={con.conId} data-appid={con.Id} icon-name="utility:meet_content_source"
+                                                            alternative-text="Schedule Interview" style="cursor: pointer; margin-left: 5px;" title="Schedule Interview">
+                                                    </lightning-button-icon>
+                                                    </template>
+                                                    <template if:true={con.showUpdateInterview}>
+                                                        <lightning-button-icon variant="brand" onclick={openShowUpdateInterview} data-id={con.conId} data-appid={con.Id} title="Update Interview Status"
+                                                            icon-name="utility:record_update" alternative-text="Update Interview" 
+                                                            style="cursor: pointer; margin-left: 5px;" >
+                                                    </lightning-button-icon>
+
+                                                        <!-- <li class="slds-dropdown__item" role="presentation" data-id={con.conId} data-appid={con.Id}
+                                                            onclick={openShowUpdateInterview}>
+                                                            <a href="#" role="menuitem" tabindex="-1">
+                                                                <span class="slds-truncate" title="Update Interview Status">
+                                                                    Update Interview Status</span>
+                                                            </a>
+                                                        </li> -->
+                                                    </template>
+                                                    <template if:true={con.showWithDraw}>
+                                                        <lightning-button-icon onclick={handleAction} data-id={con.Id} data-action="Withdrawn by Candidate"
+                                                            data-status={con.Application_Stage__c} icon-name="utility:cancel_transfer" alternative-text="Not Available"
+                                                            style="cursor: pointer;margin-left: 5px;"></lightning-button-icon>
+                                                    </template>
+                                            </div>
+                                        </th>
+                                        <!-- <th>
+                                            <button class="slds-button slds-button_icon slds-button_icon-border-filled slds-button_icon-x-small"
+                                                aria-haspopup="true" tabindex="0" title="Actions" data-id={con.conId} onclick={openDropDown}>
+                                                <lightning-icon icon-name = "utility:down" title = "actions" alternative-text="Actions" size="xx-small"></lightning-icon>
+                                            </button>
+                                            
+                                            <template if:true={con.showActions}>
+                                                <div class="slds-dropdown slds-dropdown_right slds-dropdown_actions">
+                                                    <ul class="slds-dropdown__list" role="menu">
+                                                        <li class="slds-dropdown__item" role="presentation" data-id={con.conId} data-appid={con.Id} onclick={openSendSmSPopup}>
+                                                            <a href="#" role="menuitem" tabindex="0">
+                                                                <span class="slds-truncate" title="Send SMS">Send SMS</span>
+                                                            </a>
+                                                        </li>
+                                                        <template if:true={con.interviewVisible}>
+                                                            <li class="slds-dropdown__item" role="presentation" onclick={openInterviewPopup} data-id={con.conId}
+                                                                data-appid={con.Id}>
+                                                                <a href="#" role="menuitem" tabindex="-1">
+                                                                    <span class="slds-truncate" title="Schedule Interview">Schedule Interview</span>
+                                                                </a>
+                                                            </li>
+                                                        </template>
+                                                        <template if:true={con.showUpdateInterview}>
+                                                            <li class="slds-dropdown__item" role="presentation" data-id={con.conId} data-appid={con.Id}
+                                                                onclick={openShowUpdateInterview}>
+                                                                <a href="#" role="menuitem" tabindex="-1">
+                                                                    <span class="slds-truncate" title="Update Interview Status">
+                                                                        Update Interview Status</span>
+                                                                </a>
+                                                            </li>
+                                                        </template>
+                                                    </ul>
+                                                </div>
+                                            </template>
+                                        </th> -->
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                        <!-- <lightning-datatable  key-field="id" data={createApplication} columns={columns} onrowaction={handleRowAction}>
+                        </lightning-datatable> -->
+                    </div>
+                </div>
+            </template>
+    
+            <p class="slds-p-horizontal_small"></p>
+            <div slot="footer">
+               
+            </div>
+            
+        </div>
+
+    </template>
+    </template>
+    <template if:false={loaded}>
+        <lightning-spinner alternative-text="Loading"></lightning-spinner>
+    </template>
+</template>

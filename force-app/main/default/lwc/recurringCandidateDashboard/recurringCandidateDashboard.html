@@ -1,0 +1,91 @@
+<template>
+    <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_medium"
+        aria-labelledby="modal-heading-02" aria-modal="true">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header">
+                <h1 id="modal-heading-02" class="slds-modal__title slds-hyphenate">Recurring Assignment</h1>
+            </div>
+            
+            
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-2">
+                <!-- Add Search child here  -->
+            
+                <div class="slds-row">
+                    <!-- <div style="display: flex; justify-content: space-between;">
+                                                               
+                                                            </div> -->
+                    <div class="slds-grid slds-gutters">
+                        <template if:true={contact}>
+                            <div class="slds-col">
+                                <div class="candidate-card">
+                                    <div style="display:flex; justify-content: start; align-items: center;">
+                                        <span class="slds-avatar slds-avatar_circle slds-avatar_large">
+                                            <img alt="Person name"
+                                                src={contact.Profile_Picture_URL__c}
+                                                title="Person name" />
+                                        </span>
+                                        <h1 class="slds-modal__title slds-hyphenate slds-m-left_medium">{contact.Name}</h1>
+                                    </div>
+                                    <h1 class="slds-modal__title slds-hyphenate slds-m-top_medium">{contact.Email}</h1>
+                                </div>
+                            </div>
+                        </template>
+                        
+                        <div class="slds-col">
+                            <lightning-record-edit-form object-api-name="Shift__c" id="createContactForm">
+                                <lightning-input-field field-name="Contact__c" variant="label-hidden" onchange={handleAccountSelection}>
+                                </lightning-input-field>
+                            </lightning-record-edit-form>
+                        </div>
+                    </div>
+                    <hr />
+            
+                    
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col slds-size_2-of-4">
+                            <lightning-input type="date" name="startDate" label="Start Date" onchange={dateInputChange} value={startDate}></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_2-of-4">
+                            <div style="display:flex; justify-content:space-between; align-items:center">
+                                <lightning-input type="date" name="endDate" label="End Date" onchange={dateInputChange} value={endDate} style="width:80%">
+                                </lightning-input>
+                                <lightning-button variant="brand" label="Search" title="Search"
+                                    data-id="search" class="slds-m-left_x-small slds-m-top_medium" icon-name="utility:search" onclick={searchShifts}>
+                                </lightning-button>
+                            </div>
+                        </div>
+                    </div>
+            
+                    <div class="slds-m-top_medium">
+                        <label>Client Shift</label>
+                        <div class="slds-scrollable_x" style="height:5rem;width:24rem">
+                            <div class="shift slds-box">
+                                <h1>Shift-001</h1>
+                                <h1>Shift-001</h1>
+                                <h1>Shift-001</h1>
+                                <h1>Shift-001</h1>
+                            </div>
+                        </div>
+                    </div>
+                    <h1 style="text-align: center; color: #ff2727; font-size:18px; margin-bottom:20px">
+                        {duplicacyMsg}
+                    </h1>
+                </div>
+            </div>
+            
+            <div class="slds-modal__footer">
+            
+                <button class="slds-button slds-button_neutral" aria-label="Cancel and close" onclick={closePopup}
+                    style="margin-left: 5px;">Cancel</button>
+                <lightning-button style="width: auto; margin-right: 5px;" variant="brand" label="Auto Assign" title="Auto Assign"
+                    data-id="search" onclick={handleAddCandidate} class="slds-m-left_x-small" icon-name="utility:check">
+                </lightning-button>
+                <lightning-button style="width: auto; margin-right: 5px;" variant="brand" label="Save" title="Save" data-id="search"
+                    onclick={handleAddCandidate} class="slds-m-left_x-small" icon-name="utility:add">
+                </lightning-button>
+            
+            </div>
+        </div>  
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+</template>

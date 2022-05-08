@@ -1,0 +1,51 @@
+.actionPannel {
+    background-color: #747272;
+    padding: 2%;
+}
+
+.filterButton {
+    color: black;
+    font-size: 10px;
+}
+
+.jobTypeButton {
+    width: fit-content;
+}
+
+.jobTypeButton {
+    background-color: #758ee0;
+    padding: 3%;
+    color: white !important;
+}
+
+.startDate {
+    color: #0db30d;
+    font-weight: bold;
+}
+
+.closeDate {
+    color: rgb(204, 20, 20);
+    font-weight: bold;
+}
+
+.selectedRequisition {
+    border-right: #26c726 solid 10px !important;
+    background-color: #e9e4e4c7 !important;
+}
+
+.unselectedRequisition {
+    border-color: none;
+}
+
+hr {
+    margin-top: 2% !important;
+    margin-bottom: 2% !important;
+}
+
+.slds-badge {
+    --slds-c-badge-font-size: 10px;
+}
+
+.tot-requisition-badge {
+    --sds-c-badge-color-background: orange;
+}

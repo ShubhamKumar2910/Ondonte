@@ -1,0 +1,161 @@
+<template>
+    <lightning-card title="">
+        <div class="slds-grid slds-gutters">
+            <div class="slds-col">
+                <span></span>
+            </div>
+            <div class="slds-col">
+                <span>
+                    <lightning-button label="Show Selected Contacts" onclick={showContacts} style="margin-left: 40%"
+                        variant="brand"></lightning-button>
+                </span>
+            </div>
+        </div><br />
+        <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+            <thead>
+                <tr class="slds-line-height_reset">
+                    <th class="" scope="col">
+                        <div class="slds-truncate">
+                            <lightning-input onchange={allSelected} type="checkbox"></lightning-input>
+                        </div>
+                    </th>
+
+                    <th class="" scope="col">
+                        <div class="slds-truncate" title="sno">#</div>
+                    </th>
+                    <th class="" scope="col">
+                        <div class="slds-truncate slds-text-align_center" title="Name">Name</div>
+                    </th>
+                    <th class="" scope="col">
+                        <div class="slds-truncate slds-text-align_center" title="score">Score</div>
+                    </th>
+                    <th class="" scope="col">
+                        <div class="slds-truncate slds-text-align_center" title="email">Email</div>
+                    </th>
+                    <th class="" scope="col">
+                        <div class="slds-truncate slds-text-align_center" title="interview_availability">Interview
+                            Availability</div>
+                    </th>
+                    <th class="" scope="col">
+                        <div class="slds-truncate slds-text-align_center" title="status">Status</div>
+                    </th>
+                    <th class="" scope="col">
+                        <div class="slds-truncate slds-text-align_center" title="desired_pay">Desired Pay</div>
+                    </th>
+                    <th class="" scope="col">
+                        <div class="slds-truncate slds-text-align_center" title="city">City</div>
+                    </th>
+                    <th class="" scope="col">
+                        <div class="slds-truncate slds-text-align_center" title="state">State</div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <template for:each={data} for:item="con" for:index="index">
+                    <tr key={con.Id}>
+                        <th scope="col">
+                            <div>
+                                <lightning-input type="checkbox" value={con.Name} data-id={con.Name}></lightning-input>
+                            </div>
+                        </th>
+                        <th scope="col">
+                            <div>{index}</div>
+                        </th>
+
+                        <th scope="col" class="slds-text-align_center">
+                            <div>{con.Name}</div>
+                        </th>
+                        <th scope="col" class="slds-text-align_center">
+                            <div>
+                                <span class="slds-text-align_center scoreClass">
+                                    {con.score}
+                                </span>   <!--c-display-Score score={con.score}></c-display-Score-->
+                            </div>
+                        </th>
+                        <th scope="col" class="slds-text-align_center">
+                            <div>
+                                <lightning-formatted-email value={con.email}></lightning-formatted-email>
+                            </div>
+                        </th>
+                        <th scope="col" class="slds-text-align_center">
+                            <template if:true={con.interview_Availability}><span class="dotTrue"></span></template>
+<template if:false={con.interview_Availability}><span class="dotFalse"></span></template>
+</th>
+<th scope="col" class="slds-text-align_center">
+    <div>{con.status}</div>
+</th>
+<th scope="col" class="slds-text-align_center">
+    <div>{con.desired_pay}</div>
+</th>
+<th scope="col" class="slds-text-align_center">
+    <div>{con.city}</div>
+</th>
+<th scope="col" class="slds-text-align_center">
+    <div>{con.State}</div>
+</th>
+</tr>
+</template>
+</tbody>
+</table>
+<div class="slds-button-group " role="group">
+
+    <lightning-button variant="neutral" title="first" label="First" class="slds-float_left" icon-name="utility:chevronleft" icon-position="left" onclick={handleClick}>
+    </lightning-button>
+    <lightning-button variant="neutral" title="Previous" label="Previous" class="slds-float_left" icon-name="utility:chevronleft" icon-position="left" onclick={handleClick}></lightning-button>
+    <lightning-button-group>
+        <template for:each={pagelinks} for:item="page">
+                    <lightning-button key={page} label={page} onclick={handlePage}></lightning-button>
+                </template>
+    </lightning-button-group>
+    <lightning-button variant="neutral" title="next" class="slds-float_right" label="Next" icon-name="utility:chevronright" icon-position="right" onclick={handleClick}>
+    </lightning-button>
+    <lightning-button variant="neutral" title="last" class="slds-float_right" label="Last" icon-name="utility:chevronright" icon-position="right" onclick={handleClick}>
+    </lightning-button>
+    <div class="slds-dropdown-trigger slds-dropdown-trigger_click slds-button_last">
+
+    </div>
+</div>
+<!--
+            This modal box used to show the selected contacts
+        -->
+
+<div if:true={selectedCons}>
+    <template if:true={bShowModal}>
+                <section aria-describedby="modal-content-id-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                    class="slds-modal slds-fade-in-open" role="dialog" tabindex="-1">
+                    <div class="slds-modal__container">
+                        <!-- modal header start -->
+                        <header class="slds-modal__header">
+                            <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                                onclick={closeModal} title="Close">
+                                <lightning-icon alternative-text="close" icon-name="utility:close" size="small"
+                                    variant="inverse"></lightning-icon>
+                                <span class="slds-assistive-text">Close</span>
+                            </button>
+                            <h2 class="slds-text-heading_medium slds-hyphenate" id="modal-heading-01">Selected Contacts
+                                Records</h2>
+                        </header>
+                        <!-- modal body start -->
+                        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                            <template for:each={selectedCons} for:item="con">
+                                <dl class="slds-list_horizontal slds-wrap" if:true={con.Id} key={con.Id}>
+                                    <dt class="slds-item_label slds-truncate" title="First Name">Contact Name:</dt>
+                                    <dd class="slds-item_detail slds-truncate">{con.Name}</dd>
+                                    <dt class="slds-item_label slds-truncate" title="LastName">Contact Id:</dt>
+                                    <dd class="slds-item_detail slds-truncate">{con.Id}</dd>
+                                    <hr>
+                                </dl>
+                            </template>
+
+</div>
+<!-- modal footer start-->
+<footer class="slds-modal__footer">
+    <button class="slds-button slds-button_neutral" onclick={closeModal}>Cancel</button>
+</footer>
+</div>
+</section>
+<div class="slds-backdrop slds-backdrop_open"></div>
+</template>
+</div>
+</lightning-card>
+</template>

@@ -1,0 +1,336 @@
+<apex:page sidebar="false" showHeader="false" standardStylesheets="false" Controller="CandidateRegistration_Controller">
+    <html ng-app="candidateReg" ng-controller="candidateRegCtrl">
+        
+        <head>
+            <c:Libraries ></c:Libraries>
+            <style>
+                
+            </style>
+        </head>
+        <body style="margin:2%">
+            <div class="row">  
+                <div class="col-sm-3"></div>
+                <div class="col-sm-6">
+                    <div class="card">
+                        
+                        <div class="card-header">
+                            <div class="d-flex justify-content-center">
+                                <h2><b>Candidate Onboarding Form</b></h2>
+                            </div> 
+                        </div>
+                        
+                        <div class="card-body">
+                            
+                            <form class="well form-horizontal pr-5 pl-5" action=" " method="post"  id="contact_form">
+                                
+                                <b>ASSISTANT KEY SKILLS - Check all that apply:</b>                        
+                                
+                                
+                                <div class="row">                             
+                                    <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" ng-model="conRec.Scan_Imaging__c	"/> Scan Imaging
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" ng-model="conRec.Implants__c"/> Implants
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                 <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" ng-model="conRec.Fabricate_and_Place_Temporary_Crowns__c	"/> Fabricate and Place Temporary Crowns
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" ng-model="conRec.Zoom_Bleaching__c"/> Zoom/Bleaching	
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                 <div class="row">
+                                     <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" ng-model="conRec.Types_of_Crowns__c"/> Types of Crowns
+                                            </label>
+                                        </div>
+                                        <select class="form-select" aria-label="Default select example">
+                                             <option ng-repeat="com in crownPicklistVal">{{com}}</option>
+                                        </select>
+                                    </div>             
+                                </div>    
+                                
+                            <b>DENTAL KEY SKILLS - Check all that apply:</b>                        
+                                
+                                
+                                <div class="row">
+                                     <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" ng-model="conRec.Intraoral_Camera__c"/> Intraoral Camera	
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" ng-model="conRec.Invisalign__c"/> Invisalign	
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>          
+                                <div class="row">
+                                    <div class="col-sm-5">      
+                                         <label class=" control-label">General Competency</label>  
+                                          <div class="input-group">
+                                             <input type="text" class="form-control" id="inputCity" ng-model="conRec.General_Competency__c" />
+                                          </div>
+                                     </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" ng-model="conRec.Image_X_ray_Software__c"/> Image / X-ray Software
+                                            </label>
+                                        </div>
+                                        <select class="form-select" aria-label="Default select example">
+                                               <option ng-repeat="com in imgeSoftwarePickVal">{{com}}</option>
+                                        </select>
+                                    </div>   
+                                </div>
+                                
+                                
+                                <b>HYGIENIST KEY SKILLS - Check all that apply:</b>                        
+                                
+                                
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" ng-model="conRec.Assisted_Hygiene__c"/> Assisted Hygiene
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" ng-model="conRec.Assist_w_Nitrous_Administration__c	"/> Assist w/Nitrous Administration	
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" ng-model="conRec.Schedule_Appointments__c	"/> Chairside Scheduling
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" ng-model="conRec.Loupes__c"/> Loupes
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" ng-model="conRec.Micro_Ultrasonic__c"/> Micro Ultrasonic	
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" ng-model="conRec.Perio_Charting__c"/> Perio Charting	
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" ng-model="conRec.Treatment_Plan_to_Goal__c"/> Treatment Plan to Goal
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <b>FRONT OFFICE KEY SKILLS - Check all that apply:</b>                        
+                                
+                                
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" ng-model="conRec.Goal_Oriented_scheduling__c"/> Goal Oriented scheduling	
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" ng-model="conRec.Insurance_Benefit_Coordination__c	"/> Insurance Benefit Coordination	
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                             <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" ng-model="conRec.Insurance_Processing__c"/> Insurance Processing	
+	                                        </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" ng-model="conRec.Insurance_Verification_and_Pre_Auth__c"/> Insurance Verification and Pre Auth	
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" ng-model="conRec.Medicare_Billing__c"/> Medicare Billing	
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" ng-model="conRec.Practice_Management_Software_Reports__c"/> Practice Management Software Reports	
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" ng-model="conRec.Prepare_Daily_Deposit__c"/> Prepare Daily Deposit	
+                                            </label>
+                                        </div>
+                                    </div>
+                                     <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" ng-model="conRec.Prepare_Day_Sheet__c"/> Prepare Day Sheet	
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                               <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" ng-model="conRec.Recall_Maintenance__c	"/> Recall Maintenance	
+                                            </label>
+                                        </div>
+                                    </div>
+                                     <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" ng-model="conRec.Treatment_Planning_Software__c	"/> Treatment Planning Software	
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div> 
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" ng-model="conRec.Treatment_Presentation__c	"/> Treatment Presentation	
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" ng-model="conRec.AR_Management__c"/> AR Management	
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <b>COMPUTER SKILLS - Check all that apply:</b>  
+                                
+                                
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" ng-model="conRec.Computer_Skills__c"/> Computer Skills	
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <select class="form-select" aria-label="Default select example">
+                                    <option ng-repeat="com in compSkillPickVal">{{com}}</option>
+
+                                  </select>
+                            </form>
+                        </div>
+                        <div class="card-footer text-muted">
+                            <div class="d-flex justify-content-center"><br/>
+                                <button type="button" class="btn btn-warning" ng-click="updateCandidate()">Submit Details</button>      
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-3"></div>
+            </div>
+        </body>
+        <script>
+            debugger;
+        var canId = '{!candidateId}';
+        var crownPicklistVal = JSON.parse('{!crownPicklistVal}');
+        var imgeSoftwarePickVal = JSON.parse('{!imgeSoftwarePickVal}');
+        var compSkillPickVal = JSON.parse('{!compSkillPickVal}');
+
+        
+        var candidateReg = angular.module('candidateReg', []);
+        
+        candidateReg.controller('candidateRegCtrl', function ($scope) {
+            $scope.compSkillPickVal = compSkillPickVal;
+            $scope.imgeSoftwarePickVal = imgeSoftwarePickVal;
+            $scope.crownPicklistVal = crownPicklistVal;
+            $scope.conRec = {'Id':canId} ;
+            // Function to update Candidate
+            $scope.updateCandidate = function(){
+                Visualforce.remoting.Manager.invokeAction(
+                    '{!$RemoteAction.CandidateRegistration_Controller.updateCandidateRecord}',
+                    $scope.conRec,
+                    function(result,event){
+                        if(event.status){
+                            alert(result);
+                        }
+                    },
+                    {escape:true}
+                ); 
+            }
+        });
+        
+        </script>
+        
+    </html>
+</apex:page>

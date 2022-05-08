@@ -1,0 +1,139 @@
+<apex:component >
+    <apex:attribute name="username" description="This is the value for the component." type="String" required="true" />
+    <apex:attribute name="profilePictureId" description="This is the value for the component." type="String" required="true"
+        default="" />
+    <apex:attribute name="hashcode" type="String" description="This is the value for the component." required="true" default=""
+    />
+    <apex:attribute name="cid" type="String" description="This is the value for the component." required="true" default="" />
+    <style>
+        .dropdown-item {
+            display: block;
+            width: 100%;
+            padding: 0.25rem 1rem;
+            clear: both;
+            font-weight: 400;
+            color: #212529;
+            text-align: inherit;
+            text-decoration: none;
+            white-space: nowrap;
+            background-color: transparent;
+            border: 0;
+        }
+
+        
+        ul.navbar-nav.me-auto.mb-2.mb-lg-0>*,
+        ul.dropdown-menu.me-5.mobile-drops.dropdown-menu.me-5.mobile-drops.show {
+            text-transform: uppercase;
+        }
+        a.dropdown-item:hover{
+            background: #3f3f46;
+              color: #f4a52e !important;
+              text-decoration: none;
+
+        }
+
+        @media only screen and (max-width:991px) {
+            .mobile-drops {
+                margin: unset !important;
+            }
+            ul.navbar-nav.me-auto.mb-2.mb-lg-0>.nav-item {
+                display: flex;
+                justify-content: center;
+
+            }
+            ul.navbar-nav.me-auto.mb-2.mb-lg-0>li.nav-item {
+                border-bottom: 1px solid #fff;
+            }
+            .navbar-nav.ms-auto.me-5 {
+                margin: unset !important;
+            }
+            a.nav-link.dropdown-toggle {
+                display: flex;
+                flex-direction: column;
+            }
+            a.nav-link.dropdown-toggle>*,
+            ul.dropdown-menu.me-5.mobile-drops.show>li>a {
+                display: flex;
+                justify-content: center;
+            }
+            .dropdown-toggle::after {
+                border-top: unset;
+
+            }
+            .container-fluid {
+                padding: unset;
+            }
+        }
+    </style>
+    <nav class="navbar navbar-expand-lg navbar-light" style="background-color:rgba(63,63,70,1) !important">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <apex:image url="{!$Resource.logo}" styleClass="logo" width="30%" height="30%" />
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDarkDropdown" aria-controls="navbarNavDarkDropdown"
+                aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavDarkDropdown">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://ondonte--dev--c.visualforce.com/apex/CandidateDashboard?hc={!hashCode}#/CP_HomePage" style="color: white !important;">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://ondonte--dev--c.visualforce.com/apex/CandidateDashboard?hc={!hashCode}#/CP_AllJobs" ng-click=""
+                            style="color: white !important;">Permanent Job's</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://ondonte--dev--c.visualforce.com/apex/CP_CandidateTempJobCalender?id={!cid}&hc={!hashCode}#/CP_HomePage"
+                            ng-click="" style="color: #f4a52e !important;">Temporary Job's</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://ondonte--dev--c.visualforce.com/apex/CandidateDashboard?hc={!hashCode}#/CP_Schedules" ng-click=""
+                            style="color: white !important;">Upcomming Events</a>
+
+                    </li>
+                </ul>
+                <div class="navbar-nav ms-auto me-5">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false"
+                            style="color: white !important;">
+                            <div class="profile-header-img">
+                                <apex:outputPanel layout="block" rendered="{!profilePictureId == ''}">
+                                    <img class="rounded-circle" src="https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png"
+                                        width="50" height="50" alt="avatar" />
+                                </apex:outputPanel>
+                                <apex:outputPanel layout="block" rendered="{!profilePictureId != ''}">
+                                    <img class="rounded-circle" src="https://ondonte--dev--c.documentforce.com/sfc/servlet.shepherd/version/download/{!profilePictureId}"
+                                        width="50" height="50" alt="avatar" />
+                                </apex:outputPanel>
+
+                                <!-- badge -->
+
+                            </div>
+                            <span class="rank-label-container">
+                                <span class="label label-default rank-label">{!username}</span>
+                            </span>
+                        </a>
+                        <ul class="dropdown-menu me-5 mobile-drops" aria-labelledby="navbarDropdown" style="margin-left: -100px">
+                            <li>
+                                <a class="dropdown-item" href="https://ondonte--dev--c.visualforce.com/apex/CandidateDashboard?hc={!hashCode}#/CP_EditProfile">Edit Profile</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="https://ondonte--dev--c.visualforce.com/apex/CandidateDashboard?hc={!hashCode}#/referralModal">Referrals</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="https://ondonte--dev--c.visualforce.com/apex/CP_SchedulePlanner?id={!cid}&hc={!hashCode}">My Calender</a>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider" style="margin:none !important;display:none;" />
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#">Logout</a>
+                            </li>
+                        </ul>
+                    </li>
+                </div>
+            </div>
+        </div>
+    </nav>
+</apex:component>

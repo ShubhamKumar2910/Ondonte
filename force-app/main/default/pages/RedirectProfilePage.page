@@ -1,0 +1,29 @@
+<apex:page sidebar="false" showHeader="false" controller="CP_LoginPage_Controller" action="{!googleAuth}"> 
+    <script>
+	debugger;
+     
+
+    console.warn("{!hasCode}");
+    let email = encodeURIComponent('{!gId}');
+    let firstName = encodeURIComponent('{!gFname}');
+    var hashcode = '{!hasCode}';
+    var SignupCustomer = '{!SignupCustomer}';
+    let SignupCandidate = encodeURIComponent('{!SignupCandidate}');
+    let docUplaodCustomer = encodeURIComponent('{!docUplaodCustomer}');
+    // window.location.replace(siteURL+'RegistrationFromFacebook?gemail='+email+'&first_name='+firstName);
+    
+    
+    // window.location.replace='https://testingv2-leadersinternational.cs18.force.com/login/RegistrationFromFacebook?gemail='+email+'&first_name='+firstName;
+    let mainURL = window.location.origin+'/apex';
+    if(SignupCandidate == "true" && hashcode == ""){
+        window.location.replace("https://ondonte--dev.my.salesforce.com/apex" + "/CP_LoginPage?gemail="+email+'&first_name='+firstName+'&signUp=customer&register=true');
+    }else{
+        if(docUplaodCustomer == "true"){
+            window.location.replace("https://ondonte--dev.my.salesforce.com/apex" + "/CP_DocumentUpload?hc="+hashcode);
+        }else{
+            window.location.replace("https://ondonte--dev.my.salesforce.com/apex" + "/candidateDashboard?hc="+hashcode);
+        }
+    }
+    
+    </script>
+</apex:page>

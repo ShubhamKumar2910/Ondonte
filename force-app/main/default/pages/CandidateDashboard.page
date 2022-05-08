@@ -1,0 +1,615 @@
+<apex:page sidebar="false" showHeader="false" standardStylesheets="false" controller="CandidateDashboard_Controller" docType="html-5.0">
+    <!--action="{!authenticateUser}"-->
+
+    <head>
+        <c:Libraries />
+        <script src="{!$Resource.AngularMultiSelectDirective}" />
+        <script src="{!$Resource.CP_Calendar}" />
+        <script src="{!$Resource.moment}">
+        </script>
+        <script src="http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.13.0.min.js">
+        </script>
+        <script src="{!$Resource.fullcalendar}">
+        </script>
+        <script src="{!$Resource.uicalendar}">
+        </script>
+        <script src="{!$Resource.datetimepicker}">
+        </script>
+        <script src="{!$Resource.script}">
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.7.0/lodash.min.js">
+        </script>
+        <c:Controllers />
+
+
+
+        <style>
+            html {
+                overflow-x: hidden;
+            }
+
+            body {
+                margin: 0;
+                overflow-x: hidden !important;
+                background-color: rgb(203 213 225);
+            }
+
+            tr:hover {
+                background-color: rgb(203 213 225);
+
+            }
+
+            button,
+            .btn.btn-primary,
+            .btn {
+                background: #4299e1;
+                border: unset;
+
+            }
+
+            a:hover,
+            .activeColor,
+            .burger:hover,
+            i.material-icons.md-light.ml-2.pmd-sm.ng-binding:hover,
+            .nav-pills .nav-link.active {
+                color: #f4a52e !important;
+            }
+
+            .form-control:focus {
+                box-shadow: none;
+                border-color: #BA68C8
+            }
+
+            .profile-button {
+                background: #BA68C8;
+                box-shadow: none;
+                border: none
+            }
+            .recommendedJobs{
+                overflow-y: auto;
+                max-height: 500px;
+            }
+            .profile-button:hover {
+                background: #682773
+            }
+
+            .profile-button:focus {
+                background: #682773;
+                box-shadow: none
+            }
+
+            .profile-button:active {
+                background: #682773;
+                box-shadow: none
+            }
+
+            .back:hover {
+                color: #682773;
+                cursor: pointer
+            }
+
+            #formFile::before {
+                content: "Pick file";
+                position: absolute;
+                z-index: 2;
+                display: block;
+                background-color: #eee;
+                width: 80px;
+            }
+
+            .dropzone-wrapper {
+                border: 2px dashed #91b0b3;
+                color: #92b0b3;
+                position: relative;
+                height: 150px;
+            }
+
+            .dropzone-desc {
+                position: absolute;
+                margin: 0 auto;
+                left: 0;
+                right: 0;
+                text-align: center;
+                width: 40%;
+                top: 50px;
+                font-size: 16px;
+            }
+
+            .dropzone,
+            .dropzone:focus {
+                position: absolute;
+                outline: none !important;
+                width: 100%;
+                height: 150px;
+                cursor: pointer;
+                opacity: 0;
+            }
+
+            .dropzone-wrapper:hover,
+            .dropzone-wrapper.dragover {
+                background: #ecf0f5;
+            }
+
+            .dropdown-menu[data-bs-popper] {
+                top: 100%;
+                left: none !important;
+                margin-top: 0.125rem;
+            }
+
+            .loadingBackground {
+                position: fixed;
+                height: 100%;
+                width: 100%;
+                background: #F6F6F6;
+                z-index: 11111;
+                opacity: 0.7;
+                top: 0px;
+                left: 0;
+                bottom: 0;
+                right: 0;
+            }
+
+            .loading {
+                top: 50%;
+                left: 50%;
+                margin: -50px 0px 0px -50px;
+                z-index: 111111;
+                position: fixed;
+            }
+
+            .divline {
+                width: 100%;
+                text-align: center;
+                border-bottom: 1px solid #000;
+                line-height: 0.1em;
+                margin: 10px 0 20px;
+            }
+
+            .divline span {
+                background: #fff;
+                padding: 0 10px;
+            }
+
+            ul.navbar-nav.me-auto.mb-2.mb-lg-0>*,
+            .dropdown-menu.me-5.mobile-drops.show {
+                text-transform: uppercase;
+            }
+
+            @media only screen and (max-width:991px) {
+                .mobile-drops {
+                    margin: unset !important;
+                }
+                ul.navbar-nav.me-auto.mb-2.mb-lg-0>.nav-item {
+                    display: flex;
+                    justify-content: center;
+
+                }
+
+                ul.navbar-nav.me-auto.mb-2.mb-lg-0>li.nav-item {
+                    border-bottom: 1px solid #fff;
+                }
+                .navbar-nav.ms-auto.me-5 {
+                    margin: unset !important;
+                }
+                a.nav-link.dropdown-toggle {
+                    display: flex;
+                    flex-direction: column;
+                }
+                a.nav-link.dropdown-toggle>*,
+                ul.dropdown-menu.me-5.mobile-drops.show>li>a {
+                    display: flex;
+                    justify-content: center;
+                }
+                .dropdown-toggle::after {
+                    border-top: unset;
+
+                }
+            }
+
+            @media only screen and (max-width:900px) {
+                .flexibleTabs {
+                    display: block!important;
+                }
+
+            }
+
+            .card:hover {
+                box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .075)!important;
+            }
+
+            .popupFooterButton>* {
+                width: 50%;
+            }
+
+            .cancelBtn {
+                background: red;
+            }
+
+            .nav.flex-column.nav-pills.colsFlex>* {
+                text-align: inherit;
+            }
+
+            .rounded-circle {
+                border: 2px solid;
+            }
+
+            .ondontefontColor {
+                color: #1e83ec;
+            }
+
+            @media only screen and (max-width:600px) {
+                .d-block-mobile {
+                    display: block !important;
+                }
+                .container-fluid {
+                    padding: unset;
+                }
+            }
+
+            @media only screen and (max-width:699px) {
+                .modalpadd {
+                    padding: 1rem !important;
+                }
+            }
+
+            .navbar-light .navbar-toggler {
+                border: 1px solid #fff;
+                color: #fff;
+            }
+
+            @media only screen and (max-width:459px) {
+                nav.navbar.navbar-expand-lg.navbar-light>.container-fluid {
+                    display: block !important;
+                }
+                .ul.navbar-nav.m    e-auto.mb-2.mb-lg-0{
+                    width: 100%;
+                }
+            }
+        </style>
+
+
+        <script>
+            var tabValues = JSON.parse('{!tabValues}');
+            var userId = '{!$CurrentPage.parameters.hc}';
+            var JobId = '{!$CurrentPage.parameters.JobId}';
+            var siteURL = '{!candidateSiteURL}';
+            var candidateId = '{!candidateId}';
+            var workingDaysValues = JSON.parse('{!workingDaysValues}');
+            var temShiftStaffType = JSON.parse('{!temShiftStaffType}');
+            var temShiftSpecialSkills = JSON.parse('{!temShiftSpecialSkills}');
+            
+            //var getAllEvents = JSON.parse('{!getAllEvents}');
+            var blobData = '{!blobData}';
+
+
+        </script>
+
+    </head>
+
+    <body ng-app="cp_app">
+        <div ng-controller="cp_dashboard_ctrl" ng-init="getCandidateDetails()">
+            <!--c:CP_NavigationBar/-->
+
+            <nav class="navbar navbar-expand-lg navbar-light" style="background-color:rgba(63,63,70,1) !important;font-size: 14px;">
+                <div class="container-fluid">
+                    <a class="navbar-brand" href="#">
+                        <apex:image url="{!$Resource.logo}" styleClass="logo" width="30%" height="30%" />
+                    </a>
+                    <button class="navbar-toggler float-end m-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDarkDropdown" aria-controls="navbarNavDarkDropdown"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                        <!-- <span class="navbar-toggler-icon"></span> -->
+                        <i class="fa fa-bars" />
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarNavDarkDropdown">
+                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                            <li class="nav-item">
+                                <a class="nav-link" href="#/CP_HomePage" ng-class="{activeColor:activeTab==0}" style="color: white">Home</a>
+                            </li>
+                            <!--li class="nav-item">
+                                <a class="nav-link" href="#/CP_MyJobs" ng-class="{activeColor:activeTab==1}" style="color: white">My Jobs</a>
+                            </li-->
+                            <li class="nav-item">
+                                <a class="nav-link" href="#/CP_AllJobs" ng-class="{activeColor:activeTab==1}" style="color: white">Permanent Job's</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://ondonte--dev--c.visualforce.com/apex/CP_CandidateTempJobCalender?id={!candidateId}&hc={!candidateHashcode}#/CP_HomePage"
+                                    ng-class="{activeColor:activeTab==2}" style="color: white">Temporary Job's</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#/CP_Schedules" ng-class="{activeColor:activeTab==3}" style="color: white">Upcomming Events</a>
+                            </li>
+
+                        </ul>
+                        <div class="navbar-nav ms-auto me-5">
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false"
+                                    style="color: white !important;">
+                                    <div class="profile-header-img">
+                                        <img ng-show="profilePicId == undefined" class=" rounded-circle mr-2 img-circle" src="https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png"
+                                            width="40" height="40" alt="avatar" />
+                                        <img ng-hide="profilePicId == undefined" class="rounded-circle mr-2 profile-pic" src="https://ondonte--dev--c.documentforce.com/sfc/servlet.shepherd/version/download/{{profilePicId}}"
+                                            width="40" height="40" alt="avatar" />
+                                        <!-- badge -->
+
+                                    </div>
+                                    <span class="rank-label-container">
+                                        <span class="label label-default rank-label">{{userDetails.LastName}}</span>
+                                    </span>
+                                </a>
+                                <ul class="dropdown-menu me-5 mobile-drops" aria-labelledby="navbarDropdown" style="margin-left: -100px">
+                                    <li>
+                                        <a class="dropdown-item" href="#/CP_EditProfile">Edit Profile</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#referralModal">Referrals</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" ng-click="redirectToSchdlPlnr()">My Calender</a>
+                                    </li>
+                                    <li>
+                                        <hr class="dropdown-divider" />
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="#/CP_TempCalendar">Logout</a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+            <!-- Modal -->
+            <div class="modal fade" id="referralModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title ondontefontColor" id="exampleModalLabel">Refer A Friend</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body modalpadd">
+                            <label>Enter Referral Email Id</label>
+                            <input type="text" class="form-control" placeholder="Enter Email Id" ng-model="referalEmail" />
+                        </div>
+                        <div class="modal-footer d-flex" style="flex-wrap: unset;">
+                            <button type="button" class="btn btn-secondary col-sm-6 cancelBtn" style="max-width: 49%; width:50%;" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary col-sm-6" style="max-width: 49%; width:50%;" ng-click="referFriend()">Refer</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="modal fade" id="backgroundCheckModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Background Check</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <label>Background check will be initiated for Following Application</label>
+                            <ul>
+                                <li ng-repeat="appName in BackGroundCheckApplications"> {{appName}}</li>
+                            </ul>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary" ng-click="backgroundcheckConcent()">Okay</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="modal fade" id="applicationConfirmationPopup" tabindex="-1" aria-labelledby="fileUploadModel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-header d-flex ">
+                            <center>
+                                <h5 class="modal-title" id="exampleModalLabel">Recomended Jobs</h5>
+                            </center>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+
+                                <div class="col-sm-12 recommendedJobs">
+                                    <div ng-repeat="job in applicationConfirmationList">
+                                        <div class="card mb-2 ">
+                                            <div class="card-header d-flex justify-content-lg-between d-block-mobile">
+                                                <p class="card-title col-sm-6 m-0 ">
+                                                    <b class="ondontefontColor">Job : </b>
+                                                    <span style="color:black">{{job.Name}}</span>
+                                                </p>
+                                                <p class="card-title col-sm-6 m-0">
+                                                    <b class="ondontefontColor">Requisition : </b>
+                                                    <span style="color:#000">{{job.Job_Requisition__r.Name}}</span>
+                                                </p>
+                                            </div>
+                                            <div class="card-body">
+
+
+                                                <div class="d-flex justify-content-lg-between">
+                                                    <div style="width:50%;">
+                                                        <b class="ondontefontColor">Start Date:&nbsp;</b>
+                                                        <span style="color:black;"> {{job.Job_Requisition__r.Expected_Start_Date__c | date:'MM/dd/yyyy'}}</span>
+                                                    </div>
+                                                    <div style="width:50%;">
+                                                        <b class="ondontefontColor">End Date:&nbsp;</b>
+                                                        <span style="color:black;">{{job.Job_Requisition__r.Expected_End_Date__c | date:'MM/dd/yyyy'}}</span>
+                                                    </div>
+                                                </div>
+                                                <p class="card-text">
+                                                    <b class="ondontefontColor">Description :</b>
+                                                    <span style="color: #000;">{{job.Job_Requisition__r.Description__c}}</span>
+                                                </p>
+
+                                            </div>
+                                            <div class="d-flex justify-content-end card-footer popupFooterButton">
+                                                <button class="btn btn-primary" ng-click="acceptJob(job.Id)">Accept</button>&nbsp;
+                                                <button type="button" class="btn btn-secondary cancelBtn" ng-click="declineJob(job.Id)">Decline</button>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="modal fade" id="shiftConfirmationPopup" tabindex="-1" aria-labelledby="fileUploadModel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Recomended Temporary Jobs</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div ng-repeat="job in shiftToConfirm">
+                                        <div class="mb-2">
+                                            <div>
+
+
+                                                <div class="row">
+                                                    <h5 class="">{{job.shift.Name}}</h5>
+                                                    <div class="col-md-6">
+                                                        <h6 class="mb-2 text-muted">Job Date: {{job.shift.Start_DateTime__c | date}}</h6>
+                                                        <b>
+                                                            <div class="card-text">Job Start Time: {{job.shift.Start_DateTime__c | date:"hh:mm"}}</div>
+                                                            <div class="card-text">Job End Time: {{job.shift.End_DateTime__c | date:"hh:mm"}}</div>
+                                                        </b>
+                                                    </div>
+                                                    <div class="col-md-6" ng-if="job.skillList.length > 0">
+                                                        <div>
+                                                            <b>Required Skills:</b>
+                                                        </div>
+                                                        <ul>
+                                                            <li ng-repeat="skill in job.skillList">{{skill}}</li>
+                                                        </ul>
+                                                    </div>
+
+                                                </div>
+                                                <div class="d-flex justify-content-end">
+                                                    <button class="btn btn-primary" ng-click="acceptShift(job.shift.Id)">Accept</button>&nbsp;
+                                                    <button type="button" class="btn btn-secondary" ng-click="declineShift(job.shift.Id)">Decline</button>
+
+                                                </div>
+                                                <hr/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="loadingSection" id="spinner" ng-if="showSpinner">
+                <div class="loadingBackground"></div>
+                <div>
+                    <apex:image url="{!$Resource.Loading}" styleClass="loading" />
+                </div>
+            </div>
+
+            <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header  d-flex justify-content-center">
+                            <h5 class="modal-title" id="staticBackdropLabel" style="font-weight: 800;">Update Your Availability</h5>
+                            <button type="button" id="colsePopup" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row  mt-3">
+                                <div class="col-md-6">
+                                    <div class="container">
+
+                                        <div class="form-check" ng-repeat="days in workingDaysPickValues">
+                                            <input class="form-check-input" type="checkbox" ng-model="checked" id="{{days}}" ng-click="selectedDays(checked,days)"
+                                            />
+                                            <label class="form-check-label" for="{{days}}">
+                                                <b>{{days}}</b>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div>
+                                        <label for="appt">
+                                            <b>All Day Available?</b>
+                                        </label>&nbsp;
+                                        <span>
+                                            <input type="checkbox" class="" ng-model="allDayAvailable" ng-click="customAvailable = false"/>
+                                        </span>
+                                    </div>
+                                    <h6 class="divline">
+                                        <span>OR</span>
+                                    </h6>
+
+                                    <div>
+                                        <label for="appt">
+                                            <b>Update Available Hours</b>
+                                        </label>&nbsp;
+                                        <span>
+                                            <input type="checkbox" class="" ng-model="customAvailable" ng-click="allDayAvailable = false"/>
+                                        </span>
+                                    </div>
+
+                                    <div ng-if="customAvailable">
+                                        <div>
+                                            <label for="appt">
+                                                <b>Start Time:</b>
+                                            </label>&nbsp;
+                                            <div>
+                                                <input type="time" id="appt" name="appt" class="form-control" value="00:00" ng-model="strtTime"/>
+                                            </div>
+                                        </div>
+                                        <div class="mt-3">
+                                            <label for="appt">
+                                                <b>End Time:</b>
+                                            </label>&nbsp;
+                                            <div>
+                                                <input type="time" id="appt" name="appt" class="form-control" value="00:00" ng-model="endTime" />
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary" ng-click="submitAvailablity(endTime,strtTime)">Submit</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div style="Margin-top: 1%;">
+                <div>
+
+                    <ng-view>
+                    </ng-view>
+                </div>
+            </div>
+        </div>
+    </body>
+
+</apex:page>

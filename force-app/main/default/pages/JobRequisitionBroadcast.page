@@ -1,0 +1,51 @@
+<apex:page standardController="Contact" recordSetVar="candidates" extensions="JobRequisitionBroadcastExtention" lightningStyleSheets="true">
+
+    <apex:outputPanel id="main" layout="block">
+        <apex:outputPanel layout="block" rendered="{!showErrorMsg}">
+            <p style="font-size: initial;font-weight:bold; color: red; background-color:white;">
+                {!uiErrorMsg}
+            </p>
+        </apex:outputPanel>
+        <apex:outputPanel layout="block" rendered="{!!showErrorMsg}">
+            <apex:form >
+                <apex:pageBlock title="Candidates">
+                    <apex:pageBlockTable value="{!candidatesList}" var="can">
+                        <apex:column value="{!can.Name}" />
+                        <apex:column value="{!can.Email}" />
+                        <apex:column value="{!can.Phone}" />
+                    </apex:pageBlockTable>
+                
+                </apex:pageBlock>
+
+                <!-- <apex:pageBlock>
+                    <apex:pageBlockButtons location="top">
+                        <apex:outputPanel id="myButtons">
+                            
+                        </apex:outputPanel>
+                    </apex:pageBlockButtons>
+                </apex:pageBlock> -->    
+                <apex:pageBlock title="Requisition to Broadcast">
+                    <apex:pageBlockButtons location="top">
+                        <apex:commandButton action="{!Beginning}" title="Beginning" value="<<" disabled="{!disablePrevious}" reRender="myPanel,myButtons"
+                        />
+                        <apex:commandButton action="{!Previous}" title="Previous" value="<" disabled="{!disablePrevious}" reRender="myPanel,myButtons"
+                        />
+                        <apex:commandButton action="{!Next}" title="Next" value=">" disabled="{!disableNext}" reRender="myPanel,myButtons" />
+                        <apex:commandButton action="{!End}" title="End" value=">>" disabled="{!disableNext}" reRender="myPanel,myButtons" />
+
+                        <apex:commandButton action="{!sendEmail}" value="Send SMS" />
+                        <apex:commandButton action="{!sendEmail}" value="Send email" />
+                        <apex:commandButton action="{!cancel}" value="Cancel" />
+                    </apex:pageBlockButtons>
+                    <apex:pageMessages />
+                    <apex:pageBlockTable value="{!requisitionWrapperList}" var="req">
+                        <apex:column width="25px">
+                            <apex:inputCheckbox value="{!req.isSelected}" />
+                        </apex:column>
+                        <apex:column value="{!req.requisition.Name}" />
+                    </apex:pageBlockTable>
+                </apex:pageBlock>
+            </apex:form>
+        </apex:outputPanel>
+    </apex:outputPanel>
+</apex:page>

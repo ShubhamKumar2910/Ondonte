@@ -1,0 +1,13 @@
+.lgc-bg {
+    background-color: rgb(242, 242, 242);
+}
+
+.lgc-bg-inverse {
+    background-color: rgb(22, 50, 92);
+}
+.class1 {
+    opacity: 1;
+   transition: opacity 2s ease-in;
+   -moz-transition: opacity 2s ease-in;
+   -webkit-transition: opacity 2s ease-in;
+}

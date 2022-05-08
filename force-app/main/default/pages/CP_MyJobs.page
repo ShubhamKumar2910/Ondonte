@@ -1,0 +1,534 @@
+<apex:page sidebar="false" showHeader="false" standardStylesheets="false">
+    <style>
+        .stepper-wrapper {
+            margin-top: auto;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .stepper-item {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+
+            @media (max-width: 768px) {
+                font-size: 12px;
+            }
+        }
+
+        .stepper-item::before {
+            position: absolute;
+            content: "";
+            border-bottom: 2px solid #ccc;
+            width: 100%;
+            top: 20px;
+            left: -50%;
+            z-index: 2;
+        }
+
+        .stepper-item::after {
+            position: absolute;
+            content: "";
+            border-bottom: 2px solid #ccc;
+            width: 100%;
+            top: 20px;
+            left: 50%;
+            z-index: 2;
+        }
+
+        .stepper-item .step-counter {
+            position: relative;
+            z-index: 5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #ccc;
+            margin-bottom: 6px;
+        }
+
+        .stepper-item.active {
+            font-weight: bold;
+        }
+
+        .stepper-item.completed .step-counter {
+            background-color: #4bb543;
+        }
+
+        .stepper-item.completed::after {
+            position: absolute;
+            content: "";
+            border-bottom: 2px solid #4bb543;
+            width: 100%;
+            top: 20px;
+            left: 50%;
+            z-index: 3;
+        }
+
+        .stepper-item:first-child::before {
+            content: none;
+        }
+
+        .stepper-item:last-child::after {
+            content: none;
+        }
+
+        * {
+            margin: 0;
+            padding: 0
+        }
+
+        html {
+            height: 100%
+        }
+
+        p {
+            color: grey
+        }
+
+        #heading {
+            text-transform: uppercase;
+            color: #673AB7;
+            font-weight: normal
+        }
+
+        #msform {
+            text-align: center;
+            position: relative;
+            margin-top: 20px
+        }
+
+        #msform fieldset {
+            background: white;
+            border: 0 none;
+            border-radius: 0.5rem;
+            box-sizing: border-box;
+            width: 100%;
+            margin: 0;
+            padding-bottom: 20px;
+            position: relative
+        }
+
+        .form-card {
+            text-align: left
+        }
+
+        #msform fieldset:not(:first-of-type) {
+            display: none
+        }
+
+        #msform input,
+        #msform textarea {
+            padding: 8px 15px 8px 15px;
+            border: 1px solid #ccc;
+            border-radius: 0px;
+            margin-bottom: 25px;
+            margin-top: 2px;
+            width: 100%;
+            box-sizing: border-box;
+            font-family: montserrat;
+            color: #2C3E50;
+            background-color: #ECEFF1;
+            font-size: 16px;
+            letter-spacing: 1px
+        }
+
+        #msform input:focus,
+        #msform textarea:focus {
+            -moz-box-shadow: none !important;
+            -webkit-box-shadow: none !important;
+            box-shadow: none !important;
+            border: 1px solid #673AB7;
+            outline-width: 0
+        }
+
+        #msform .action-button {
+            width: 100px;
+            background: #673AB7;
+            font-weight: bold;
+            color: white;
+            border: 0 none;
+            border-radius: 0px;
+            cursor: pointer;
+            padding: 10px 5px;
+            margin: 10px 0px 10px 5px;
+            float: right
+        }
+
+        #msform .action-button:hover,
+        #msform .action-button:focus {
+            background-color: #311B92
+        }
+
+        #msform .action-button-previous {
+            width: 100px;
+            background: #616161;
+            font-weight: bold;
+            color: white;
+            border: 0 none;
+            border-radius: 0px;
+            cursor: pointer;
+            padding: 10px 5px;
+            margin: 10px 5px 10px 0px;
+            float: right
+        }
+
+        #msform .action-button-previous:hover,
+        #msform .action-button-previous:focus {
+            background-color: #000000
+        }
+
+        .card {
+            z-index: 1;
+            border: none;
+            position: relative;
+            border: 1px solid rgba(0, 0, 0, .125) !important;
+        }
+
+        .fs-title {
+            font-size: 25px;
+            color: #673AB7;
+            margin-bottom: 15px;
+            font-weight: normal;
+            text-align: left
+        }
+
+        .purple-text {
+            color: #673AB7;
+            font-weight: normal
+        }
+
+        .steps {
+            font-size: 25px;
+            color: gray;
+            margin-bottom: 10px;
+            font-weight: normal;
+            text-align: right
+        }
+
+        .fieldlabels {
+            color: gray;
+            text-align: left
+        }
+
+        #progressbar {
+            margin-bottom: 30px;
+            overflow: hidden;
+            color: lightgrey
+        }
+
+        #progressbar .active {
+            color: #673AB7
+        }
+
+        #progressbar li {
+            list-style-type: none;
+            font-size: 15px;
+            width: 25%;
+            float: left;
+            position: relative;
+            font-weight: 400
+        }
+
+        #progressbar #Applied:before {
+            font-family: FontAwesome;
+            content: "\f13e"
+        }
+
+        #progressbar #InterviewScheduled:before {
+            font-family: FontAwesome;
+            content: "\f007"
+        }
+
+        #progressbar #Selected:before {
+            font-family: FontAwesome;
+            content: "\f030"
+        }
+
+        #progressbar #Placed:before {
+            font-family: FontAwesome;
+            content: "\f00c"
+        }
+
+        #progressbar li:before {
+            width: 50px;
+            height: 50px;
+            line-height: 45px;
+            display: block;
+            font-size: 20px;
+            color: #ffffff;
+            background: lightgray;
+            border-radius: 50%;
+            margin: 0 auto 10px auto;
+            padding: 2px
+        }
+
+        #progressbar li:after {
+            content: '';
+            width: 100%;
+            height: 2px;
+            background: lightgray;
+            position: absolute;
+            left: 0;
+            top: 25px;
+            z-index: -1
+        }
+
+        #progressbar li.active:before,
+        #progressbar li.active:after {
+            background: #46b846
+        }
+
+        .progress {
+            height: 20px
+        }
+
+        .progress-bar {
+            background-color: #4bc84b
+        }
+
+        .fit-image {
+            width: 100%;
+            object-fit: cover
+        }
+
+        .progress-wrapper {
+            margin-bottom: 15px;
+        }
+
+        .float-right {
+            float: right;
+        }
+
+        .progress {
+            height: 10px;
+            overflow: hidden;
+            display: flex;
+            font-size: .75rem;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: .25rem;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .dropzone-wrapper {
+            border: 2px dashed #91b0b3;
+            color: #92b0b3;
+            position: relative;
+            height: 150px;
+        }
+
+        .dropzone-desc {
+            position: absolute;
+            margin: 0 auto;
+            left: 0;
+            right: 0;
+            text-align: center;
+            width: 40%;
+            top: 50px;
+            font-size: 16px;
+        }
+
+        .dropzone,
+        .dropzone:focus {
+            position: absolute;
+            outline: none !important;
+            width: 100%;
+            height: 150px;
+            cursor: pointer;
+            opacity: 0;
+        }
+
+        .dropzone-wrapper:hover,
+        .dropzone-wrapper.dragover {
+            background: #ecf0f5;
+        }
+    </style>
+    <div ng-controller="cp_myjobs_ctrl">
+        <div class="container" ng-init="getAMyJobs()">
+
+            <div class="row">
+                <div class="col-2">
+                </div>
+                <div class="col-8">
+                    <div ng-repeat="job in myJobs" ng-hide="jobDetailPage">
+                        <div class="card mb-2">
+                            <div class="card-body">
+
+                                <h5 class="card-title">{{job.Name}}</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">{{job.Job_Requisition__r.Name}}</h6>
+                                <p class="card-text">{{job.Job_Requisition__r.Description__c}}</p>
+                                <div>
+                                    <b>Start Date:&nbsp; {{job.Job_Requisition__r.Expected_Start_Date__c | date:'MM/dd/yyyy'}}&nbsp;&nbsp;End
+                                        Date:&nbsp;{{job.Job_Requisition__r.Expected_End_Date__c | date:'MM/dd/yyyy'}}</b>
+                                </div>
+
+                                <div class="d-flex justify-content-end">
+                                    <a class="btn btn-primary" ng-click="viewJobDetails(job)">View</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" ng-show="jobDetailPage">
+                        <div>
+                            <div style="" class="p-5">
+                                <span>
+                                    <button type="button" class="btn btn-secondary float-end" ng-click="backFromJobDetails()">
+                                        <i class="fa fa-arrow-left"></i>&nbsp;Back</button>
+
+                                </span>
+                                <h2 style="font-weight: 600;">{{jobDetails.Job_Requisition__r.Name}}</h2>
+                                <span class="float-end">
+
+                                </span>
+                                <p style="font-weight: 600;">{{jobDetails.Job_Requisition__r.Description__c}}</p>
+                            </div>
+
+
+                            <form id="msform">
+
+                                <ul id="progressbar">
+
+                                    <li class="active" id="Applied">
+                                        <strong>Applied</strong>
+                                    </li>
+
+                                    <li class="" id="InterviewScheduled">
+                                        <strong>Interview Scheduled</strong>
+                                    </li>
+
+                                    <li class="" id="Selected">
+                                        <strong>Selected</strong>
+                                    </li>
+
+                                    <li class="" id="Placed">
+                                        <strong>Placed</strong>
+                                    </li>
+
+                                </ul>
+                            </form>
+                            <div class="container">
+                                <div class="row">
+                                   
+                                </div>
+
+                                <div>
+
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <table class="table" ng-if="showDocTable">
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col">#</th>
+                                                        <th scope="col">Document Name</th>
+                                                        <th scope="col">Document Status</th>
+                                                        <th scope="col">Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr ng-repeat="doc in userDoc">
+                                                        <th scope="row">{{$index+1}}</th>
+                                                        <td>{{doc.userDocument.Name}}</td>
+                                                        <td>{{doc.userDocument.Status__c}}</td>
+                                                        <td ng-show="doc.contentVersion.Id != null">
+                                                            <button type="button" class="btn btn-primary" ng-click="viewDocument(doc.contentVersion.Id)" href="">View</button>
+                                                            <button type="button" class="btn btn-secondary" ng-click="selUserDocId(doc.userDocument.Id,doc.contentVersion.Id)" data-bs-toggle="modal" data-bs-target="#fileUploadModel">Replace</button>
+                                                        </td>
+                                                        <td ng-hide="doc.contentVersion.Id != null || doc.contentVersion.Id != undefined">
+                                                            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#myModal" ng-click="selUserDocId(doc.userDocument.Id,'')" >Uplaod</button>
+                                                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal">  Open modal</button>
+
+                                                        </td>
+                                                    </tr>
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="d-flex justify-content-center">
+                                <button type="button" class="btn btn-primary" ng-click="withdrawApplication(jobDetails.Id)">Withdraw Application</button>&nbsp;&nbsp;
+                                <button type="button" class="btn btn-secondary" ng-click="getUserDoc()">View Documents</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Modal -->
+                <div class="modal fade" id="fileUploadModel" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-xl">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Uplaod Document</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-4">
+                                        <div class="dropzone-wrapper">
+                                            <div class="dropzone-desc">
+                                                <i class="glyphicon glyphicon-download-alt"></i>
+                                                <p>Choose an PDF file or drag it here.</p>
+                                            </div>
+                                            <input type="file" name="img_logo" class="dropzone" accept="application/pdf" id="attachmentFile" />
+                                        </div>
+                                        <div id="file-upload-filename"></div>
+                                    </div>
+                                    <div class="col-8">
+
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-warning m-5" ng-Click="uploadFileToUserDoc('attachment')">Uplaod</button>
+                                &nbsp;&nbsp;
+                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                              </div>
+
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <!-- The Modal -->
+<div class="modal" id="myModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+  
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Modal Heading</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+  
+        <!-- Modal body -->
+        <div class="modal-body">
+          Modal body..
+        </div>
+  
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+        </div>
+  
+      </div>
+    </div>
+  </div>
+                <div class="col-2">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</apex:page>

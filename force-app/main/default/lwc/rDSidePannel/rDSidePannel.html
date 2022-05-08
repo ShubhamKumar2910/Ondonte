@@ -1,0 +1,98 @@
+<template>
+    <article class="slds-card" style="height:100%">
+        <div class="slds-card__header slds-grid">
+            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+            <div class="slds-media__figure">
+                <span class="slds-icon_container slds-icon-standard-account" title="account">
+                <lightning-icon icon-name="standard:dashboard" alternative-text="Approved" title=""></lightning-icon>
+                <span class="slds-assistive-text">Dashboard</span>
+                </span>
+            </div>
+            <div class="slds-media__body">
+                <h2 class="slds-card__header-title">
+                <a href="#" class="slds-card__header-link slds-truncate" title="Accounts">
+                    <span>Recruiter Dashboard</span>
+                </a>
+                </h2>
+            </div>
+            </header>
+        </div>
+        <div class="slds-card__body slds-card__body_inner">
+            <!-- <span>Job Type</span> -->
+            <div class="slds-button-group slds-align_absolute-center" role="group">
+                <button data-id="temp-btn" class={tempBtnClass} onclick={handleTempClick}>Temporary</button>
+                <button data-id="permnt-btn" class={permntBtnClass} onclick={handlePermanentClick}>Permanent</button>
+            </div>
+
+            <div class="slds-m-top_medium">
+                <lightning-combobox name="progress" label="Filter by:" value={currentFilter} placeholder="Job Type" options={filterOptions}
+            onchange={handleFilterChange}></lightning-combobox>
+            </div>
+            <div class="slds-m-top_medium">
+                <span>Filter by Client: </span> <c-search-account onaccselection={accSelectionHandler}></c-search-account>            
+            </div>
+            <div class="slds-m-top_medium slds-m-left_x-small"><lightning-badge class="tot-requisition-badge" label={requisitionsBadge}></lightning-badge></div>
+            <div class="slds-var-m-top_x-small slds-scrollable_y" style="height:50vh;">
+                <template for:each={requisitions} for:item="requisition">
+                    <div key={requisition.Id} class={requisition.class} data-id={requisition.Id} data-name ={requisition.Id} onclick={handleJobChange} style="cursor:pointer;">
+                    <article class="slds-card" onclick={handleCardChild} style="background:inherit;padding:1%;">
+                        <div class="slds-card__header slds-grid">
+                        <div style="display: flex; justify-content: start; align-items: center; width: 100%;">
+                            <lightning-icon icon-name="standard:account" alternative-text="Approved" title=""></lightning-icon>
+                            <div style="margin-left: 3%; width: 100%;">
+                                <div style="display: flex;">
+                                    <h2 style="color: rgb(10, 10, 10); font-size:14px;">Client : </h2> <p style="color: rgb(15, 15, 15); font-size:14px; margin-left: 2%;">{requisition.Client__r.Name}</p>
+                                </div>
+                                <div style="display: flex;">
+                                    <h2 style="color: rgb(10, 10, 10); font-size:12px;"> Job: </h2>
+                                    <p style="color: rgb(58, 58, 58); font-size:12px; margin-left: 2%;">{requisition.Name}</p>
+                                </div>
+                                <!-- <div style="display: flex;">
+                                    <h2 style="color: rgb(10, 10, 10); font-size:10px;"> StaffType: </h2>
+                                    <p style="color: rgb(58, 58, 58); font-size:10px; margin-left: 2%;">
+                                        
+                                    </p>
+                                    
+                                </div> -->
+                            </div>
+                        </div>
+                        </div>
+                        <div class="slds-card__body slds-card__body_inner" style="margin-bottom:0px;">
+                            <template for:each={requisition.staffType} for:item="stafType">
+                                <span class="slds-badge slds-badge_inverse" key={stafType}>
+                                    <!-- <span class="slds-badge__icon slds-badge__icon_left">
+                                        <span class="slds-icon_container slds-icon-utility-moneybag slds-current-color" title="staff type">
+                                            <lightning-icon size="xx-small" icon-name="utility:favorite" alternative-text="Approved" title=""></lightning-icon>
+                                        </span>
+                                    </span> -->
+                                    {stafType}
+                                </span>
+                            </template>
+                            <!-- <p class="description">Status : {requisition.Status__c}</p> -->
+                            <template if:true={requisition.isPermanentPlacement}>
+                                <div class="slds-grid slds-gutters" style="margin-top: 2%;">
+                                    <p style="margin-left: 3%;">Start Date: </p>
+                                    <div class="slds-col startDate">
+                                        <span>
+                                            <p>{requisition.Expected_Start_Date__c}</p>
+                                        </span>
+                                    </div>
+                                    <p>End Date: </p>
+                                    <div class="slds-col closeDate">
+                                        <span>
+                                            <p>{requisition.Expected_End_Date__c}</p>
+                                        </span>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </article>
+                    </div>
+                </template>
+            </div>
+        </div>
+        <!-- <footer class="slds-card__footer">
+            <div class="slds-m-top_medium slds-m-left_x-small" onclick={showMore}><lightning-badge label="Show more(+)"></lightning-badge></div>
+        </footer> -->
+    </article>
+</template>

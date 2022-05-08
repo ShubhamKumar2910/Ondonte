@@ -1,0 +1,129 @@
+<apex:page showHeader="false" sidebar="false" docType="html-5.0" renderAs="pdf"  controller="GenerateResumeController">
+    
+    <table>
+    <td>
+<span style="float: left;"><p style="font-size:12px; margin-left:155px;margin-bottom:-10px;">THIS RESUME is provided by Ondonte Dental Staffing to our Clients for the sole purpose of considering this individual
+                    for hire through Ondonte as a Permanent employee or for the a Temporary assignment. This Resume is <b>CONFIDENTAL</b>
+                    between the Client. Ondonte Dental Staffing and the individual, and it may not be otherwise distributed or used for any 
+                    other purpose. For information, please call Ondonte at 925-218-0649 or email us at sue@ondonte.com</p></span>
+ <apex:image url="{!$Resource.logo1}" style="margin-top:-75px; margin-bottom:0px;" />
+        
+         <hr style="height:2px;border-width:0;color:gray;background-color:blue;margin-bottom:22px;margin-top:-10px;"/>
+</td>
+     </table>
+    
+    <table width="100%" style="margin-top:-5%;font-weight: 100;margin-bottom:0;margin-top:0px;">    
+        <tr>
+            <th style="">
+                <h2 style="text-align:center;margin-top:0%;border-width:0;font-size: 20px;height:6px;color:black;"><b style="text-transform: uppercase;"> {!contactDetails.FirstName} {!contactDetails.LastName}</b></h2>   
+            </th>
+        </tr>
+    </table>  <br/>    
+    <hr style="height:2px;border-width:0;margin-left:55px;margin-right:55px;color:gray;background-color:gray;margin-bottom:0;margin-top:0px;"/>
+    
+    <table width="100%" style="margin-top:5px; white-space: nowrap;overflow: hidden;text-overflow: clip;">
+        <tr>
+            <th>
+                <p style="text-align:center;font-size:15px; font-weight:normal;margin-bottom:0;margin-top:0px;"> {!contactDetails.MailingStreet} {!contactDetails.MailingCity} , {!contactDetails.MailingState} {!contactDetails.MailingPostalCode} {!contactDetails.MailingCountry}
+                </p>
+            </th>
+        </tr> 
+    </table>
+    
+    <!--
+ <p style="margin-left:35px;margin-bottom:-15px; font-size:20px;" >
+        References Available upon request updated
+    </p> 
+-->
+    <table>
+        <p style="text-align:center;font-size:14px;margin : 0; padding-top:0;"> <a href="{!contactDetails.Email}">{!contactDetails.Email}</a> </p>
+    </table>
+    
+    <table rendered="{! ISNULL( rWrapper.credList ) }">
+        <p>
+            <h3 style="margin-left:35px;margin-bottom:-15px;" > Certifications/Licensure
+            <apex:repeat var="creRec" value="{!rWrapper.credList}">
+                    <li style="margin-left:35px;font-size:15px;margin : 35; padding-top:0;">{!creRec.Name}</li>  
+            </apex:repeat>
+        </h3>
+        </p>
+    </table>
+    
+     <table  rendered="{! ISNULL( rWrapper.workList ) }">
+        <p>
+            <h3 style="margin-left:35px;margin-bottom:-15px;" > Professional Experience
+            <apex:repeat var="workRec" value="{!rWrapper.workList}">
+                    <li style="margin-left:35px;font-size:15px;margin : 35; padding-top:0;">{!workRec.Name}</li>  
+                    <li style="margin-left:35px;font-size:15px;margin : 35; padding-top:0;">{!workRec.Job_Ttle__c}</li>
+                    <li style="margin-left:35px;font-size:15px;margin : 35; padding-top:0;">Total Dental Health, Oakland, CA: November 2020 – Present</li>
+                    <li style="margin-left:35px;font-size:15px;margin : 35; padding-top:0;">Dr. Mckinzie, Oakland, CA: October 2012 – October 2020</li>
+                    <li style="margin-left:35px;font-size:15px;margin : 35; padding-top:0;">Washington Square Park Dental, San Francisco, CA: April 2013 – Present</li>
+                    <li style="margin-left:35px;font-size:15px;margin : 35; padding-top:0;">Hercules Dental Care, Hercules, CA: June 2013 – December 2013</li>
+                    <li style="margin-left:35px;font-size:15px;margin : 35; padding-top:0;">Dr. Tickner, San Leandro, CA: July 2012 – December 2012</li>
+                    <li style="margin-left:35px;font-size:15px;margin : 35; padding-top:0;">Pacific Dental Associates, San Francisco, CA: Temped June 2012 – August 2014</li>
+                    <li style="margin-left:35px;font-size:15px;margin : 35; padding-top:0;">Dr. Terlet and Aziz, Berkeley, CA: Temped October 2012 – September 2013</li>
+            </apex:repeat>
+        </h3>
+
+        </p>
+    </table>
+    
+    <table>
+        <!--h3 style="margin-left:35px;margin-bottom:-15px;">
+           Applicable Skills
+            <li style="margin-left:35px;text-align: start;font-size:15px;margin : 35; padding-top:0;">Wating for Field Values</li>
+            
+        </h3-->
+    </table>
+    
+    <table >
+        <p>
+            <h3 style="margin-left:35px;margin-bottom:-15px;" > Education
+            <apex:repeat var="eduRec" value="{!rWrapper.eduList}">
+                    <li style="margin-left:35px;font-size:15px;margin : 35; padding-top:0;">{!eduRec.Course_Name__c}</li>  
+                    <li style="margin-left:35px;font-size:15px;margin : 35; padding-top:0;">{!eduRec.University_College_Name__c}</li>
+                    <li style="margin-left:35px;font-size:15px;margin : 55; padding-top:0;">Chabot College: Associates of Arts, Dental Hygiene 2011</li>
+                    <li style="margin-left:35px;font-size:15px;margin : 55; padding-top:0;">Merritt College: Associates of Science, Health Science 2008</li>
+            </apex:repeat>
+        </h3>
+        </p>
+    </table>
+     
+    <table>
+        <p>
+            <!--apex:repeat var="eduRec1" value="{!rWrapper.eduList}"-->
+                <h3 style="margin-left:35px;margin-bottom:-15px;" > Qualifications
+                    
+                 <!--   <li style="margin-left:35px;font-size:15px;margin : 55; padding-top:0;">{!eduRec1.Start_Year__c}</li>  
+                    <li style="margin-left:35px;font-size:15px;margin : 55; padding-top:0;">{!eduRec1.End_Year__c}</li>   -->
+                    <li style="margin-left:35px;font-size:15px;margin : 55; padding-top:0;">Subgingival chemotherapeutics and application of antimicrobial agents (Arestin)</li>
+                    <li style="margin-left:35px;font-size:15px;margin : 55; padding-top:0;">Radiograph both digital and traditional, Dentrix, EagleSoft, Datacon and Open Dental</li>
+                      <li style="margin-left:35px;font-size:15px;margin : 55; padding-top:0;">Administration of Local Anesthetic agents and Nitrous Oxide</li>
+                      <li style="margin-left:35px;font-size:15px;margin : 55; padding-top:0;">Oral cancer screening, diagnosing periodontal disease and soft tissue curettage</li>
+                      <li style="margin-left:35px;font-size:15px;margin : 55; padding-top:0;">Patient participation and involvement in oral hygiene care and instructions</li>
+                      <li style="margin-left:35px;font-size:15px;margin : 55; padding-top:0;">Individualized treatment planning with dentist</li>
+                </h3>
+            <!--/apex:repeat-->
+        </p>
+    </table>
+   
+       
+    <p style="margin-left:35px;margin-bottom:-15px; font-size:20px;" >
+        References Available upon request updated
+    </p> 
+ 
+
+    <table>
+        <apex:image url="{!$Resource.logo1}" style="margin-top:40px; margin-bottom:-10px; height:55px"  />
+       
+            <td>
+                <span >
+                <p style="font-size:12px; text-align: start;margin-left:155px; margin-top:-40px;">THIS RESUME is provided by Ondonte Dental Staffing to our Clients for the sole purpose of considering this individual
+                    for hire through Ondonte as a Permanent employee or for the a Temporary assignment. This Resume is <b>CONFIDENTAL</b>
+                    between the Client. Ondonte Dental Staffing and the individual, and it may not be otherwise distributed or used for any 
+                    other purpose. For information, please call Ondonte at 925-218-0649 or email us at sue@ondonte.com</p> </span>
+                <hr style="height:2px;border-width:0;color:gray;background-color:blue;margin-bottom:22px"/>
+            </td>
+       
+    </table>
+</apex:page>

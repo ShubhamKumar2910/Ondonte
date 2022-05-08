@@ -1,0 +1,609 @@
+<apex:page sidebar="false" showHeader="false" standardStylesheets="false" controller="CandidateDashboard_Controller" docType="html-5.0">
+
+    <head>
+        <!--c:Libraries /-->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-route.js">
+        </script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js">
+        </script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.29.2/sweetalert2.all.js"> 
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js">
+        </script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js">
+        </script>
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+        <style>
+            body {
+                overflow-x: hidden;
+                background-color: rgb(203 213 225) !important;
+            }
+
+            .loadingSection {
+                position: fixed;
+                height: 100%;
+                width: 100%;
+                z-index: 111;
+                display: flex;
+            }
+
+            .loadingBackground {
+                position: fixed;
+                height: 100%;
+                width: 100%;
+                background: #F6F6F6;
+                z-index: 11111;
+                opacity: 0.7;
+                top: 0px;
+                left: 0;
+                bottom: 0;
+                right: 0;
+                position: fixed;
+            }
+
+            .loading {
+                top: 50%;
+                left: 50%;
+                margin: -50px 0px 0px -50px;
+                z-index: 111111;
+                position: fixed;
+            }
+
+            .loader {
+                margin: auto;
+            }
+
+            #formFile::before {
+                content: "Pick file";
+                position: absolute;
+                z-index: 2;
+                display: block;
+                background-color: #eee;
+                width: 80px;
+            }
+
+            .dropzone-wrapper {
+                border: 2px dashed #91b0b3;
+                color: #92b0b3;
+                position: relative;
+                height: 150px;
+            }
+
+            .dropzone-desc {
+                position: absolute;
+                margin: 0 auto;
+                left: 0;
+                right: 0;
+                text-align: center;
+                width: 40%;
+                top: 50px;
+                font-size: 16px;
+            }
+
+            .dropzone,
+            .dropzone:focus {
+                position: absolute;
+                outline: none !important;
+                width: 100%;
+                height: 150px;
+                cursor: pointer;
+                opacity: 0;
+            }
+
+            .dropzone-wrapper:hover,
+            .dropzone-wrapper.dragover {
+                background: #ecf0f5;
+            }
+
+            .dropdown-menu[data-bs-popper] {
+                top: 100%;
+                left: none !important;
+                margin-top: 0.125rem;
+            }
+
+            .ondontefontColor {
+                color: #1e83ec;
+            }
+
+            .uploadBtn {
+                width: 100;
+                display: flex;
+            }
+
+            .uploadBtn>* {
+                width: 49%;
+            }
+
+            .fullScreen {
+                display: table;
+            }
+
+            .mobileCard {
+                display: none;
+            }
+
+            @media only screen and (max-width:991px) {
+                .fullScreen {
+                    display: none;
+                }
+                .mobileCard {
+                    display: block;
+                }
+            }
+        </style>
+    </head>
+    <script>   
+        var tabValues = [];
+        var workingDaysValues = [];
+        var userId;
+        var siteURL;
+        var candidateId;
+        var getAllEvents;
+        var eventsOnLoad;
+        var maxStringSize = 6000000;    //Maximum String size is 6,000,000 characters
+        var maxFileSize = 4350000;      //After Base64 Encoding, this is the max file size
+        var chunkSize = 950000;         //Maximum Javascript Remoting message size is 1,000,000 characters
+        var attachment;
+        var attachmentName;
+        var fileSize;
+        var positionIndex;
+        var doneUploading;
+        var blobData;
+        var userId = '{!$CurrentPage.parameters.hc}';
+        var candidateId = '{!candidateId}';
+        var app = angular.module('clientApp', []);
+        app.controller('clientCtrl', function ($scope) {
+
+            $scope.resumeUserDoc;
+            $scope.updateResume;
+            $scope.showSpinner = false;
+            $scope.isExpirable = false;
+            $scope.selUserDocId = function (fileId, doc, docRec) {
+               // debugger;
+                $scope.showUplaodUserDoc = true;
+                $scope.fileId = fileId;
+                $scope.selecteduDoc = doc;
+                $scope.userDocId = docRec.userDocument.Id;
+                $scope.isExpirable = docRec.userDocument.Document_Expiry_Applicable__c;
+            }
+
+            $scope.backFromUploadDoc = function () {
+                $scope.showUplaodUserDoc = false;
+                $scope.fileId = '';
+                $scope.selecteduDoc = '';
+            }
+            $scope.uploadFileToUserDoc = function (type) {
+
+               // debugger;
+                $scope.selecteduDoc;
+
+                if ($scope.fileId != undefined) {
+                    $scope.uploadFile(type, $scope.selecteduDoc, $scope.fileId);
+                } else {
+                    if (type == 'resume') {
+                        if ($scope.resumeUserDoc.contentVersion != undefined) {
+                            $scope.uploadFile(type, $scope.resumeUserDoc.userDocument.Id, $scope.resumeUserDoc.contentVersion.Id);
+                        } else {
+                            $scope.uploadFile(type, $scope.resumeUserDoc.userDocument.Id, "");
+                        }
+                    } else if (type == 'profilePic') {
+                        $scope.uploadFile(type, $scope.resumeUserDoc.Id, "");
+                    }
+                    else {
+                        $scope.uploadFile(type, $scope.selecteduDoc, "");
+                    }
+                }
+                $("#fileUploadModel").modal('hide');
+            }
+
+            $scope.getContactUserDoc = function () {
+                //debugger;
+                $scope.contactUserDocument = [];
+                $scope.showSpinner = true;
+                CandidateDashboard_Controller.getContactUserDoc(candidateId, function (result, event) {
+
+                    if (event.status && result != null) {
+                       // debugger;
+                        var counter = 0;
+                        for (var i = 0; i < result.length; i++) {
+                            if (result[i].userDocument.Name == "Profile Picture") {
+                                $scope.profilePicUD = result[i];
+                            } else if (result[i].userDocument.Name == "Resume") {
+                                $scope.resumeUserDoc = result[i];
+                                if ($scope.resumeUserDoc.contentVersion != null) {
+                                    $scope.updateResume = false;
+                                }
+                            } else {
+                                $scope.contactUserDocument.push(result[i]);
+                                if (result[i].userDocument.Status__c == "Uploaded") {
+                                    counter++;
+                                }
+                            }
+                        }
+                        if (counter == $scope.contactUserDocument.length) {
+                            window.location.replace("https://ondonte--dev.my.salesforce.com/apex/CP_LoginPage");
+                        }
+                        $scope.$apply();
+
+                    }
+                    else {
+
+                    }
+                }, { escape: false })
+                $scope.showSpinner = false;
+            }
+            $scope.getContactUserDoc();
+            $scope.getUserDoc = function () {
+                //debugger;
+                $scope.showSpinner = true;
+                CandidateDashboard_Controller.getAllUserDoc(candidateId, function (result, event) {
+
+                    if (event.status && result != null) {
+                       // debugger;
+                        for (var i = 0; i < result.length; i++) {
+                            if (result[i].userDocument.Name == "Profile Picture") {
+                                $scope.profilePicUD = result[i];
+                            } else if (result[i].userDocument.Name == "Resume") {
+                                $scope.resumeUserDoc = result[i];
+                                if ($scope.resumeUserDoc.contentVersion != null) {
+                                    $scope.updateResume = false;
+                                }
+                            } else {
+                                $scope.contactUserDocument.push(result[i]);
+                            }
+                        }
+                        $scope.$apply();
+
+                    }
+                    else {
+
+                    }
+                }, { escape: false })
+                $scope.showSpinner = false;
+            }
+
+            $scope.uploadFile = function (type, userDocId, fileId) {
+               // debugger;
+                $scope.showSpinner = true;
+                var file;
+                if (type == 'profilePic') {
+                    file = document.getElementById('profilePic').files[0];
+                } else if (type == 'resume') {
+                    file = document.getElementById('resumeAttachmentFile').files[0];
+                }
+                else {
+                    file = document.getElementById('attachmentFiles').files[0];
+                }
+
+                console.log(file);
+                if (file != undefined) {
+                    if (file.size <= maxFileSize) {
+
+                        attachmentName = file.name;
+                        const myArr = attachmentName.split(".");
+                        if (myArr[1] != "pdf" && type != 'profilePic') {
+                            alert("Please upload in PDF format only");
+                            return;
+                        }
+                        var fileReader = new FileReader();
+                        fileReader.onloadend = function (e) {
+                            attachment = window.btoa(this.result);  //Base 64 encode the file before sending it
+                            positionIndex = 0;
+                            fileSize = attachment.length;
+                            $scope.showSpinner = false;
+                            console.log("Total Attachment Length: " + fileSize);
+                            doneUploading = false;
+                            if (fileSize < maxStringSize) {
+                                $scope.uploadAttachment(type, fileId, userDocId);
+                            } else {
+                                alert("Base 64 Encoded file is too large.  Maximum size is " + maxStringSize + " your file is " + fileSize + ".");
+                            }
+
+                        }
+                        fileReader.onerror = function (e) {
+                            alert("There was an error reading the file.  Please try again.");
+                        }
+                        fileReader.onabort = function (e) {
+                            alert("There was an error reading the file.  Please try again.");
+                        }
+
+                        fileReader.readAsBinaryString(file);  //Read the body of the file
+
+                    } else {
+                        alert("File must be under 4.3 MB in size.  Your file is too large.  Please try again.");
+                        $scope.showSpinner = false;
+                    }
+                } else {
+                    alert("You must choose a file before trying to upload it");
+                    $scope.showSpinner = false;
+                }
+            }
+
+            $scope.uploadAttachment = function (type, fileId, userDocId) {
+                var attachmentBody = "";
+                if (fileId == undefined) {
+                    fileId = " ";
+                }
+                if (fileSize <= positionIndex + chunkSize) {
+                    attachmentBody = attachment.substring(positionIndex);
+                    doneUploading = true;
+                } else {
+                    attachmentBody = attachment.substring(positionIndex, positionIndex + chunkSize);
+                }
+                console.log("Uploading " + attachmentBody.length + " chars of " + fileSize);
+                CandidateDashboard_Controller.doUploadAttachment(
+                    type, attachmentBody, attachmentName, candidateId, userDocId, fileId,
+                    function (result, event) {
+                        console.log(result);
+                        if (event.type === 'exception') {
+                            console.log("exception");
+                            console.log(event);
+                        } else if (event.status) {
+                            if (doneUploading == true) {
+                               // debugger;
+                                if ($scope.isExpirable)
+                                    $scope.updateDocExpiryDate();
+                                if (type == 'profilePic') {
+                                    $scope.profilePicId = result;
+                                    $scope.profilePic = true;
+                                    Swal.fire(
+                                        '',
+                                        'Uploaded Successfully!',
+                                        'success'
+                                    )
+
+                                    $scope.$apply();
+                                } else if (type == 'resume') {
+
+                                    $scope.parseResume(result);
+                                    $scope.updateResume = false;
+                                } else {
+                                    Swal.fire(
+                                        '',
+                                        'Uploaded Successfully!',
+                                        'success'
+                                    )
+                                    $("#fileUploadModel").modal('hide');
+                                    $("#resumeUploadModel").modal('hide');
+                                    $scope.showUplaodUserDoc = false;
+
+                                    $scope.getContactUserDoc();
+                                }
+                                // $scope.getCandidateDetails();
+
+                            } else {
+                                positionIndex += chunkSize;
+                                $scope.uploadAttachment(result, '');
+                            }
+                        } else {
+                            console.log(event.message);
+                        }
+                    },
+
+
+                    { buffer: true, escape: true, timeout: 120000 }
+                );
+            }
+
+            $scope.getResumeDetail = function () {
+
+            }
+            $scope.viewDocument = function (docId) {
+
+                window.location.replace('https://ondonte--dev--c.documentforce.com/sfc/servlet.shepherd/version/download/' + docId + '?asPdf=false&operationContext=CHATTER', '_blank', 'location=yes,height=570,width=520,scrollbars=yes,status=yes');
+            }
+
+            $scope.updateDocExpiryDate = function () {
+                $scope.docExpiryDate;
+                //debugger;
+                var month = $scope.docExpiryDate.getMonth() + 1;
+                var day = $scope.docExpiryDate.getDate();
+                var year = $scope.docExpiryDate.getFullYear();
+
+                CandidateDashboard_Controller.updateDocExpirydate(day, month, year, $scope.userDocId, function (result, event) {
+
+                    //$('#calendar-card').hide();
+                    if (event.status) {
+                        $scope.isExpirable = false;
+                    } else {
+                        $scope.isExpirable = false;
+                    }
+                }, { escape: false });
+            }
+            $(function () {
+                var dtToday = new Date();
+
+                var month = dtToday.getMonth() + 1;
+                var day = dtToday.getDate();
+                var year = dtToday.getFullYear();
+                if (month < 10)
+                    month = '0' + month.toString();
+                if (day < 10)
+                    day = '0' + day.toString();
+
+                var minDate = year + '-' + month + '-' + day;
+
+                $('#txtDate').attr('min', minDate);
+            });
+        });
+    </script>
+
+    <body ng-app="clientApp" ng-controller="clientCtrl" style="background:#F5F5F5">
+        <div class="loadingSection" id="spinner" ng-if="showSpinner">
+
+            <div class="loadingBackground"></div>
+
+            <div class="loader">
+
+                <apex:image url="{!$Resource.Loading}" styleClass="loading" />
+
+            </div>
+
+        </div>
+
+        <nav class="navbar navbar-expand-lg navbar-light" style="background-color:rgba(63,63,70,1) !important;font-size: 14px;">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">
+                    <apex:image url="{!$Resource.logo}" styleClass="logo" width="30%" height="30%" />
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDarkDropdown" aria-controls="navbarNavDarkDropdown"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNavDarkDropdown">
+
+                    <div class="navbar-nav ms-auto me-5">
+                        <li class="nav-item dropdown">
+
+
+                        </li>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="row mt-2">
+            <div class="col-md-2">
+
+            </div>
+            <div class="col-md-8">
+                <div class="card" style="margin-bottom: 25px;margin-top: 25px;">
+                    <div class="card-header">
+                        <div class="d-flex justify-content-center">
+                            <h2>
+                                <b class="ondontefontColor">Upload Documents</b>
+                            </h2>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <table class="table fullScreen" ng-if="contactUserDocument.length > 0">
+                            <thead>
+                                <tr>
+                                    <th scope="col" class="ondontefontColor">#</th>
+                                    <th scope="col" class="ondontefontColor">Document Name</th>
+                                    <th scope="col" class="ondontefontColor">Description</th>
+                                    <th scope="col" class="ondontefontColor">Document Status</th>
+                                    <th scope="col" class="ondontefontColor d-flex justify-content-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="doc in contactUserDocument">
+                                    <th scope="row">{{$index+1}}</th>
+                                    <td>{{doc.userDocument.Name}}</td>
+                                    <td>{{doc.userDocument.Description__c}}</td>
+                                    <td>{{doc.userDocument.Status__c}}</td>
+                                    <td ng-show="doc.userDocument.Status__c == 'Uploaded' || doc.userDocument.Status__c == 'Approved'" class="uploadBtn justify-content-between">
+                                        <button type="button" class="btn btn-primary" ng-click="viewDocument(doc.contentVersion.Id)" style="background: #4299e1;">
+                                            <i class="fa fa-eye" />
+                                        </button>
+                                        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#fileUploadModel" style="background: #4299e1;"
+                                            ng-click="selUserDocId(doc.userDocument.Id,doc.contentVersion.Id,doc)">
+                                            <i class="fa fa-edit" />
+                                        </button>
+                                    </td>
+                                    <td ng-show="doc.userDocument.Status__c == 'Rejected' || doc.userDocument.Status__c == 'Pending'">
+                                        <button type="button" class="btn btn-secondary col-sm-12" data-bs-toggle="modal" data-bs-target="#fileUploadModel" style="background: #4299e1;"
+                                            ng-click="selUserDocId(doc.userDocument.Id,'',doc)">
+                                            <i class="fa fa-upload" />
+                                        </button>
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                        <div class="card mobileCard mb-3" ng-repeat="doc in contactUserDocument">
+                            <div class="card-header">
+                                <div class="card-title ">
+                                    <b class="ondontefontColor">Document Name :</b> <span>{{doc.userDocument.Name}}</span></div>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text ">
+                                    <b class="ondontefontColor">Description : </b><span>{{doc.userDocument.Description__c}}</span></p>
+                                <p class="card-text ">
+                                    <b class="ondontefontColor">Status : </b><span>{{doc.userDocument.Status__c}}</span></p>
+                               
+                            </div>
+                            <div class="card-footer d-flex col-sm-12 ">
+                                <div ng-show="doc.userDocument.Status__c == 'Uploaded' || doc.userDocument.Status__c == 'Approved'"  class="col-sm-12">
+                                    <button type="button" class="btn btn-primary col-sm-6"  style="background: #4299e1;max-width: 49%;" ng-click="viewDocument(doc.contentVersion.Id)" href="">
+                                        <i class="fa fa-eye"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-primary col-sm-6" style="background: #4299e1;max-width: 49%;" data-bs-toggle="modal" data-bs-target="#fileUploadModel" ng-click="selUserDocId(doc.userDocument.Id,doc.contentVersion.Id)">
+                                        <i class="fa fa-edit"></i>
+                                    </button>
+                                </div>
+                                <div ng-show="doc.userDocument.Status__c == 'Rejected' || doc.userDocument.Status__c == 'Pending'" class="col-sm-12">
+                                    <button type="button" class="btn btn-primary col-sm-12" style="background: #4299e1;" data-bs-toggle="modal" data-bs-target="#fileUploadModel" ng-click="selUserDocId(doc.userDocument.Id,'')">
+                                        <i class="fa fa-upload"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--<div class="card-footer">
+                        <div class="d-flex justify-content-center">
+                            <br/>
+                        </div>
+                    </div>-->
+                </div>
+            </div>
+
+        </div>
+        <!-- Modal -->
+        <div class="modal fade" id="fileUploadModel" tabindex="-1" aria-labelledby="fileUploadModel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Uplaod Document</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-1">
+
+                            </div>
+                            <div class="col-10">
+                                <div class="row" style="margin-bottom:2%;">
+                                    <div class="col-md-6">
+                                        Expirable Document?:
+                                        <input type="checkbox" ng-model="isExpirable" />
+
+                                    </div>
+                                    <div class="col-md-6">
+                                        <input type="date" id="txtDate" ng-disabled="!isExpirable" ng-model="docExpiryDate" />
+                                    </div>
+                                </div>
+                                <div class="dropzone-wrapper">
+                                    <div class="dropzone-desc">
+                                        <i class="glyphicon glyphicon-download-alt"></i>
+                                        <p>Choose an PDF file or drag it here.</p>
+                                    </div>
+                                    <input type="file" name="img_logo" class="dropzone" accept="application/pdf" id="attachmentFiles" />
+                                </div>
+                                <div id="file-upload-filename"></div>
+                            </div>
+                            <div class="col-1">
+
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-warning" ng-Click="uploadFileToUserDoc('attachment')" style="background: #4299e1;">Uplaod</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </body>
+</apex:page>

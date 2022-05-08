@@ -1,0 +1,52 @@
+<template>
+    <template if:true={isFormOpen}>
+        <lightning-quick-action-panel header="Add Preferred Location">
+        
+            <label class="slds-form-element__label" for="select-01">Select County</label>
+            <div class="slds-form-element__control">
+                <div class="slds-select_container">
+                    <select class="slds-select" id="select-01" onchange={onValueSelection}>
+                        <!--iterate all picklist values from accounts list using for:each loop-->
+                        <template for:each={accounts.data} for:item="acc">
+                            <option key={acc.Id} value={acc.Id}>
+                                {acc.Name}
+                            </option>
+                        </template>
+                    </select>
+                </div>
+            </div>
+            <div style="margin-top:10px">
+                <lightning-dual-listbox name="languages" label="Select City" source-label="Available" selected-label="Selected"
+                    field-level-help="Select your preferred city" options={lstOptions} onchange={handleChange}>
+                </lightning-dual-listbox>
+                <br />
+                <template if:true={lstSelected}>
+                    <template for:each={lstSelected} for:item="sel">
+                        <p key={sel}>{sel.label}</p>
+                    </template>
+                </template>
+            </div>
+        
+        </lightning-quick-action-panel>
+    </template>
+
+    <template if:false={isFormOpen}>
+        <div class="slds-p-around_small">
+            <c-candidate-availablity record-id={recordId}></c-candidate-availablity>
+        </div>
+    </template>
+
+    <div class="slds-modal__footer">
+        <template if:true={isFormOpen}>
+            <lightning-button variant="brand" label="Save" title="Primary action" onclick={syncBtn}
+                class="slds-m-left_x-small"></lightning-button>
+        </template>
+        <template if:false={isFormOpen}>
+            <lightning-button variant="brand" label="Add Location" title="Primary action" onclick={openFormHandler}
+                class="slds-m-left_x-small"></lightning-button>
+        </template>
+       
+        <button class="slds-button slds-button_neutral" aria-label="Cancel and close" onclick={closeAction}
+            style="margin-left: 5px;">Cancel</button>
+    </div>
+</template>

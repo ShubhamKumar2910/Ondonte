@@ -1,0 +1,867 @@
+<apex:page sidebar="false" showHeader="false" standardStylesheets="false">
+    <html>
+
+    <head>
+        <STYLE>
+            body {
+                overflow-x: hidden;
+            }
+
+            .loadingBackground {
+                position: fixed;
+                height: 100%;
+                width: 100%;
+                background: #F6F6F6;
+                z-index: 11111;
+                opacity: 0.7;
+                top: 0px;
+                left: 0;
+                bottom: 0;
+                right: 0;
+            }
+
+            .loading {
+                top: 50%;
+                left: 50%;
+                margin: -50px 0px 0px -50px;
+                z-index: 111111;
+                position: fixed;
+            }
+
+            .multiselect-parent {
+                width: 100%;
+            }
+
+            .dropdown-toggle {
+                width: 100;
+            }
+
+            .dropdown-menu-form {
+                padding: 4%;
+            }
+
+            .dropdown-menu-form {
+                width: -webkit-fill-available;
+            }
+
+            .fc-time {
+                display: none !important;
+            }
+
+            .nav-pills .nav-link.active {
+                background-color: rgba(63, 63, 70, 1) !important;
+
+            }
+
+            .nav-pills>.nav-link {
+                border-radius: unset;
+                color: black;
+                /*background-color: rgba(63,63,70,1) !important;*/
+            }
+
+            @media only screen and (min-width:700px) {
+                .fullscreen {
+                    display: table;
+                }
+                .mobileCard {
+                    display: none;
+                }
+            }
+
+            @media only screen and (max-width:699px) {
+                .padding {
+                    padding-right: unset;
+                }
+                .padding>.col-md-8 {
+                    padding: unset;
+                }
+                .mobileCard {
+                    display: block;
+                }
+                .mobileCard.padding {
+                    padding: 2%;
+                }
+                .fullscreen {
+                    display: none;
+                }
+                .modal-body {
+                    padding: unset;
+                }
+                .mobileDocs{
+                    max-height: 700px;
+                    overflow-y:auto;
+                }
+                
+            }
+
+            .mobileDividor {
+                display: none;
+            }
+            .mobRow{
+                padding-right: unset;
+            }
+            @media only screen and (max-width:900px) {
+                .flexibleMainTabs {
+
+                    flex-direction: row!important;
+                    justify-content: center;
+                    justify-content: space-around;
+                }
+                .colsFlex {
+                    flex-direction: row !important;
+                    justify-content: space-evenly;
+                }
+                .mobileDividor {
+                    display: block;
+                }
+            }
+
+            .card.card-header.footer {
+                flex-direction: unset;
+            }
+
+            @media only screen and (max-width:991px) {
+                .row.padding>div.col-md-2 {
+                    width: 10%;
+                }
+                .row.padding>div.col-md-8 {
+                    width: 80%;
+                }
+
+            }
+
+            @media only screen and (max-width:500px) {
+                .card.card-header.footer {
+                    flex-direction: column;
+                }
+                .navbar-brand {
+                    margin: unset;
+                }
+                .navbar>.container-fluid {
+                    display: block;
+                }
+                .navbar-toggler {
+                    float: right;
+                }
+            }
+
+            .dropdown-item:hover {
+                background: #3f3f46;
+            }
+
+            button.dropdown-toggle.ng-binding.btn.btn-default {
+                background: #fff;
+                border: 1px solid #ced4da;
+            }
+
+            .editSave {
+                width: 50%;
+            }
+
+            .fullEyes {
+                display: flex;
+                justify-content: space-between;
+            }
+
+            .fullEyes>* {
+                width: 49%;
+            }
+
+            .upload>* {
+                width: 100%;
+            }
+
+            .uploadDocBtn {
+                flex-wrap: unset;
+            }
+
+            .width_2>* {
+                width: 50%;
+            }
+
+            .card-bodypadding {
+                padding-bottom: 0.3rem;
+            }
+            @media only screen and (max-width:900px){
+                .tab-content{
+                    border:unset !important;
+                }
+            }
+            @media only screen and (max-width:600px){
+                .width_2{
+                    display: block !important;
+                }
+                .width_2>*{
+                    width: 100% !important;
+                }
+            }
+            @media only screen and (max-width:700px){
+                .mobcol{
+                    width: 5% !important;
+                }
+                .contentCol{
+                    width: 90% !important;
+                }
+               
+            }
+            @media screen and (max-width:767px){
+                .mt-mob{
+                    margin-top: 1rem!important;
+                }
+                /*.mobmargin{
+                    margin-right: calc(-.8 * var(--bs-gutter-x));
+                    margin-left: calc(-.5 * var(--bs-gutter-x));
+                }*/
+            }
+            .borders{
+                border-top:2px solid;
+                border-bottom: 2px solid;
+            }
+            .tbodyBorder{
+                border: unset !important;
+            }
+            .scrollable-content{
+                max-height:700px;
+                overflow-y:scroll;
+            }
+        </STYLE>
+    </head>
+
+    <body ng-controller="cp_editprofile_ctrl">
+
+        <div class="row mobmargin" ng-init="getAllCounties()">
+            <div class="loadingSection" ng-show="showSpinnereditProf">
+                <div class="loadingBackground"></div>
+                <div>
+                    <apex:image url="{!$Resource.Loading}" styleClass="loading" />
+                </div>
+            </div>
+            <div class="row padding">
+                <div class="col-md-2 mobcol"> </div>
+                <div class="col-md-8 contentCol mt-2 mb-3">
+                    <div class="card">
+                        <div class="card-body" ng-hide="showResumeParser" style="padding: 0;">
+                            <div class="card-header d-flex justify-content-center">
+                                <h5 class="modal-title" id="exampleModalLabel">Profile</h5>
+                            </div>
+                            <div>
+
+
+                                <div class="d-flex align-items-start flexibleTabs flexibleMainTabs">
+                                    <div class="nav flex-column nav-pills colsFlex" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                                        <button class="nav-link active" id="v-pills-home-tab" data-bs-toggle="pill" data-bs-target="#v-pills-home" type="button"
+                                            role="tab" aria-controls="v-pills-home" aria-selected="true">Profile</button>
+                                        <button class="nav-link" id="v-pills-profile-tab" data-bs-toggle="pill" data-bs-target="#v-pills-profile" type="button" role="tab"
+                                            aria-controls="v-pills-profile" aria-selected="false">Document</button>
+                                        <button class="nav-link" id="v-pills-messages-tab" data-bs-toggle="pill" data-bs-target="#v-pills-messages" type="button"
+                                            role="tab" aria-controls="v-pills-messages" aria-selected="false" ng-click="getExperienceDetail()">Work Experience</button>
+                                        <button class="nav-link" id="v-pills-settings-tab" data-bs-toggle="pill" data-bs-target="#v-pills-settings" type="button"
+                                            role="tab" aria-controls="v-pills-settings" aria-selected="false">Preferred Work Location</button>
+                                        <button class="nav-link" id="v-pills-resume-tab" data-bs-toggle="pill" data-bs-target="#v-pills-resume" type="button" role="tab"
+                                            aria-controls="v-pills-resume" aria-selected="false">Resume</button>
+                                    </div>
+                                    <hr class="mobileDividor" />
+                                    <div class="tab-content" id="v-pills-tabContent" style="border-left: ridge;width: -webkit-fill-available;">
+                                        <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">
+                                            <div class="modal-body">
+                                                <div class="container rounded bg-white">
+
+                                                    <div class="row">
+                                                        <div class="d-flex flex-column align-items-center text-center">
+                                                            <div ng-show="profilePic">
+                                                                <img class="rounded-circle mt-5 img-circle" ng-show="profilePicId == undefined" src="https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png"
+                                                                    width="80" height="80" alt="avatar" />
+                                                                <img class="rounded-circle mt-5 mr-2 profile-pic" ng-hide="profilePicId == undefined" src="https://ondonte--dev--c.documentforce.com/sfc/servlet.shepherd/version/download/{{profilePicId}}"
+                                                                    width="100" height="100" alt="avatar" />
+                                                                <button class="upload-profile-pencil" ng-click="changeProfilePic()" style="background:unset;">
+                                                                    <i class='fa fa-pencil' style='font-size:20px;'></i>
+                                                                </button>
+
+
+
+                                                            </div>
+                                                            <div ng-hide="profilePic">
+                                                                <input class="form-control" type="file" id="profilePic" />
+                                                                <button style="margin-top:3%; width: 100%;" type="button" class="btn btn-secondary col-sm-6" ng-click="uploadProfilePic()">Upload</button>
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="p-3 py-5">
+                                                            <div class="d-flex justify-content-between align-items-center mb-3">
+
+                                                                <h6 class="text-right ondontefontColor">Edit Profile</h6>
+                                                            </div>
+                                                            <div class="row mt-2">
+                                                                <div class="col-md-6">
+                                                                    <input type="text" class="form-control" placeholder="First Name" ng-model="userDetails.FirstName" ng-disabled="editProfile"
+                                                                    />
+                                                                </div>
+                                                                <div class="col-md-6 mt-mob">
+                                                                    <input type="text" class="form-control" placeholder="Last Name" ng-model="userDetails.LastName" ng-disabled="editProfile"
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                            <div class="row mt-3">
+                                                                <div class="col-md-6">
+                                                                    <input type="text" class="form-control" placeholder="Email" ng-model="userDetails.Email" ng-disabled="true" />
+                                                                </div>
+                                                                <div class="col-md-6 mt-mob">
+                                                                    <input type="text" class="form-control" placeholder="Phone" ng-model="userDetails.Phone" ng-disabled="editProfile" />
+                                                                </div>
+                                                            </div>
+                                                            <!--div class="row mt-3">
+<div class="col-md-6">
+<input type="text" class="form-control" placeholder="Role" ng-model="userDetails.Contact_Role__c" ng-disabled="editProfile"
+/>
+</div>
+<div class="col-md-6">
+<input type="text" class="form-control" placeholder="street" ng-model="userDetails.MailingStreet" ng-disabled="editProfile"
+/>
+</div>
+</div>
+<div class="row mt-3">
+<div class="col-md-6">
+<input type="text" class="form-control" placeholder="City" ng-model="userDetails.MailingCity" ng-disabled="editProfile" />
+</div>
+<div class="col-md-6">
+<input type="text" class="form-control" value="USA" placeholder="Country" ng-model="userDetails.MailingCountry" ng-disabled="editProfile"
+/>
+
+</div>
+</div-->
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                            <div class="card footer col-sm-12" style="background-color: rgba(0,0,0,.03);">
+                                                <button type="button" class="btn btn-primary   m-2 editSave col-sm-6" ng-show="editProfile" ng-click="editProfileFunc()">Edit</button>
+                                                <button type="button" class="btn btn-primary m-2  editSave col-sm-6" ng-hide="editProfile" ng-click="updateUserDetails()">Save</button>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">
+                                            <div class="modal-body">
+
+                                                <div class="container rounded bg-white ">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <div class="d-flex justify-content-center" style="padding:2%;">
+                                                                <h3>
+                                                                    <b>Documents</b>
+                                                                </h3>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-12 border-right mobileDocs" ng-hide="uploadUserDoc">
+                                                            <table class="table fullscreen" ng-if="contactUserDocument.length > 0">
+                                                                <thead class="borders" style="">
+                                                                    <tr>
+                                                                        <th scope="col" class="ondontefontColor">#</th>
+                                                                        <th scope="col" class="ondontefontColor">Document Name</th>
+                                                                        <th scope="col" class="ondontefontColor">Document Status</th>
+                                                                        <th scope="col" class="ondontefontColor" style="justify-content:center;display: flex;border:unset;">Action</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody class="tbodyBorder">
+                                                                    <tr ng-repeat="doc in contactUserDocument">
+                                                                        <th scope="row">{{$index+1}}</th>
+                                                                        <td>{{doc.userDocument.Name}}</td>
+                                                                        <td>{{doc.userDocument.Status__c}}</td>
+                                                                        <td ng-show="doc.userDocument.Status__c == 'Uploaded' || doc.userDocument.Status__c == 'Approved'" class="fullEyes">
+                                                                            <button type="button" class="btn btn-primary" ng-click="viewDocument(doc.contentVersion.Id)" href="">
+                                                                                <i class="fa fa-eye"></i>
+                                                                            </button>
+                                                                            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#fileUploadModel" ng-click="selUserDocId(doc.userDocument.Id,doc.contentVersion.Id)">
+                                                                                <i class="fa fa-edit"></i>
+                                                                            </button>
+                                                                        </td>
+                                                                        <td ng-show="doc.userDocument.Status__c == 'Rejected' || doc.userDocument.Status__c == 'Pending'" class="upload">
+                                                                            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#fileUploadModel" ng-click="selUserDocId(doc.userDocument.Id,'')">
+                                                                                <i class="fa fa-upload"></i>
+                                                                            </button>
+                                                                        </td>
+                                                                    </tr>
+
+                                                                </tbody>
+                                                            </table>
+
+                                                            <div class="card mobileCard mb-3" ng-repeat="doc in contactUserDocument">
+                                                                <div class="card-header">
+                                                                    <div class="card-title m-0">
+                                                                        <b class="ondontefontColor">Document Name :</b> <span>{{doc.userDocument.Name}}</span></div>
+                                                                </div>
+                                                                <div class="card-body">
+                                                                    <p class="card-text ">
+                                                                        <b class="ondontefontColor">Description : </b><span>{{doc.userDocument.Description__c}}</span></p>
+                                                                    <p class="card-text ">
+                                                                        <b class="ondontefontColor">Status : </b><span>{{doc.userDocument.Status__c}}</span></p>
+                                                                   
+                                                                </div>
+                                                                <div class="card-footer d-flex col-sm-12 " style="width: 100;%">
+                                                                    <div ng-show="doc.userDocument.Status__c == 'Uploaded' || doc.userDocument.Status__c == 'Approved'"  class="col-md-12"  style="width: 100%;">
+                                                                        <button type="button" class="btn btn-primary col-sm-6"  style="background: #4299e1;max-width: 49%;width:50%;" ng-click="viewDocument(doc.contentVersion.Id)" href="">
+                                                                            <i class="fa fa-eye"></i>
+                                                                        </button>
+                                                                        <button type="button" class="btn btn-primary col-sm-6" style="background: #4299e1;max-width: 49%;width: 50%;" data-bs-toggle="modal" data-bs-target="#fileUploadModel" ng-click="selUserDocId(doc.userDocument.Id,doc.contentVersion.Id)">
+                                                                            <i class="fa fa-edit"></i>
+                                                                        </button>
+                                                                    </div>
+                                                                    <div ng-show="doc.userDocument.Status__c == 'Rejected' || doc.userDocument.Status__c == 'Pending'" class="col-sm-12" style="width:100%;">
+                                                                        <button type="button" class="btn btn-primary col-sm-12" style="background: #4299e1;width:100%;" data-bs-toggle="modal" data-bs-target="#fileUploadModel" ng-click="selUserDocId(doc.userDocument.Id,'')">
+                                                                            <i class="fa fa-upload"></i>
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <!-- Modal -->
+                                                            <div class="modal fade" id="fileUploadModel" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="forgotPasswordPopup"
+                                                                aria-hidden="true">
+                                                                <div class="modal-dialog-centered modal-dialog">
+                                                                    <div class="modal-content">
+                                                                        <div class="modal-header">
+                                                                            <h5 class="modal-title" id="fileUploadModel">Upload Document</h5>
+                                                                            <button type="button" class="btn-close " data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                        </div>
+                                                                        <div class="modal-body">
+                                                                            <div class="row">
+                                                                                <div class="col-1">
+
+                                                                                </div>
+                                                                                <div class="col-10">
+                                                                                    <div class="dropzone-wrapper">
+                                                                                        <div class="dropzone-desc">
+                                                                                            <i class="glyphicon glyphicon-download-alt"></i>
+                                                                                            <p>Choose an PDF file or drag it
+                                                                                                here.</p>
+                                                                                        </div>
+                                                                                        <input type="file" name="img_logo" class="dropzone" accept="application/pdf" id="attachmentFiles" />
+                                                                                    </div>
+                                                                                    <div id="file-upload-filename"></div>
+                                                                                </div>
+                                                                                <div class="col-1">
+
+                                                                                </div>
+                                                                            </div>
+
+                                                                        </div>
+                                                                        <div class="modal-footer popupFooterButton uploadDocBtn">
+                                                                            <button type="button" class="btn btn-secondary cancelBtn" data-bs-dismiss="modal">Close</button>
+                                                                            <button type="button" class="btn btn-warning" ng-Click="uploadFileToUserDoc('attachment')">upload</button>
+                                                                        </div>
+
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+
+
+
+
+
+
+
+
+                                                        <div class="col-md-12 border-right" ng-show="uploadUserDoc">
+                                                            <div class="mt-2">
+                                                                <b>Upload your Resume</b>
+                                                                <div class="dropzone-wrapper">
+                                                                    <div class="dropzone-desc">
+                                                                        <i class="glyphicon glyphicon-download-alt"></i>
+                                                                        <p>Choose an PDF file or drag it here.</p>
+                                                                    </div>
+                                                                    <input type="file" name="img_logo" class="dropzone" accept="application/pdf" id="attachmentFiles" />
+                                                                </div>
+                                                                <button type="button" class="btn btn-secondary mt-1" ng-click="uploadFileToUserDoc('resume')">upload</button>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane fade" id="v-pills-messages" role="tabpanel" aria-labelledby="v-pills-messages-tab">
+                                            <div class="card footer card-header justify-content-end" style="background-color: #fff;" ng-hide="showAddExperience">
+                                                <button type="button" class="btn btn-primary " ng-click="addUserExperience()">Add Experience</button>
+
+                                            </div>
+                                            <div class="modal-body ">
+                                                <div class="container p-3 rounded bg-white p-0">
+                                                    <div class="row g-3">
+                                                        <div class="col-md-12 border-right " ng-class="{'scrollable-content':!showAddExperience}" >
+                                                            <form class="row g-3" ng-hide="showAddExperience">
+                                                                <div ng-repeat="exp in prevExprience">
+                                                                    <div class="card mb-2">
+                                                                        <div class="card-header">
+                                                                            <p class="card-title m-0">
+                                                                                <b class="ondontefontColor">Employer Name : </b>
+                                                                                <span>{{exp.Employer_Name__c}}</span>
+                                                                            </p>
+                                                                        </div>
+                                                                        <div class="card-body card-bodypadding">
+
+                                                                            <div class="d-flex justify-content-between width_2">
+
+                                                                                <p class="card-title ">
+                                                                                    <b class="ondontefontColor">Designation : </b>
+                                                                                    <span>{{exp.Name}}</span>
+                                                                                </p>
+
+                                                                                <p class="card-title">
+                                                                                    <b class="ondontefontColor">Duration :</b>
+                                                                                    <span> {{exp.Duration__c}}</span>
+                                                                                </p>
+
+                                                                            </div>
+                                                                            <div class="d-flex justify-content-between width_2">
+                                                                                <p>
+                                                                                    <b class="ondontefontColor">Start Date:</b>
+                                                                                    <span>{{exp.Start_Date__c | date:'MM/dd/yyyy'}}</span>
+                                                                                </p>
+                                                                                <p>
+                                                                                    <b class="ondontefontColor"> End Date:</b>
+                                                                                    <span>{{exp.End_date__c| date:'MM/dd/yyyy'}}</span>
+                                                                                </p>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div>
+                                                                </div>
+                                                            </form>
+
+
+
+                                                            <div ng-show="showAddExperience">
+                                                                <div class="row g-3">
+                                                                    <div class="row">
+                                                                        <div class="col-md-6">
+                                                                            <label for="inputEmail4" class="form-label m-0 mt-2">Designation</label>
+                                                                            <input type="text" class="form-control" id="inputEmail4" ng-model="workExp.Name" />
+                                                                        </div>
+                                                                        <div class="col-md-6">
+                                                                            <label for="inputEmail4" class="form-label m-0 mt-2">Employer Name</label>
+                                                                            <input type="text" class="form-control" id="inputEmail4" ng-model="workExp.Employer_Name__c" />
+                                                                        </div>
+
+
+                                                                        <div class="col-md-6">
+                                                                            <label for="inputCity" class="form-label m-0 mt-2">Start Date</label>
+                                                                            <input type="date" class="form-control" id="inputCity" ng-model="expStartDate" />
+                                                                        </div>
+
+                                                                        <div class="col-md-6">
+                                                                            <label for="inputZip" class="form-label m-0 mt-2" ng-model="">End Date</label>
+                                                                            <input type="date" class="form-control" id="inputZip" ng-model="expEndDate" />
+                                                                        </div>
+                                                                        <div class="col-md-6">
+                                                                            <label for="inputPassword4" class="form-label m-0 mt-2">Duration</label>
+                                                                            <input type="number" class="form-control" id="inputPassword4" ng-model="workExp.Duration__c" />
+                                                                        </div>
+                                                                        <div class="col-12 d-flex justify-content-center mt-3">
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                            <!--<div class="card footer" style="background-color: rgba(0,0,0,.03);" ng-hide="showAddExperience">
+                                                <button type="button" class="btn btn-primary m-2" ng-click="addUserExperience()">Add Experience</button>
+                                                
+                                            </div>-->
+                                            <div class="card footer" style="background-color: rgba(0,0,0,.03);" ng-show="showAddExperience">
+                                                <button type="submit" class="btn btn-primary m-2" style="width: 75%;" ng-click="saveWorkExp()">Save</button>
+
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane fade" id="v-pills-settings" role="tabpanel" aria-labelledby="v-pills-settings-tab" style="width: 100%">
+                                            <!--<div class="col-md-12">
+                                                    <div class="d-flex justify-content-center" style="padding:2%;" >
+                                                        <h3>
+                                                            <b>Preferred Work Location</b>
+                                                        </h3>
+                                                    </div>
+                                                </div>-->
+                                           <!-- <hr style="margin-top:unset" />-->
+                                            <div class="col-md-12" style="padding:1%">
+                                                <div class="row " style="--bs-gutter-x:none">
+                                                    
+                                                    <div class="d-flex justify-content-center ondontefontColor">
+                                                        <p>
+                                                            <b>Add New Preferred Work Location</b>
+                                                        </p>
+                                                    </div>
+                                                    <div class="row mobRow">
+
+                                                        <div class="col-sm-4">
+                                                            <label>
+                                                                <b>Select County </b>
+                                                            </label>
+                                                            <select class="form-select" aria-label="Default select example" ng-model="selectedCounty" ng-change="cityInSelectedCounty()">
+                                                                <option ng-repeat="county in countyList" value="{{county.Id}}">{{county.Name}}</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <label>
+                                                                <b>Select City </b>
+                                                            </label>
+                                                            <div ng-dropdown-multiselect="true" options="example14data" selected-model="example14model" checkboxes="true" extra-settings="setting1"
+                                                                style="width:100%;background:#fff;"></div>
+                                                        </div>
+                                                        <div class="col-sm-4 mt-3 d-flex justify-content-center">
+                                                            <button type="button" class="btn btn-primary" style="width:100%;" ng-click="addNewCityDetails()">Add</button>
+                                                        </div>
+                                                    </div>
+
+
+                                                </div>
+                                            </div>
+                                            <!--<hr style="margin-bottom:unset;"/>-->
+                                            <div class="row" style="--bs-gutter-x:none;">
+                                                <!-- <div class="col-md-12">
+                                                    <div class="d-flex justify-content-center" style="padding:2%;" >
+                                                        <p>
+                                                            <b>Preferred Work Locations</b>
+                                                        </p>
+                                                    </div>
+                                                </div>-->
+
+
+                                                <div class="col-md-12 modal-body mobileDocs">
+                                                    <div class="container p-3">
+                                                        <table class="table fullscreen " style="border-top:2px solid;" ng-show="prefWorkLocation.length >0">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th scope="col" class="ondontefontColor">#</th>
+                                                                    <th scope="col" class="ondontefontColor">County</th>
+                                                                    <th scope="col" class="ondontefontColor">City</th>
+                                                                    <th scope="col" class="d-flex justify-content-center ondontefontColor">Action</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr ng-repeat="location in prefWorkLocation">
+                                                                    <th scope="row">{{$index+1}}</th>
+                                                                    <td>{{location.County__r.Name}}</td>
+                                                                    <td>{{location.City__r.Name}}</td>
+                                                                    <td>
+                                                                        <button type="button" class="btn btn-danger  cancelBtn" style="width: 100%;" ng-click="delteWorkLocation(location)">
+                                                                            <i class="fa fa-trash" aria-hidden="true"></i>
+                                                                        </button>
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+
+                                                        <div class="card mobileCard padding mb-3" ng-repeat="location in prefWorkLocation">
+
+                                                            <div class="card-body pb-0">
+                                                                <p class="card-title">
+                                                                    <b>Country : </b>{{location.County__r.Name}}</p>
+                                                                <p class="card-text">
+                                                                    <b>City : </b> {{location.City__r.Name}} </p>
+                                                                <div>
+                                                                    
+                                                                </div>
+                                                            </div>
+                                                            <div class="card-footer p-0" style="width:100%;">
+                                                                <button type="button" class="btn btn-danger cancelBtn"  style="width:100%;" ng-click="delteWorkLocation(location)">
+                                                                    <i class="fa fa-trash" aria-hidden="true"></i>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+
+
+                                            </div>
+
+                                        </div>
+                                        <div class="tab-pane fade" id="v-pills-resume" role="tabpanel" aria-labelledby="v-pills-resume-tab">
+                                            <div class="modal-body">
+                                                <div ng-hide="resumeUserDoc.userDocument.Status__c == 'Pending' || resumeUserDoc.userDocument.Status__c== 'Rejected'">
+                                                    <div class="col-sm-6">
+                                                    <div class="col-sm-12">Uplaod your resume :</div>
+                                                        <button type="button" class="btn btn-secondary mt-1 col-sm-12"
+                                                             data-bs-toggle="modal" data-bs-target="#resumeUploadModel">
+                                                            <i class="fa fa-upload"></i>
+                                                        </button>
+                                                    </div>
+                                                    <iframe src="{{resumeIframe}}" style="width:100%;height:800%;padding:20px;"></iframe>
+                                                    <!--button type="button" class="btn btn-primary" ng-click="viewDocument(resumeUserDoc.contentVersion.Id)" href="">View</button-->
+
+                                                </div>
+                                                <div ng-show="resumeUserDoc.userDocument.Status__c == 'Pending' || resumeUserDoc.userDocument.Status__c== 'Rejected'">
+                                                    <Label>Upload Your Resume</Label>&nbsp;&nbsp;
+                                                    <button type="button" class="btn btn-secondary mt-1" style="margin:25px;" data-bs-toggle="modal" data-bs-target="#resumeUploadModel">upload</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="card-body" ng-show="showResumeParser" style="padding: 0;">
+                            <div class="card-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Candidate Details</h5>
+                            </div>
+                            <div class="modal-body">
+                                <div class="accordion" id="accordionPanelsStayOpenExample">
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="panelsStayOpen-headingOne">
+                                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true"
+                                                aria-controls="panelsStayOpen-collapseOne">
+                                                Candidate Details
+                                            </button>
+                                        </h2>
+                                        <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingOne">
+                                            <div class="accordion-body">
+                                                <div class="row g-3">
+                                                    <div class="col-md-6">
+                                                        <label for="inputPassword4" class="form-label">Name</label>
+                                                        <input type="text" class="form-control" id="inputPassword4" ng-model="candidateDetails.Name" ng-disabled="true" />
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label for="inputEmail4" class="form-label">Country</label>
+                                                        <input type="text" class="form-control" id="inputEmail4" ng-model="candidateDetails.MailingCountry" ng-disabled="true" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="panelsStayOpen-headingTwo">
+                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo"
+                                                aria-expanded="true" aria-controls="panelsStayOpen-collapseTwo">
+                                                Education Details
+                                            </button>
+                                        </h2>
+                                        <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingTwo">
+                                            <div class="accordion-body">
+
+                                                <div class="card mt-2" ng-repeat="edu in educationDetails">
+                                                    <div class="card-body">
+                                                        <div class="row g-3">
+
+                                                            <div class="col-md-6">
+                                                                <label for="inputPassword4" class="form-label">University / College Name</label>
+                                                                <input type="text" class="form-control" id="inputPassword4" ng-model="edu.University_College_Name__c" />
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <label for="inputEmail4" class="form-label">Course Name</label>
+                                                                <input type="text" class="form-control" id="inputEmail4" ng-model="edu.Course_Name__c" />
+                                                            </div>
+
+                                                            <div class="col-md-6">
+                                                                <label for="inputZip" class="form-label">End Year</label>
+                                                                <input type="text" class="form-control" id="inputZip" ng-model="edu.End_Year__c" />
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="panelsStayOpen-headingThree">
+                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseThree"
+                                                aria-expanded="true" aria-controls="panelsStayOpen-collapseThree">
+                                                Past Experience Details
+                                            </button>
+                                        </h2>
+                                        <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingThree">
+                                            <div class="accordion-body">
+                                                <div class="card mt-2" ng-repeat="exp in experienceDetails">
+                                                    <div class="card-body">
+                                                        <div class="row g-3">
+                                                            <div class="col-md-6">
+                                                                <label for="inputEmail4" class="form-label">Employer Name</label>
+                                                                <input type="text" class="form-control" id="inputEmail4" ng-model="exp.Employer_Name__c" />
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <label for="inputPassword4" class="form-label">Job Type</label>
+                                                                <input type="text" class="form-control" id="inputPassword4" ng-model="exp.Name" />
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <label for="inputCity" class="form-label">Start Year</label>
+                                                                <input type="text" class="form-control" id="inputCity" ng-model="exp.Start_Date__c" />
+                                                            </div>
+
+                                                            <div class="col-md-6">
+                                                                <label for="inputZip" class="form-label">End Year</label>
+                                                                <input type="text" class="form-control" id="inputZip" ng-model="exp.End_date__c" />
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" ng-click="saveCandidateResumeDetails()">Save Candidate Details</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2 mobcol"> </div>
+
+            </div>
+
+
+            <!-- Resume Popup-->
+            <div class="modal fade" id="resumeUploadModel" tabindex="-1" aria-labelledby="resumeUploadModel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title ondontefontColor" id="exampleModalLabel">Upload your Resume</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-1">
+
+                                </div>
+                                <div class="col-10">
+                                    <div class="dropzone-wrapper">
+                                        <div class="dropzone-desc">
+                                            <i class="glyphicon glyphicon-download-alt"></i>
+                                            <p>Choose an PDF file or drag it here.</p>
+                                        </div>
+                                        <input type="file" name="img_logo" class="dropzone" accept="application/pdf" id="resumeAttachmentFile" />
+                                    </div>
+                                    <div id="file-upload-filename"></div>
+
+                                </div>
+                                <div class="col-1">
+
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="modal-footer" style="flex-wrap: unset;">
+                            <button type="button" class="btn btn-secondary cancelBtn col-sm-6" style="max-width: 49%;" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-warning m-1 col-sm-6" style="max-width: 49%;" ng-Click="uploadFile('resume', '', resumeUserDoc.userDocument.Id)">upload</button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </body>
+
+    </html>
+</apex:page>

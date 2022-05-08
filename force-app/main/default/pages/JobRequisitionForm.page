@@ -1,0 +1,912 @@
+<apex:page sidebar="false" showHeader="false" standardStylesheets="false" controller="JobRequisitionForm_Controller" docType="html-5.0">
+    <head>
+        <!--c:Libraries /-->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+        <meta name="viewport" content="width=device-width,initial-scale=1"/>
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-route.js">
+        </script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js">
+        </script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.29.2/sweetalert2.all.js"> 
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js">
+        </script>
+        <style>
+            body{
+            overflow-x:hidden;
+            }
+            .loadingSection {
+            position: fixed;
+            height: 100%;
+            width: 100%;
+            z-index: 111;
+            display:flex;
+            }
+            .loadingBackground 
+            {        
+            position:fixed;
+            height: 100%;
+            width: 100%;
+            background: #F6F6F6;
+            z-index: 11111;
+            opacity: 0.7;
+            top: 0px;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            position:fixed;
+            }        
+            .loading {    
+            top: 50%;
+            left: 50%;
+            margin: -50px 0px 0px -50px;
+            z-index: 111111;
+            position: fixed;
+            }
+            .loader{
+            margin:auto;
+            }
+        </style>
+    </head>
+    <script>   
+    var placementTypeValues = JSON.parse('{!placementTypeValues}');
+    var staffTypeValues = JSON.parse('{!staffTypeValues}');
+    var jobTermsValues = JSON.parse('{!jobTermsValues}');
+    var workingDay=JSON.parse('{!workingDay}');
+    var ImageXRaySoftware=JSON.parse('{!ImageXRaySoftware}');
+    var XRayProficiency=JSON.parse('{!XRayProficiency}');
+    var PMSKnowledge=JSON.parse('{!PMSKnowledge}');
+    var typesOfCrowns=JSON.parse('{!typesOfCrowns}');
+    var computerSkills=JSON.parse('{!computerSkills}');
+    console.log(ImageXRaySoftware)
+    console.log(XRayProficiency)
+    console.log(PMSKnowledge)
+    console.log(typesOfCrowns)
+    console.log(computerSkills)
+    var userId = '{!$CurrentPage.parameters.d}';
+    
+    var app = angular.module('clientApp', []);
+    app.controller('clientCtrl', function($scope) {
+        // $scope.showSpinner=false;
+        debugger;
+        $scope.placementTypeValues = placementTypeValues;
+        $scope.staffTypeValues = staffTypeValues;
+        $scope.jobTermsValues = jobTermsValues;
+        $scope.workingDay=workingDay;
+        $scope.clientId = userId;
+        $scope.ImageXRaySoftware=ImageXRaySoftware;
+        $scope.XRayProficiency=XRayProficiency;
+        $scope.PMSKnowledge=PMSKnowledge;
+        $scope.typesOfCrowns=typesOfCrowns;
+        $scope.computerSkills=computerSkills;
+        $scope.startTime="";
+        $scope.endTime="";
+        
+        $scope.JobRequisition = { Name: "", Placement_Type__c: "Permanent", Staff_Type__c: "", Billing_Fee__c: 0 ,Job_Term__c:"",Description__c:"",No_Of_Positions__c:0,Description__c:"",Status__c:"Open",Working_Days__c:"",Image_X_ray_Software__c:""};
+        $scope.init = function () {
+            alert("Angularjs call function on page load");
+            $scope.showSpinner=true;
+        };
+        $scope.submitJobReqForm = function(){
+            debugger;
+            
+            if((typeof  $scope.JobRequisition.Staff_Type__c)==='object')
+            {
+                $scope.JobRequisition.Staff_Type__c=  $scope.JobRequisition.Staff_Type__c.join(';');        
+            }
+            if((typeof  $scope.JobRequisition.Working_Days__c)==='object')
+            {
+                $scope.JobRequisition.Working_Days__c=  $scope.JobRequisition.Working_Days__c.join(';');        
+            }
+            
+            var startHour;
+            var startMinute;
+            var endHour;
+            var endMin;
+            if((typeof  $scope.startTime)==='object')
+            {
+                startHour=$scope.startTime.getHours();
+                startMinute=$scope.startTime.getMinutes();
+            }
+            else
+            {
+                startHour=null;
+                startMinute=null;
+            }
+            if((typeof  $scope.endTime)==='object')
+            {
+                endHour=$scope.endTime.getHours();
+                endMin=$scope.endTime.getMinutes();
+            }
+            else
+            { 
+                endHour=null;
+                endMin=null;
+            }
+            
+            if($scope.JobRequisition.No_Of_Positions__c==0)
+            {
+                Swal.fire(
+                    '',
+                    'No of position is required ',
+                    'error'
+                );
+                return;
+            }
+
+            if($scope.JobRequisition.City__c== undefined)
+            {
+                Swal.fire(
+                    '',
+                    'Please enter Job City',
+                    'error'
+                );
+                return;
+            }
+
+            if($scope.JobRequisition.Staff_Type__c == undefined)
+            {
+                Swal.fire(
+                    '',
+                    'Please select the Staff Type',
+                    'error'
+                );
+                return;
+            }
+            
+            if($scope.expStartDate == undefined || $scope.expStartDate == '') {
+                Swal.fire(
+                    '',
+                    'StartDate is required.',
+                    'error'
+                );
+                return;
+            }
+            debugger;
+            
+             if($scope.expEndDate == undefined  || $scope.expEndDate == '') {
+                Swal.fire(
+                    '',
+                    'EndDate is required.',
+                    'error'
+                );
+                return;
+            }
+            if($scope.JobRequisition.Working_Days__c == undefined || $scope.JobRequisition.Working_Days__c == ''){
+                Swal.fire(
+                    '',
+                    'WorkingDays are required.',
+                    'error'
+                    );
+                return;
+                }
+            if($scope.startTime == undefined || $scope.startTime == ''){
+                Swal.fire(
+                    '',
+                    'StartTime is required.',
+                    'error'
+                    );
+                return;
+                }
+            if($scope.endTime == undefined || $scope.endTime == ''){
+                Swal.fire(
+                    '',
+                    'EndTime is required.',
+                    'error'
+                    );
+                return;
+                }
+            var dateVal = $scope.expStartDate;
+            var startDate = dateVal.getDate();
+            var startMonth = dateVal.getMonth();
+            var startYear = dateVal.getFullYear();
+            
+            var dateVal1 = $scope.expEndDate;
+            var endDate = dateVal1.getDate();
+            var endMonth = dateVal1.getMonth();
+            var endYear = dateVal1.getFullYear();
+            if(Date.parse($scope.expStartDate) == Date.parse($scope.expEndDate) && Date.parse($scope.expStartDate) < Date.parse($scope.expEndDate)){
+                Swal.fire(
+                    '',
+                    'End Date should not be equal to or less than Start Date.',
+                    'error'
+                );
+                return;
+            }
+            $scope.showSpinner=true;
+            JobRequisitionForm_Controller.submitJobRequisitionForm($scope.JobRequisition,$scope.clientId,startDate,startMonth,startYear,endDate,endMonth,endYear,startHour,startMinute,endHour,endMin, function (result, event) {
+                if (event.status && result != null) {
+                    debugger;
+                    Swal.fire(
+                        '',
+                        'Requisition Form Submitted Successfully! Ondonte Team will get back to you shortly with the best match.',
+                        'success'
+                    );
+                    
+                    //location.reload();
+                    $scope.JobRequisition = { Name: "", Placement_Type__c: "Permanent", Staff_Type__c: "", Billing_Fee__c: 0 ,Job_Term__c:"",Description__c:"",No_Of_Positions__c:0,Description__c:""};
+                    $scope.expStartDate = "";
+                    $scope.expEndDate = "";
+                    $scope.$apply();
+                    setTimeout(function(){window.location = 'https://www.ondonte.com';}, 5000);
+                }
+                $scope.showSpinner=false;
+            }, { escape: false })
+        }
+        
+    });
+    </script>
+    <body ng-app="clientApp" ng-controller="clientCtrl" style="background:#F5F5F5">
+        <div class="loadingSection" id="spinner" ng-if="showSpinner">
+            
+            <div class="loadingBackground"></div>
+            
+            <div class="loader">
+                
+                <apex:image url="{!$Resource.Loading}" styleClass="loading" />
+                
+            </div>
+            
+        </div>
+        
+        <nav class="navbar navbar-expand-lg navbar-light" style="background-color:rgba(63,63,70,1) !important;font-size: 14px;">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">
+                    <apex:image url="{!$Resource.logo}" styleClass="logo" width="30%" height="30%" />
+                </a>
+                <!--<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDarkDropdown" aria-controls="navbarNavDarkDropdown"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>-->
+                <div class="collapse navbar-collapse" id="navbarNavDarkDropdown">
+                    
+                    <div class="navbar-nav ms-auto me-5">
+                        <!--<li class="nav-item dropdown"> </li>-->
+                    </div>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="row mt-2">
+            <div class="col-md-3">
+                
+            </div>
+            <div class="col-md-6">
+                <div class="card" style="margin-bottom: 25px;margin-top: 25px;">
+                    <div class="card-header">
+                        <div class="d-flex justify-content-center"><h2><b>Job Requisition Form</b></h2> </div> </div>
+                    <div class="card-body">
+                        
+                        <div class="row">
+                            <div class="col-sm-1"/>
+                            <div class="col-sm-10">
+                            	<form class="well form-horizontal pr-5 pl-5" action=" " method="post"  id="contact_form">
+                           
+                            		<div >
+                                
+                                
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-sm-12">
+                                                    <label class=" control-label"><b>Job Name</b></label>
+                                                    <span class="required-asterisk" style="color:red;">*</span>
+                                                    <div class=" inputGroupContainer" style="padding-top:10px;">
+                                                        <div class="input-group">
+                                                            <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                                                            <input  name="first_name" placeholder="Job Name" class="form-control"  type="text" ng-model="JobRequisition.Name" required="true"  ng-required="JobRequisition.Name" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br/>
+                                
+                                <!-- Text input-->
+                                
+                                <!--div class="form-group">
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                    <label class=" control-label" ><b>Placement Type</b></label> 
+                                    <div class=" inputGroupContainer">
+                                        <div class="input-group">
+                                            <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                                            <select class="form-select" aria-label="Default select example" ng-model="JobRequisition.Placement_Type__c">
+                                                <option ng-repeat="placement in placementTypeValues">{{placement}}</option>
+                                            </select>           
+                                        </div>
+                                        </div>
+                                        </div>
+                                    </div>
+                                </div-->
+
+                                
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-sm-12">
+                                                    <label class=" control-label" ><b>Staff Type</b></label> 
+                                                    <span class="required-asterisk" style="color:red;">*</span>
+                                                    <div class=" inputGroupContainer" style="padding-top:10px;">
+                                                        <div class="input-group">
+                                                            <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                                                            <select class="form-select" aria-label="Default select example"  multiple="true" ng-model="JobRequisition.Staff_Type__c">
+                                                                <option ng-repeat="staff in staffTypeValues">{{staff}}</option>
+                                                            </select>           
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <div class="form-group" style="padding-top:10px;">
+                                                    <label class="form-check-label" style="width:100%;">
+                                                        <label class=" control-label" ><b>Working Days</b></label> 
+
+                                                        <span class="required-asterisk" style="color:red;">*</span>
+                                                        
+                                                        <select class="form-select" aria-label="Default select example" ng-model="JobRequisition.Working_Days__c" multiple="true" required="true" ng-required="JobRequisition.Working_Days__c">
+                                                            <option ng-repeat="work in workingDay">{{work}}</option>
+                                                        </select>   
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                
+                                
+                                
+                                <!--div class="form-group">
+                                    <label class=" control-label" ><b>Job Terms</b></label> 
+                                    <div class=" inputGroupContainer">
+                                        <div class="input-group">
+                                            <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                                            <select class="form-select" aria-label="Default select example" ng-model="JobRequisition.Job_Term__c">
+                                                <option ng-repeat="staff in jobTermsValues">{{staff}}</option>
+                                            </select>           
+                                        </div>
+                                    </div>
+                                </div
+                                <br/>-->
+                                
+                                <!-- Text input-->
+                                        <!--div class="form-group">
+                                            <div class="row">
+                                                <div class="col-sm-12">
+                                                    <label class=" control-label"><b>Start Date</b></label>
+                                                    <span class="required-asterisk" style="color:red;">*</span>
+                                                    <div class=" inputGroupContainer" style="padding-top:10px;">
+                                                        <div class="input-group">
+                                                            <input type="date" class="form-control" id="inputCity" ng-model="expStartDate" required="true"  ng-required="JobRequisition.Expected_Start_Date__c" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br/>
+                                
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-sm-12">
+                                                    <label class=" control-label"><b>End Date</b></label>
+                                                    <span class="required-asterisk" style="color:red;">*</span>
+                                                    <div class=" inputGroupContainer" style="padding-top:10px;">
+                                                        <div class="input-group">
+                                                            <input type="date" class="form-control" id="inputCity" ng-model="expEndDate" required="true"  ng-required="JobRequisition.Expected_End_Date__c" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br/-->
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <div class="form-group" style="padding-top:10px;">
+                                                    <label class="form-check-label" style="width:100%;">
+                                                        <label class=" control-label"><b>Start Date</b></label>
+                                                        <span class="required-asterisk" style="color:red;">*</span>
+                                                        <input type="date" class="form-control" id="inputCity" ng-model="expStartDate" required="true"  ng-required="JobRequisition.Expected_Start_Date__c" />
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <div class="form-group" style="padding-top:10px;">
+                                                    <label class="form-check-label" style="width:100%;">
+                                                        <label class=" control-label"><b>End Date</b></label>
+                                                        <span class="required-asterisk" style="color:red;">*</span>
+                                                        <input type="date" class="form-control" id="inputCity" ng-model="expEndDate" required="true"  ng-required="JobRequisition.Expected_End_Date__c" />
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br/>
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <div class="form-group" style="padding-top:10px;">
+                                                    <label class="form-check-label" style="width:100%;">
+                                                        <label class=" control-label"><b>Start time</b></label>
+                                                        <span class="required-asterisk" style="color:red;">*</span>
+                                                        <input type="time"  class="form-select" ng-model="startTime" name="Start time" value="00:00" required="true" ng-required="JobRequisition.Work_Start_Time__c"/>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <div class="form-group" style="padding-top:10px;">
+                                                    <label class="form-check-label" style="width:100%;">
+                                                        <label class=" control-label"><b>End time</b></label>
+                                                        <span class="required-asterisk" style="color:red;">*</span>
+                                                        <input type="time"  class="form-select" ng-model="endTime" name="End time" value="00:00" required="true" ng-required="JobRequisition.Work_End_Time__c"/>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-sm-12">
+                                                    <label class=" control-label"><b>No of positions required</b></label>
+                                                    <span class="required-asterisk" style="color:red;">*</span>
+                                                    <div class=" inputGroupContainer" style="padding-top:10px;">
+                                                        <div class="input-group">
+                                                            <input type="number" class="form-control" id="inputCity" ng-model="JobRequisition.No_Of_Positions__c" required="true"  ng-required="JobRequisition.No_Of_Positions__c" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br/>
+                                
+                                <!-- Text input-->
+                                
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-sm-12">
+                                                    <label class=" control-label"><b>Job Description</b></label>  
+                                                    <div class=" inputGroupContainer" style="padding-top:10px;">
+                                                        <div class="input-group">
+                                                            <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" ng-model="JobRequisition.Description__c"></textarea>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                <br/>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <label class=" control-label"><b>Job City</b></label> 
+                                            <span class="required-asterisk" style="color:red;">*</span> 
+                                            <div class=" inputGroupContainer" style="padding-top:10px;">
+                                                <div class="input-group">
+                                                    <input  name="first_name" placeholder="Job City" class="form-control"  type="text" ng-model="JobRequisition.City__c" required="true"  ng-required="JobRequisition.City__c" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <br/>
+                                
+                                <div class="">
+                                    <b>DENTAL KEY SKILLS :</b>
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class="form-group from-check" style="padding-top:10px;">
+                                                <label class="form-check-label" style="width:100%;">
+                                                    <label class=" control-label" >X-ray Proficiency</label>
+                                                    <select class="form-select" aria-label="Default select example" ng-model="JobRequisition.X_ray_Proficiency__c"  >
+                                                        <option ng-repeat="xRayProf in XRayProficiency">{{xRayProf}}</option>
+                                                    </select>   
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group from-check" style="padding-top:10px;">
+                                                <label class="form-check-label" style="width:100%;">
+                                                    <label class=" control-label" >PMS Knowledge</label>
+                                                    <select class="form-select" aria-label="Default select example" ng-model="JobRequisition.PMS_Knowledge__c"  >
+                                                        <option ng-repeat="pmsKnowledge in PMSKnowledge">{{pmsKnowledge}}</option>
+                                                    </select>   
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class="form-group from-check">
+                                                <label class="form-check-label" style="width:100%;">
+                                                    <label class=" control-label" >Image / X-ray Software</label>
+                                                    <select class="form-select" aria-label="Default select example" ng-model="JobRequisition.Image_X_ray_Software__c"  >
+                                                        <option ng-repeat="imgXRay in ImageXRaySoftware">{{imgXRay}}</option>
+                                                    </select>   
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class="form-group form-check">
+                                                <label class="form-check-label">
+                                                    <input class="form-check-input" type="checkbox" ng-model="JobRequisition.Applying_Pit_Fissure_Sealants__c "/> Applying Pit/Fissure Sealants
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group form-check">
+                                                <label class="form-check-label">
+                                                    <input class="form-check-input" type="checkbox" ng-model="JobRequisition.Invisalign__c"/> Invisalign
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class="form-group form-check">
+                                                <label class="form-check-label">
+                                                    <input class="form-check-input" type="checkbox" ng-model="JobRequisition.Coronal_Polishing__c "/> Coronal Polishing
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group form-check">
+                                                <label class="form-check-label">
+                                                    <input class="form-check-input" type="checkbox" ng-model="JobRequisition.Intraoral_Camera__c"/> Intraoral Camera
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <br/>
+                                
+                                <div class="">   
+                                    <b>ASSISTANT KEY SKILLS :</b>
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class="form-group from-check" style="padding-top:10px;">
+                                                <label class="form-check-label" style="width:100%;">
+                                                    <label class=" control-label" >Types of Crowns</label>
+                                                    <select class="form-select" aria-label="Default select example" ng-model="JobRequisition.Types_of_Crowns__c"  >
+                                                        <option ng-repeat="crowns in typesOfCrowns">{{crowns}}</option>
+                                                    </select>   
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class="form-group form-check">
+                                                <label class="form-check-label">
+                                                    <input class="form-check-input" type="checkbox" ng-model="JobRequisition.Fabricate_and_Place_Temporary_Crowns__c "/> Fabricate and Place Temporary Crowns
+                                                </label>
+                                            </div>
+                                        </div>
+                                        </div>
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class="form-group form-check">
+                                                <label class="form-check-label">
+                                                    <input class="form-check-input" type="checkbox" ng-model="JobRequisition.Cerec__c "/> Cerec
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group form-check">
+                                                <label class="form-check-label">
+                                                    <input class="form-check-input" type="checkbox" ng-model="JobRequisition.Implants__c"/> Implants
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class="form-group form-check">
+                                                <label class="form-check-label">
+                                                    <input class="form-check-input" type="checkbox" ng-model="JobRequisition.E4D__c "/> E4D
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group form-check">
+                                                <label class="form-check-label">
+                                                    <input class="form-check-input" type="checkbox" ng-model="JobRequisition.Scan_Imaging__c"/> Scan Imaging
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class="form-group form-check">
+                                                <label class="form-check-label">
+                                                    <input class="form-check-input" type="checkbox" ng-model="JobRequisition.X6_Handed_Chairside__c "/> 6-Handed Chairside
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group form-check">
+                                                <label class="form-check-label">
+                                                    <input class="form-check-input" type="checkbox" ng-model="JobRequisition.Zoom_Bleaching__c"/> Zoom/Bleaching
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class="form-group form-check">
+                                                <label class="form-check-label">
+                                                    <input class="form-check-input" type="checkbox" ng-model="JobRequisition.OMSA_Permit__c "/> OMSA Permit
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group form-check">
+                                                <label class="form-check-label">
+                                                    <input class="form-check-input" type="checkbox" ng-model="JobRequisition.Inventory_Control_Ordering__c"/> Inventory Control/Ordering
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class="form-group form-check">
+                                                <label class="form-check-label">
+                                                    <input class="form-check-input" type="checkbox" ng-model="JobRequisition.Orthodontic_Assistant_Permit__c "/> Orthodontic Assistant Permit
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>  
+                                </div>
+                                <br/>
+                                
+                                <div class="">   
+                                    <b>HYGIENIST KEY SKILLS :</b>
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class="form-group form-check" style="padding-top:10px;">
+                                                <label class="form-check-label">
+                                                    <input class="form-check-input" type="checkbox" ng-model="JobRequisition.Assisted_Hygiene__c "/> Assisted Hygiene
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group form-check">
+                                                <label class="form-check-label">
+                                                    <input class="form-check-input" type="checkbox" ng-model="JobRequisition.Loupes__c"/> Loupes
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class="form-group form-check">
+                                                <label class="form-check-label">
+                                                    <input class="form-check-input" type="checkbox" ng-model="JobRequisition.Arestin__c "/> Arestin
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group form-check">
+                                                <label class="form-check-label">
+                                                    <input class="form-check-input" type="checkbox" ng-model="JobRequisition.Fluoride_Varnish__c"/> Fluoride Varnish
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class="form-group form-check">
+                                                <label class="form-check-label">
+                                                    <input class="form-check-input" type="checkbox" ng-model="JobRequisition.Assist_w_Nitrous_Administration__c "/> Assist w/Nitrous Administration
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group form-check">
+                                                <label class="form-check-label">
+                                                    <input class="form-check-input" type="checkbox" ng-model="JobRequisition.Laser_Curettage__c	"/> Laser Curettage
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class="form-group form-check">
+                                                <label class="form-check-label">
+                                                    <input class="form-check-input" type="checkbox" ng-model="JobRequisition.Chairside_Scheduling__c "/> Chairside Scheduling
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group form-check">
+                                                <label class="form-check-label">
+                                                    <input class="form-check-input" type="checkbox" ng-model="JobRequisition.Micro_Ultrasonic__c	"/> Micro Ultrasonic
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class="form-group form-check">
+                                                <label class="form-check-label">
+                                                    <input class="form-check-input" type="checkbox" ng-model="JobRequisition.Digital_Perio_Charting__c "/> Digital Perio Charting
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group form-check">
+                                                <label class="form-check-label">
+                                                    <input class="form-check-input" type="checkbox" ng-model="JobRequisition.Treatment_Planning__c	"/> Treatment Planning
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <br/>
+                                    
+                                    
+                                    <div class="">   
+                                        <b>FRONT OFFICE KEY SKILLS :</b>
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <div class="form-group form-check" style="padding-top:10px;">
+                                                    <label class="form-check-label">
+                                                        <input class="form-check-input" type="checkbox" ng-model="JobRequisition.Formal_Software_Trained__c "/> Formal Software Trained
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <div class="form-group form-check">
+                                                    <label class="form-check-label">
+                                                        <input class="form-check-input" type="checkbox" ng-model="JobRequisition.Post_Insurance_Payments__c"/> Post Insurance Payments
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <div class="form-group form-check">
+                                                    <label class="form-check-label">
+                                                        <input class="form-check-input" type="checkbox" ng-model="JobRequisition.Create_Patient_Files__c "/> Create Patient Files
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <div class="form-group form-check">
+                                                    <label class="form-check-label">
+                                                        <input class="form-check-input" type="checkbox" ng-model="JobRequisition.Over_the_Counter_Collection__c"/> Over the Counter Collection
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <div class="form-group form-check">
+                                                    <label class="form-check-label">
+                                                        <input class="form-check-input" type="checkbox" ng-model="JobRequisition.Appointment_Scheduling__c "/> Appointment Scheduling
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <div class="form-group form-check">
+                                                    <label class="form-check-label">
+                                                        <input class="form-check-input" type="checkbox" ng-model="JobRequisition.Prepare_Daily_Deposit__c	"/> Prepare Daily Deposit
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <div class="form-group form-check">
+                                                    <label class="form-check-label">
+                                                        <input class="form-check-input" type="checkbox" ng-model="JobRequisition.Accounts_Payable__c "/> Accounts Payable
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <div class="form-group form-check">
+                                                    <label class="form-check-label">
+                                                        <input class="form-check-input" type="checkbox" ng-model="JobRequisition.Prepare_Day_Sheet__c	"/> Prepare Day Sheet
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <div class="form-group form-check">
+                                                    <label class="form-check-label">
+                                                        <input class="form-check-input" type="checkbox" ng-model="JobRequisition.AR_Management__c "/> AR Management
+
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <div class="form-group form-check">
+                                                    <label class="form-check-label">
+                                                        <input class="form-check-input" type="checkbox" ng-model="JobRequisition.Recall_Maintenance__c"/> Recall Maintenance
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <div class="form-group form-check">
+                                                    <label class="form-check-label">
+                                                        <input class="form-check-input" type="checkbox" ng-model="JobRequisition.Insurance_Benefit_Coordination__c "/> Insurance Benefit Coordination
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <div class="form-group form-check">
+                                                    <label class="form-check-label">
+                                                        <input class="form-check-input" type="checkbox" ng-model="JobRequisition.Create_Treatment_Plans_in_System__c"/> Create Treatment Plans in System
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <div class="form-group form-check">
+                                                    <label class="form-check-label">
+                                                        <input class="form-check-input" type="checkbox" ng-model="JobRequisition.Insurance_Verification_and_Pre_Auth__c	 "/> Insurance Verification and Pre-Authorization
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <div class="form-group form-check">
+                                                    <label class="form-check-label">
+                                                        <input class="form-check-input" type="checkbox" ng-model="JobRequisition.Treatment_Presentation__c"/> Treatment Presentation
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <div class="form-group form-check">
+                                                    <label class="form-check-label">
+                                                        <input class="form-check-input" type="checkbox" ng-model="JobRequisition.Run_Financial_Reports__c	 "/> Run Financial Reports
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <br/>
+                                    
+                                    <!--<div class="">
+                                        <b>COMPUTER SKILLS :</b>
+                                        <div class="row">
+                                            <div class ="col-sm-6">
+                                                <div class="form-group form-check">
+                                                    <label class="form-check-label" style="width:60%;">
+                                                        <label class=" control-label" >Computer Skills</label>
+                                                        <select class="form-select" aria-label="Default select example" ng-model="JobRequisition.Computer_Skills__c"  >
+                                                            <option ng-repeat="compSkills in computerSkills">{{compSkills}}</option>
+                                                        </select>
+                                                    </label>
+                                                </div> 
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <br/>-->
+
+                                        </div> 
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="col-sm-1"/>
+                        </div>
+                    </div> 
+                    <div class="card-footer">
+                        <div class="d-flex justify-content-center"><br/>
+                            <button type="button" class="btn btn-warning" ng-click="submitJobReqForm()">submit</button>
+                        </div>
+                    </div>
+                </div>  
+            </div>
+            
+        </div>
+    </body>
+</apex:page>

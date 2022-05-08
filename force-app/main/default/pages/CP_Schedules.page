@@ -1,0 +1,103 @@
+<apex:page sidebar="false" showHeader="false" standardStylesheets="false">
+
+    <style>
+        .scollable-controlls{
+            overflow-y: auto;
+            max-height: 700px;
+        }
+        @media only screen and (max-width:491px) {
+            nav.navbar.navbar-expand-lg.navbar-light>.container-fluid {
+                display: block !important;
+            }
+            ul.navbar-nav.me-auto.mb-2.mb-lg-0 {
+                width: 100%;
+            }
+        }
+    </style>
+    <div ng-controller="cp_schdl_ctrl">
+        <div ng-init="getAllEvents()">
+
+            <!--div class="container shadow min-vh-100 py-2">
+            <div class="container network_wrapper col-sm p-2 ">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">Schedules</h5>
+                        <ul class="nav nav-tabs card-header-tabs" data-bs-tabs="tabs">
+                            <li class="nav-item">
+                                <a class="nav-link active" aria-current="true" data-bs-toggle="tab" href="#dhcp">Ondonte</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#static">Client</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <form class="card-body tab-content">
+                        <div class="tab-pane active" id="dhcp">
+                            <div ng-repeat="job in allEvents">
+                                <div class="card mb-2">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{job.Subject}}</h5>
+                                        <p class="card-text">{{job.StartDateTime | date:'MM/dd/yyyy'}}</p>
+                                        <p class="card-text">{{job.Description}}</p>
+                                        <a>{{job.Zoom_Invite_Link__c}}</a>
+                                        <div class="d-flex justify-content-end">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane" id="static">
+                            <div ng-repeat="job in ApplicationSchedules">
+                                <div class="card mb-2">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{job.Subject}}</h5>
+                                        <p class="card-text">{{job.StartDateTime | date:'MM/dd/yyyy'}}</p>
+                                        <p class="card-text">{{job.Description}}</p>
+                                        <a>{{job.Zoom_Invite_Link__c}}</a>
+                                        <div class="d-flex justify-content-end">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div-->
+            <div class="row">
+                <div class="col-md-3"></div>
+                <div class="col-md-6 scollable-controlls mt-3 mb-2">
+                    <div ng-repeat="job in allEvents">
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <div class="card-title m-0">
+                                    <b class="ondontefontColor">Subject : </b>
+                                    <span style="color:black;">{{job.Subject}}</span>
+                                </div>
+                            </div>
+                            <div class="card-body">
+
+                                <p class="card-text">
+                                    <b class="ondontefontColor">Start Date : </b>
+                                    <span style="color:black;">{{job.StartDateTime | date:'MM/dd/yyyy'}}</span>
+                                </p>
+                                <p class="card-text">
+                                    <b class="ondontefontColor">Description : </b>
+                                    <span style="color:#000;">{{job.Description}}</span>
+                                </p>
+                                <p class="card-texr">
+                                    <b class="ondontefontColor">Zoom Invite link : </b>
+                                    <a href="{{job.Zoom_Invite_Link__c}}">{{job.Zoom_Invite_Link__c}}</a>
+                                </p>
+                                <div class="d-flex justify-content-end">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3"></div>
+
+            </div>
+        </div>
+    </div>
+</apex:page>

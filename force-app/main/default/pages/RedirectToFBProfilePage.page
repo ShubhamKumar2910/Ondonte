@@ -1,0 +1,27 @@
+<apex:page controller="CP_LoginPage_Controller" showHeader="false" sidebar="false" action="{!checkUserAuth}">
+    <script>
+    debugger;
+        let email = encodeURIComponent('{!FbId}');
+        let firstName = encodeURIComponent('{!name}');
+        let isLogin = encodeURIComponent('{!isLogin}');
+    	let isSignUp = encodeURIComponent('{!isSignUp}');
+    	let isCandidate = encodeURIComponent('{!isCandidate}');
+    	let isFBcustomerSignup = encodeURIComponent('{!isFBcustomerSignup}');  
+        let isFBcandidateSignup = encodeURIComponent('{!isFBcandidateSignup}');
+        let docUplaodCustomer = encodeURIComponent('{!docUplaodCustomer}');
+    let isCustomer = encodeURIComponent('{!isCustomer}');
+    	var hashcode = '{!hasCodeUpdate}';
+    // window.location.replace(siteURL+'RegistrationFromFacebook?gemail='+email+'&first_name='+firstName);
+    let mainURL = window.location.origin+'/apex';
+      if(isSignUp == "false" && hashcode != ""){ 
+        if(docUplaodCustomer == "true"){
+            window.location.replace("https://ondonte--dev.my.salesforce.com/apex" + "/CP_DocumentUpload?hc="+hashcode);
+        }else{
+            window.location.replace("https://ondonte--dev.my.salesforce.com/apex" + "/candidateDashboard?hc="+hashcode);
+        }
+    }else{
+        window.location.replace("https://ondonte--dev.my.salesforce.com/apex" + "/CP_LoginPage?gemail="+email+'&first_name='+firstName+'&signUp=customer&register=true');
+       
+         }        
+    </script>
+</apex:page>

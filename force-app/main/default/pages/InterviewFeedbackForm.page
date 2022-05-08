@@ -1,0 +1,188 @@
+<apex:page showHeader="false" sidebar="false" controller="InterviewFeedbackFormHelper" standardStylesheets="false">
+    <html lang="En">
+
+    <head>
+        <c:Libraries ></c:Libraries>
+        <style>
+            .center {
+                margin: auto;
+                padding: 10px;
+            }
+            .customClass{
+                margin-top:2%;
+            }
+        </style>
+    </head>
+
+    <body ng-app="myApp" ng-controller="appController">
+        <nav class="navbar navbar-expand-lg navbar-light" style="background-color:rgba(63,63,70,1) !important;font-size: 14px;">
+            
+           
+           
+           
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">
+                    <apex:image url="{!$Resource.logo}" styleClass="logo" width="30%" height="30%" />
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDarkDropdown" aria-controls="navbarNavDarkDropdown"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNavDarkDropdown">
+
+                    <div class="navbar-nav ms-auto me-5">
+                        <li class="nav-item dropdown">
+                        </li>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <div class="row mt-2">
+            <div class="col-md-3">
+
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <form class="card-body">
+                        <form class="well form-horizontal pr-5 pl-5" action=" " method="post" id="contact_form">
+                        <div class="card-header">
+                            <div class="d-flex justify-content-center">
+                                <h2>
+                                    <b>Candidate Interview Feedback</b>
+                                </h2>
+                            </div>
+                        </div>
+                        <div ng-hide="captureFeedback">
+                            Interview Feedback has already been submitted for this candidate. Thankyou for visiting us.
+                        </div>
+                        <div ng-show="captureFeedback">
+                            <div class="form-group">
+                                <label class=" control-label">
+                                    <b>Interview Status</b>
+                                </label>
+                                <div class=" inputGroupContainer">
+                                    <div class="input-group">
+                                        <span class="input-group-addon">
+                                            <i class="glyphicon glyphicon-user"></i>
+                                        </span>
+                                        <select class="form-select" aria-label=""  ng-model="selectedStatus">
+                                            <option ng-repeat="interview in interviewStatus">{{interview}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class=" control-label">
+                                    <b>Feedback</b>
+                                </label>
+                                <div class=" inputGroupContainer">
+                                    <div class="input-group">
+                                        <span class="input-group-addon">
+                                            <i class="glyphicon glyphicon-user"></i>
+                                        </span>
+                                        <input name="first_name" placeholder="Comments" ng-change="commentInserted()" class="form-control" type="text" ng-model="comments" />
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+                        <div class="card-footer d-flex justify-content-center customClass" ng-show="captureFeedback">
+                            <button type="submit" class="btn btn-warning " ng-disabled="enableSubmitButton" ng-click="saveFeedback()">Submit</button>
+                        </div>
+                    </form>
+                    </form>
+                </div>
+            </div>
+            <div class="col-md-3">
+
+            </div>
+        </div>
+        <div class="loadingSection" id="spinner" ng-if="showSpinner">
+            <div class="loadingBackground">
+
+                
+
+
+                
+            </div>
+            <div class="loader">
+                <apex:image style="margin-left:50%" url="{!$Resource.Loading}" styleClass="loading" />
+            </div>
+        </div>
+
+
+        
+    </body>
+    <script>
+        var app = angular.module("myApp", []).controller('appController', function ($scope) {
+            debugger;
+            $scope.showSpinner = false;
+            $scope.interviewStatus = ['--NONE--','Selected', 'Rejected'];
+            $scope.selectedStatus = '--NONE--';
+            $scope.comments = '';
+            $scope.feedbackSubmitted = false;
+            $scope.jobId = '';
+            $scope.captureFeedback;
+            $scope.enableSubmitButton = true;
+           $scope.commentInserted = function(){
+                debugger;
+                 if(($scope.selectedStatus == 'Selected' || $scope.selectedStatus == 'Rejected') &&  $scope.comments.length > 3){
+                    $scope.enableSubmitButton = false;
+                    $scope.$apply();
+                }
+            },
+            $scope.saveFeedback = function () {
+                debugger;
+                $scope.showSpinner = true;
+                $scope.enableSubmitButton = true;
+                Visualforce.remoting.Manager.invokeAction(
+                    '{!$RemoteAction.InterviewFeedbackFormHelper.updateInterviewFeedback}',
+                    $scope.selectedStatus, $scope.comments, $scope.jobId,
+                    function (result, event) {
+                        if (event.status) {
+                            //alert('updated');
+                            $scope.$apply();
+                        }
+                        else if (event.type === 'exception') {
+                            alert(event.message);
+                        } else {
+                            alert(event.message);
+                        }
+                        $scope.showSpinner = false;
+                        window.location.replace("https://www.ondonte.com/");
+                    },
+                    { escape: true }
+                );
+            },
+                $scope.onPageLoad = function () {
+                    debugger;
+                    $scope.jobId = '{!$CurrentPage.parameters.Id}';
+                    Visualforce.remoting.Manager.invokeAction(
+                        '{!$RemoteAction.InterviewFeedbackFormHelper.getInterviewFeedbackDetails}', $scope.jobId,
+                        function (result, event) {
+                            if (event.status) {
+                                if (result != null) {
+                                    $scope.captureFeedback = true;
+                                } else {
+                                    $scope.captureFeedback = false;
+                                }
+                                $scope.$apply();
+                            }
+                            else if (event.type === 'exception') {
+                                alert(event.message);
+                            } else {
+                                alert(event.message);
+                            }
+                             
+                        },
+                        { escape: true }
+                    );
+                }
+            $scope.onPageLoad();
+        })
+    </script>
+
+    </html>
+</apex:page>

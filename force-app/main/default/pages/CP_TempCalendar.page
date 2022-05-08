@@ -1,0 +1,14 @@
+<apex:page sidebar="false" showHeader="false" standardStylesheets="false">
+<html>
+    <head>
+        <script> 
+            
+        </script>
+    </head>
+    <body>
+shubbu shubbu
+<!--div ui-calendar="uiConfig.calendar" class="span8 calendar" ng-model="eventSources"></div--> 
+
+    </body>
+</html>
+</apex:page>

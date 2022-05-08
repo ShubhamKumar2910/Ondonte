@@ -1,0 +1,9 @@
+<!--
+@purpose : This page is used as a redirect URL for Facebook login 
+for MEnor/Student/Alumni/Facilitator profile page which is hosted on Sites
+-->
+<apex:page sidebar="false" showHeader="false" controller="CP_LoginPage_Controller" action="{!redirectProfilePagefoFB}"> 
+    <script>
+        debugger; 
+    </script>    
+</apex:page>

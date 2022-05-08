@@ -1,0 +1,600 @@
+<apex:page sidebar="false" showHeader="false" standardStylesheets="false" Controller="CP_LoginPage_Controller">
+
+    <head>
+        <c:Libraries ></c:Libraries>
+        <script src="{!$Resource.CP_LoginPage}">
+        </script>
+        <style>
+            body {
+                background: #F5F5F5;
+            }
+
+            .card-img-left {
+                width: 45%;
+                /* Link to your background image using in the property below! */
+                background: scroll center url('https://source.unsplash.com/WEQbe2jBg40/414x512');
+                background-size: cover;
+            }
+
+            .btn-login {
+                font-size: 0.9rem;
+                letter-spacing: 0.05rem;
+                padding: 0.75rem 1rem;
+            }
+
+            .btn-google {
+                color: white !important;
+                background-color: #ea4335;
+            }
+
+            .btn-facebook {
+                color: white !important;
+                background-color: #3b5998;
+            }
+
+            .loadingBackground {
+        position: fixed;
+        height: 100%;
+        width: 100%;
+        background: #F6F6F6;
+        z-index: 11111;
+        opacity: 0.7;
+        top: 0px;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        }
+        .loading {
+        top: 50%;
+        left: 50%;
+        margin: -50px 0px 0px -50px;
+        z-index: 111111;
+        position: fixed;
+        }
+            @media only screen and (min-width:850px) and (max-width:1000px){
+            	.padding_1000{
+            		padding-left:20px !important;
+            padding-right:20px !important;
+           		 }
+            }
+            @media only screen and (max-width: 750px) {
+            	@media screen and (min-device-width: 650px) and (max-device-width: 750px) { 
+            		.col{
+            			padding:unset;
+            		}
+            }
+           		.col{
+            		    flex-shrink: 0 !important;
+            flex: unset;
+            
+            	}
+            }
+        </style>
+
+        <script>
+         var skillList = JSON.parse('{!skillList}');
+         var staffList = JSON.parse('{!staffList}');
+         var siteUrl = "{!$Label.CandidateSiteURL}";
+         var isRegistration = '{!$CurrentPage.parameters.register}';
+         var gemail = '{!$CurrentPage.parameters.gemail}';
+         var first_name = '{!$CurrentPage.parameters.first_name}';
+         var refralId = '{!$CurrentPage.parameters.refralId}';
+         var crownPicklistVal = JSON.parse('{!crownPicklistVal}');
+                var imgeSoftwarePickVal = JSON.parse('{!imgeSoftwarePickVal}');
+                var compSkillPickVal = JSON.parse('{!compSkillPickVal}');
+        
+            window.onload = function () {
+
+            }
+            function myFunction() {
+                debugger;
+                var fb = document.getElementById('facebookUrlId');
+                fb.href = "https://www.facebook.com/v2.8/dialog/oauth?client_id=" + "{!$Setup.Facebook_API_Details__c.App_Id__c}" + "&response_type=code&redirect_uri=" + "{!$Setup.Facebook_API_Details__c.login_Site_URL__c}" + "&scope=public_profile,email&&auth_type=rerequest";
+
+            }
+            function myFunctionforgoogle() {
+                debugger;
+                var a = document.getElementById('googleUrlId');
+                a.href = "https://accounts.google.com/AccountChooser?continue=https://accounts.google.com/o/oauth2/auth?redirect_uri=" + "{!$Setup.Google_API_Details__c.Login_Redirect_URI__c}" + "%26prompt%3Dconsent%26response_type%3Dcode%26client_id=" + "{!$Setup.Google_API_Details__c.Client_Id__c}" + "%26scope%3Dhttps://www.googleapis.com/auth/userinfo.email%2Bhttps://www.googleapis.com/auth/userinfo.email%2Bhttps://www.googleapis.com/auth/userinfo.email%2Bhttps://www.googleapis.com/auth/plus.login%2Bhttps://www.googleapis.com/auth/plus.me%2Bhttps://www.googleapis.com/auth/userinfo.email%2Bhttps://www.googleapis.com/auth/userinfo.profile%2Bhttps://www.googleapis.com/auth/plus.login%2Bhttps://www.googleapis.com/auth/userinfo.email%2Bhttps://www.googleapis.com/auth/userinfo.profile%2Bhttps://www.googleapis.com/auth/plus.login%2Bhttps://www.googleapis.com/auth/plus.login%2Bhttps://www.googleapis.com/auth/plus.login%2Bhttps://www.googleapis.com/auth/plus.me%2Bhttps://www.googleapis.com/auth/userinfo.email%2Bhttps://www.googleapis.com/auth/userinfo.profile%2Bhttps://www.googleapis.com/auth/plus.login%2Bhttps://www.googleapis.com/auth/plus.me%2Bhttps://www.googleapis.com/auth/userinfo.email%2Bhttps://www.googleapis.com/auth/userinfo.profile%2Bhttps://www.googleapis.com/auth/userinfo.email%26access_type%3Doffline%26from_login%3D1%26as%3D-270badd61a3e150b&btmpl=authsub&scc=1&oauth=1";
+            }
+
+        </script>
+    </head>
+
+    <body ng-app="LoginApp" ng-controller="LoginCtlr">
+        <div class="loadingSection" id="spinner" ng-if="showSpinner">
+            <div class="loadingBackground"></div>
+            <div>
+                <apex:image url="{!$Resource.Loading}" styleClass="loading" />
+            </div>
+        </div>
+      <nav class="navbar navbar-expand-lg navbar-light" style="background-color:rgba(63,63,70,1) !important;font-size: 14px;">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <apex:image url="{!$Resource.logo}" styleClass="logo" width="30%" height="30%" />
+            </a>
+            <!--<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDarkDropdown" aria-controls="navbarNavDarkDropdown"
+                aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>-->
+            <div class="collapse navbar-collapse" id="navbarNavDarkDropdown">
+    
+                <div class="navbar-nav ms-auto me-5">
+                    <li class="nav-item dropdown">
+    
+                       
+                    </li>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+        <div class="container px-4" ng-hide="registrationPage">
+            <div class="row gx-5 mt-5">
+                <div class="col">
+                    <div class="p-3 border bg-light mt-5">
+
+                        <div class="card">
+                            <apex:image url="{!$Resource.logo}" styleClass="logo" width="50%" height="50%" />
+                            <div class="card-body">
+                                <p class="card-text" >Are looking for additional days to fill your schedule or are you seeking a permanent part-time
+                                    of full time position? We are committed to working with you to help you achieve your
+                                    objectives. “A core principle in our mission is to always go beyond just making placements
+                                    to achieving the right fit for both the candidate and our client”. There is no fee to
+                                    sign up with Ondonte Dental Staffing. Our client is the doctor and their practice. They
+                                    pay all fees related to temporary assignments and permanent placements.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="p-3 border bg-light align-items-center">
+
+                        <div class="card-body p-4 p-sm-5 padding_1000">
+                            <h5 class="card-title text-center mb-5 fw-light fs-5">Login</h5>
+
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" placeholder="myusername" ng-model="userName" />
+                                <label for="floatingInputUsername">Username</label>
+                            </div>
+
+
+
+                            <div class="form-floating mb-3">
+                                <input type="password" class="form-control" placeholder="Password" ng-model="userPassword" />
+                                <label for="floatingPassword">Password</label>
+                            </div>
+
+
+                            <div class="d-grid mb-2">
+                                <button class="btn btn-lg btn-primary btn-login fw-bold text-uppercase" type="submit" ng-click="loginUser()">Login</button>
+                            </div>
+
+                            <div class="text-center ">
+                              <a class="small" ng-click="showRegForm()">Have an account? Sign Up</a>&nbsp;&nbsp;&nbsp;&nbsp;
+                              <span >
+                                <a class="small" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Forgot Password?</a>
+                               </span>
+                              
+                            </div>
+                           
+
+
+                            <hr class="my-4" />
+
+                            <div class="d-grid mb-2">
+                                <a class="btn btn-lg btn-google btn-login fw-bold text-uppercase" type="submit" onclick="myFunctionforgoogle()" id="googleUrlId">
+                                  <i class="fa fa-google" aria-hidden="true"></i> Sign up with Google
+                                </a>
+                            </div>
+
+                            <div class="d-grid">
+                                <a class="btn btn-lg btn-facebook btn-login fw-bold text-uppercase" type="submit" href="#" onclick="myFunction()" id="facebookUrlId">
+                                  <i class="fa fa-facebook" aria-hidden="true"></i> Sign up with Facebook
+                                </a>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container" ng-show="registrationPage">
+        <div class="row">
+          <div class="col-md-2"></div>
+          <div class="col-md-8">
+            <div class="card mt-5">
+              <div class="card-header">
+               <center><h2><b>Registration Form</b></h2></center>
+              </div>
+              <div class="card-body">
+                <form class="well form-horizontal" action=" " method="post"  id="contact_form">
+                  <fieldset>
+                    <b>BASIC DETAILS</b>   
+                  <div class="form-group">
+                    <label class="control-label"><b>First Name</b></label>  
+                    <div class="inputGroupContainer">
+                    <div class="input-group">
+                    <span class="input-group-addon"></span>
+                    <input  name="first_name" placeholder="First Name" class="form-control"  type="text" ng-model="contactDetails.FirstName"/>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label" ><b>Last Name</b></label> 
+                      <div class="inputGroupContainer">
+                      <div class="input-group">
+                    <span class="input-group-addon"></span>
+                    <input name="last_name" placeholder="Last Name" class="form-control"  type="text" ng-model="contactDetails.LastName"/>
+                      </div>
+                    </div>
+                  </div>
+          
+                  <div class="form-group">
+                    <label class="control-label"><b>Email</b></label>  
+                    <div class="inputGroupContainer">
+                    <div class="input-group">
+                    <span class="input-group-addon"></span>
+                    <input  name="user_name" placeholder="Email" class="form-control"  type="text" ng-model="contactDetails.Email"/>
+                      </div>
+                    </div>
+                  </div>                 
+                
+
+                  <div class="form-group">
+                    <label class="control-label"><b>Contact No</b></label>  
+                      <div class="inputGroupContainer">
+                      <div class="input-group">
+                          <span class="input-group-addon"><i class="glyphicon glyphicon-earphone"></i></span>
+                    <input name="contact_no" placeholder="Phone" class="form-control" type="text" ng-model="contactDetails.Phone"/>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label class="control-label"><b>Address</b></label>
+                    <div class="row">
+                        <div class="col-md-6"> 
+                            <input name="contact_no" placeholder="City" class="form-control" type="text" ng-model="contactDetails.MailingCity"/>
+                        </div>
+                        <div class="col-md-6"> 
+                            <input name="contact_no" placeholder="State" class="form-control" type="text" ng-model="contactDetails.MailingState "/>
+                        </div>
+                    </div>
+                    <div class=""><br/>
+
+          
+                    </div>
+                  </div>
+                  <br/>
+                  <div class="form-group">
+                    <label class="control-label"><b>Staff Type</b></label>
+                    <div class="row" >
+                        <div class="col-md-6" ng-repeat="staff in staffList">
+                            <div > 
+                                <input class="form-check-input" type="checkbox" value="staff" ng-click="staffTypePickValue(staff)"/>&nbsp;{{staff}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class=""><br/>
+
+          
+                    </div>
+                  </div>
+
+                  <hr/>
+                  <b>SKILLS</b> 
+                  <b>ASSISTANT KEY SKILLS - Check all that apply:</b>                        
+                                
+                                
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                               Types of Crowns
+                                                <select class="form-select" aria-label="Default select example" ng-model="contactDetails.Types_of_Crowns__c">
+                                                    <option ng-repeat="staff in crownPicklistVal">{{staff}}</option>
+                                                  </select> 
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" ng-model="contactDetails.Implants__c"/> Implants
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                 <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" ng-model="contactDetails.Fabricate_and_Place_Temporary_Crowns__c	"/> Fabricate and Place Temporary Crowns
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" ng-model="contactDetails.Zoom_Bleaching__c"/> Zoom/Bleaching	
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                 <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" ng-model="contactDetails.Scan_Imaging__c	"/> Scan Imaging
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                
+                            
+                            
+                            <b>DENTAL KEY SKILLS - Check all that apply:</b>                        
+                                
+                                
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                Image / X-ray Software
+                                                <select class="form-select" aria-label="Default select example" ng-model="contactDetails.Image_X_ray_Software__c">
+                                                    <option ng-repeat="staff in imgeSoftwarePickVal">{{staff}}</option>
+                                                  </select> 
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" ng-model="contactDetails.Invisalign__c"/> Invisalign	
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>          
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" ng-model="contactDetails.Intraoral_Camera__c"/> Intraoral Camera	
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-5">
+                                         
+                                         <label class=" control-label">General Competency</label>  
+                                          <div class="input-group">
+                                             <input type="text" class="form-control" id="inputCity" ng-model="contactDetails.General_Competency__c" />
+                                        </div>
+                                     </div>
+                                    
+                                </div>
+                                
+                                <b>HYGIENIST KEY SKILLS - Check all that apply:</b>                        
+                                
+                                
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" ng-model="contactDetails.Assisted_Hygiene__c"/> Assisted Hygiene
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" ng-model="contactDetails.Assist_w_Nitrous_Administration__c	"/> Assist w/Nitrous Administration	
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" ng-model="contactDetails.Schedule_Appointments__c	"/> Chairside Scheduling	
+
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" ng-model="contactDetails.Loupes__c"/> Loupes	
+
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" ng-model="contactDetails.Micro_Ultrasonic__c"/> Micro Ultrasonic	
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" ng-model="contactDetails.Perio_Charting__c"/> Perio Charting	
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" ng-model="contactDetails.Treatment_Plan_to_Goal__c"/> Treatment Plan to Goal
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <b>FRONT OFFICE KEY SKILLS - Check all that apply:</b>                        
+                                
+                                
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" ng-model="contactDetails.Goal_Oriented_scheduling__c"/> Goal Oriented scheduling	
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" ng-model="contactDetails.Insurance_Benefit_Coordination__c	"/> Insurance Benefit Coordination	
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                             <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" ng-model="contactDetails.Insurance_Processing__c"/> Insurance Processing	
+	                                        </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" ng-model="contactDetails.Insurance_Verification_and_Pre_Auth__c"/> Insurance Verification and Pre Auth	
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" ng-model="contactDetails.Medicare_Billing__c"/> Medicare Billing	
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" ng-model="contactDetails.Practice_Management_Software_Reports__c"/> Practice Management Software Reports	
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" ng-model="contactDetails.Prepare_Daily_Deposit__c"/> Prepare Daily Deposit	
+                                            </label>
+                                        </div>
+                                    </div>
+                                     <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" ng-model="contactDetails.Prepare_Day_Sheet__c"/> Prepare Day Sheet	
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                               <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" ng-model="contactDetails.Recall_Maintenance__c	"/> Recall Maintenance	
+                                            </label>
+                                        </div>
+                                    </div>
+                                     <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" ng-model="contactDetails.Treatment_Planning_Software__c	"/> Treatment Planning Software	
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div> 
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" ng-model="contactDetails.Treatment_Presentation__c	"/> Treatment Presentation	
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" ng-model="contactDetails.AR_Management__c"/> AR Management	
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <b>COMPUTER SKILLS - Check all that apply:</b>  
+                                
+                                
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                Computer Skills
+                                                <!--input class="form-check-input" type="checkbox" ng-model="contactDetails.Computer_Skills__c"/> Computer Skills	-->
+                                                <select class="form-select" aria-label="Default select example" ng-model="contactDetails.Computer_Skills__c">
+                                                    <option ng-repeat="staff in compSkillPickVal">{{staff}}</option>
+                                                  </select> 
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                  
+                  </fieldset>
+                  </form>
+              </div>
+              <div class="card-footer d-flex justify-content-center">
+                <button type="button" class="btn btn-primary" ng-click="registerUser()">Submit</button>&nbsp;&nbsp;&nbsp;
+                <button type="button" class="btn btn-secondary" ng-click="backToLoginPage()">Back</button>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-2"></div>
+
+        </div>
+        
+
+
+        </div>
+        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="forgotPasswordPopup" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Enter Your Registered Email Id</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <input type="text" class="form-control" id="exampleInputPassword1" ng-model="verifyEmail"/>
+
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" ng-click="checkForEmail()">Submit</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+    </body>
+
+</apex:page>

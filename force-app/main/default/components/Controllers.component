@@ -1,0 +1,14 @@
+<apex:component >
+    <script> 
+        angular.module('cp_app', ['ngRoute','angularjs-dropdown-multiselect', 'ui.bootstrap', 'ui.bootstrap.datetimepicker']); 
+    </script>
+    <script src="{!$Resource.CP_AllJobs}"/>
+    <script src="{!$Resource.CP_LoginPage}"/>
+    <script src="{!$Resource.CP_MyJobs}"/>
+    <script src="{!$Resource.CP_HomePage}"/>
+    <script src="{!$Resource.CP_Schedules}"/>
+    <script src="{!$Resource.CP_TempJobs}"/>
+    <script src="{!$Resource.CP_EditProfile}"/>
+    <script src="{!$Resource.CP_TempCalendar}"/>
+    <script src="{!$Resource.CandidateDashboard}"/>
+</apex:component>

@@ -1,0 +1,19 @@
+<template>
+    <lightning-card title="File Upload" icon-name="custom:custom14">
+        <div class="slds-var-m-around_medium">
+            <lightning-input type="file" accept=".doc, .docx, .pdf" label="Attachment" onchange={handleFileUploaded}>
+            </lightning-input>
+        </div>
+        <template for:each={filesUploaded} for:item="file">
+            <div key={file.PathOnClient} class="slds-text-body_small">{file.PathOnClient}</div>
+        </template>
+        <br />
+
+        <footer class="slds-modal__footer">
+            <lightning-button variant="brand" label="Submit" onclick={attachFiles} class="slds-var-p-top_small">
+            </lightning-button>
+        </footer>
+
+
+    </lightning-card>
+</template>

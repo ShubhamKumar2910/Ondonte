@@ -1,0 +1,36 @@
+.candidate-card {
+    /* Add shadows to create the "card" effect */
+    box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.2);
+    transition: 0.3s;
+    border-radius: 5px;
+    padding:10px;
+    background-color:rgb(254, 198, 11)
+}
+
+/* On mouse-over, add a deeper shadow */
+.candidate-card:hover {
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
+}
+
+.cardhover:hover {
+    background-color: rgb(204, 230, 255);
+    cursor: pointer;
+}
+
+.cardSelected {
+    border-style: solid;
+    border-color: #26c726;
+    cursor: pointer;
+}
+.shift {
+    /* Add shadows to create the "card" effect */
+    box-shadow: 0 0px 0px 0 rgba(0, 0, 0, 0.2);
+    transition: 0.3s;
+    width: 30%;
+    padding:10px;
+    margin:1%;
+}
+
+.shift:hover {
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
+}

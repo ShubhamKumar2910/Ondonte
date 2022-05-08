@@ -1,0 +1,582 @@
+<template>
+    <template if:true={loaded}>
+    <template if:true={jobSelected}>
+        <div class="slds-card" style="padding:2%;">
+            <div class="slds-grid slds-gutters " style="margin-bottom:1%;">
+                <lightning-icon icon-name="standard:contact" style="width:3%; height: 6%;"></lightning-icon>
+                <div style="width:100%" class="slds-col">
+                    <div class="slds-row" style="margin-left: -10px;">
+                        <div style="display: flex;">
+                            <a>
+                                <b style="color: rgb(8, 8, 8); font-size:15px; margin-left: 10px; margin-top: 8px;" onclick={openJobDetailPage}>
+                                    JOB :
+                                    {job.Name} </b>
+                            </a><br>
+                            <a>
+                                <b style="color: rgb(53, 103, 255); font-size:12px; margin-left: 10px; margin-top: 8px;" onclick={openEditShiftModal}>
+                                (Edit/View) </b>
+                            </a><br>
+                            <!-- <h1 class="underline" style="margin-left: 10px;">(Edit Shift)</h1> -->
+                        </div>
+                        <template if:true={showActive}>
+                            <b style="color: rgb(8, 8, 8); font-size:12px; margin-left: 10px;">Status :</b><b
+                                style="color: rgb(33, 165, 0); font-size:12px; margin-left: 5px; margin-top: -1%;">
+                                {job.Status__c}</b>
+                        </template>
+                        <template if:false={showActive}>
+                            <b style="color: rgb(8, 8, 8); font-size:12px; margin-left: 10px;">Status :</b>
+                            <b style="color: rgb(255, 10, 10); font-size:12px; margin-left: 5px; margin-top: -1%;">
+                                {job.Status__c}</b>
+                        </template>
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content:end;">
+                    <lightning-icon icon-name="action:refresh" onclick={notifyParent} size="small"
+                        style="cursor: pointer; margin-right:5px" title="Refresh"></lightning-icon>
+                    <!-- <lightning-icon icon-name="action:edit" onclick={editJobRequistion} size="small"
+                        style="cursor: pointer; margin-right:5px; --sds-c-icon-color-foreground-default: #54698D;" title="Edit Job">
+                    </lightning-icon> -->
+                
+                    
+                    <!-- <lightning-badge label={currentApplicantsCount}></lightning-badge> -->
+                    <lightning-badge label={totalShiftToday}></lightning-badge>
+                    <!-- <lightning-badge label="Open Spot(0)"></lightning-badge> -->
+                </div>
+
+            </div>
+            <!-- <template if:true={job.Staff_Type__c}>
+                <b style="color:rgb(151, 151, 151); margin-bottom:2%"><span style="color: rgb(8, 8, 8);">Staff Type:- </span>
+                    {job.Staff_Type__c}</b>
+                <br />
+            </template> -->
+            <template if:true={job.Desired_Skills__c}>
+                <b style="color:rgb(151, 151, 151); margin-bottom:2%"><span style="color: rgb(8, 8, 8);" >Skill:- </span> {job.Desired_Skills__c}</b>
+                <br/>
+            </template>
+
+            <template if:true={job.Description__c}>
+                <b style="color:rgb(151, 151, 151); margin-top:2%"><span style="color: rgb(8, 8, 8);">Description:- </span> {job.Description__c}</b>
+            </template>
+
+            
+            <hr style="height:4px; margin-top: 1%;" />
+            
+
+            <div class="slds-clearfix" style="display: flex; margin-top: -20px; margin-bottom: 20px; margin-left: 1%; align-items: center;">
+                <div class="slds-float_left" style="display:flex">
+                    <div class="slds-box" style="width: 100px; padding:5%; margin: 2%;">
+                        <h1 style="text-align: center; color: #1a1a1a; font-size:18px; margin-bottom:5px">Monthly</h1>
+                        <h2>Close:- 0</h2>
+                        <h2>Open:- <span>{monthlyShiftCount}</span></h2>
+                        <h2></h2>
+                    </div>
+
+                    <div class="slds-box" style="width: 100px; padding:5%; margin: 2%;">
+                        <h1 style="text-align: center; color: #1a1a1a; font-size:18px; margin-bottom:5px">Weekly</h1>
+                        <h2>Close:- 0</h2>
+                        <h2>Open:- {thisWeekShiftCount}</h2>
+                        <h2></h2>
+                    </div>
+
+                    <!-- <lightning-badge label={monthlyShiftMsg}></lightning-badge>
+                    <lightning-badge label={thisWeekShiftMsg}></lightning-badge>
+                    <lightning-badge label={selectedShiftMsg}></lightning-badge> -->
+                </div>
+                <div class="slds-col" style="display: flex; justify-content: end; align-items: center;">
+                    <lightning-icon class="leftrightstyle" icon-name="utility:left" size="large" style="cursor:pointer; align-items: center;" id="decrement"
+                        onclick={handleWeekChange2}></lightning-icon>
+                    <template for:each={currentWeekDays} for:item="item">
+                        <div key={item.date}>
+                            <template if:true={item.selected}>
+                                <div key={item.date} style="margin:5px; align-items: center; text-align:center">
+                                    <h3 style="margin-bottom: 10px;">{item.day}</h3>
+                                    <div key={item.date} class="circleSelected" onclick={ondatechoosedhandler} data-id={item.fDate}>
+                                        {item.date}</div>
+                                </div>
+                            </template>
+                            <template if:false={item.selected}>
+                                <div key={item.date} style="margin:5px; align-items: center; text-align:center">
+                                    <h3 style="margin-bottom: 10px;">{item.day}</h3>
+                                    <div key={item.date} class="circle" onclick={ondatechoosedhandler} data-id={item.fDate}>
+                                        {item.date}</div>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+                    <lightning-icon icon-name="utility:right" size="large" style="cursor:pointer;" id="increment"
+                        onclick={handleWeekChange2}></lightning-icon>
+                </div>
+            </div>
+            
+            <div>
+                <template if:true={shiftSelectedForParticularDate.shifts}>
+                    <h3 class="slds-text-heading_large" style="display: flex; justify-content: start;">
+                        <b style="color: slategrey; font-size:15px;">
+                        </b>
+                    </h3>
+                    <div class="slds-grid slds-gutters" style="display:flex; flex-wrap:wrap; white-space: nowrap; overflow: auto;">
+                        <!-- <template for:each={} -->
+                        <template for:each={shiftSelectedForParticularDate.shifts} for:item="record">
+                            <div key={record.Id} data-id={record.Id} class={record.class} style="margin:1%;padding: 20px; width:20%;"
+                                onclick={shiftSelectedHandlder}>
+                                <div class="slds-card__header slds-grid slds-p-around_none" style="flex-wrap: wrap; flex-direction: column;">
+                                    <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                                        <div class="slds-media__body slds-grid slds-gutters">
+                                            <div class="slds-size_6-of-8 slds-row" style="flex-wrap: wrap;flex-direction: column;">
+                                                <h2 class="slds-card__header-title">
+                                                    <a class="slds-card__header-link slds-truncate" data-id={record.Id} title="Accounts" onclick={openShift}>
+                                                        <span>{record.Name}</span>
+                                                    </a>
+                                                </h2>
+                                                <h2>Shift Time:- {record.sDate} - {record.eDate}</h2>
+                                               
+                                                <h2>Required Candidates:- {record.No_Of_Required_Candidates__c}</h2>
+                                                <h2>Status:- {record.Status__c}</h2>
+                                                <div style="display: flex; flex-direction: column;">
+                                                    <span>Skill:- {record.Staff_Type__c}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </header>
+                                </div>
+                                <footer class="slds-card__footer">
+                                </footer>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+                <template if:false={shiftSelectedForParticularDate.shifts}>
+                    <div style="display:flex; justify-content: center; width: 100%; margin-top: 5%;">
+                        <h1 style="text-align: center; font-size:18px">Shifts Not avaliable!</h1>
+                    </div>
+                </template>
+            </div>
+
+            <template if:true={showEditShiftModal}>
+                <!-- Modal/Popup Box LWC starts here -->
+                <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_medium"
+                    aria-labelledby="modal-heading-01" aria-modal="true">
+                    <div class="slds-modal__container">
+            
+            
+                        <div class="slds-modal__content slds-p-around_medium" style="padding:0%">
+                            <iframe src="/apex/EditTemporaryJobShifts?isrdview=true&id=a0G3N00000266UmUAI" width="100%" height="700" style="border:none;">
+                            </iframe>
+                        </div>
+                        <div class="slds-modal__footer">
+            
+                            <button class="slds-button slds-button_neutral" aria-label="Cancel and close" onclick={closeEditShiftModal}
+                                style="margin-left: 5px;">Cancel</button>
+            
+                        </div>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </template>
+
+            <template if:true={smsPopup}>
+                <!-- Modal/Popup Box LWC starts here -->
+                <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_medium"
+                    aria-labelledby="modal-heading-01" aria-modal="true">
+                    <div class="slds-modal__container">
+                    
+                      
+                        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1"  style="padding:0%">
+                            <iframe src={smsUrl} width="100%" height="700" style="border:none;">
+                                </iframe>
+                        </div>
+                        <div class="slds-modal__footer">
+            
+                            <button class="slds-button slds-button_neutral" aria-label="Cancel and close" onclick={closeSMSPopup}
+                                style="margin-left: 5px;">Cancel</button>
+                          
+                        </div>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </template>
+
+            <div style="margin-top: 2%;">
+                <template if:true={hasChildShift}>
+
+                    <div style="display: flex; justify-content: end; align-items: center; margin-right: -30px;">
+                        <!-- <h3 class="slds-text-heading_large" style="display: flex; justify-content: start;">
+                            <b style="color: slategrey; font-size:15px; "> Applied Shifts
+                            </b>
+                        </h3> -->
+                        <div style="display: flex;">
+                            <lightning-input type="text" placeholder="Search" style="margin-top: 7px;" onchange={searchHandler}>
+                            </lightning-input>
+                            <div class="slds-float_right slds-p-right_large">
+                                <div class="slds-p-around_large">
+                                    <div class="slds-button-group " role="group">
+                                        <lightning-button variant="neutral" title="first" label="First" class="slds-float_left"
+                                            icon-name="utility:chevronleft" icon-position="left" onclick={handleClick}>
+                                        </lightning-button>
+                                        <lightning-button variant="neutral" title="Previous" label="Previous" class="slds-float_left"
+                                            icon-name="utility:chevronleft" icon-position="left" onclick={handleClick}>
+                                        </lightning-button>
+                                        <lightning-button-group>
+                                            <template for:each={pagelinks} for:item="page">
+                                                <lightning-button key={page} label={page} onclick={handlePage}></lightning-button>
+                                            </template>
+                                        </lightning-button-group>
+                                        <lightning-button variant="neutral" title="next" class="slds-float_right" label="Next"
+                                            icon-name="utility:chevronright" icon-position="right" onclick={handleClick}>
+                                        </lightning-button>
+                                        <lightning-button variant="neutral" title="last" class="slds-float_right" label="Last"
+                                            icon-name="utility:chevronright" icon-position="right" onclick={handleClick}>
+                                        </lightning-button>
+                                        <div class="slds-dropdown-trigger slds-dropdown-trigger_click slds-button_last"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content:space-between">
+                        <h3 class="slds-text-heading_large" style="display: flex; justify-content: start;">
+                            <b style="color: slategrey; font-size:15px; "> Applied Shifts
+                            </b>
+                        </h3>
+                        <span>
+                            <lightning-button variant="brand" label="Send SMS" title="Filter action" data-id="submit"
+                                onclick={bulkSmsHandler} class="slds-m-left_x-small" icon-name="utility:sms">
+                            </lightning-button>
+                            <lightning-button variant="brand" label="Accept By Candidate" title="Accepted By Candidate" data-id="Accepted By Candidate"
+                                onclick={allocateCandidates} class="slds-m-left_x-small" icon-name="utility:check" disabled={registerBlockerActive}>
+                            </lightning-button>
+                            <lightning-button variant="brand" label="Submit candidates" title="Filter action" data-id="Submit" onclick={allocateCandidates}
+                                class="slds-m-left_x-small" icon-name="utility:check" disabled={registerBlockerActive}>
+                            </lightning-button>
+
+                            <lightning-button variant="brand" label="Allocate candidates" title="Filter action" data-id="Allocated" onclick={allocateCandidates}
+                                class="slds-m-left_x-small" icon-name="utility:add" disabled={registerBlockerActive}>
+                            </lightning-button>
+                        </span>
+                    </div>
+
+                    
+                    <div style="margin-top: 2%;" class="slds-scrollable_x">
+
+                        <table aria-multiselectable="true"
+                            class="slds-table slds-table_bordered slds-table_fixed-layout slds-table_resizable-cols" role="grid"
+                            aria-label="Example advanced table of Opportunities in actionable mode with row selected">
+                            <thead>
+                                <tr class="slds-line-height_reset">
+                                    <th class="slds-text-align_right slds-cell_action-mode" scope="col" style="width:2rem">
+                                        <span id="column-group-header" class="slds-assistive-text">Choose a row</span>
+                                        <div class="slds-th__action slds-th__action_form">
+                                            <div class="slds-checkbox">
+                                                <input type="checkbox" name="choose-all" id="checkbox-unique-id-297" value="checkbox-unique-id-297" checked={isAppliedShiftAllChecked}
+                                                    tabindex="0" aria-labelledby="check-select-all-label column-group-header" onchange={selectAllHandler}/>
+                                                <label class="slds-checkbox__label" for="checkbox-unique-id-297" id="check-select-all-label">
+                                                    <span class="slds-checkbox_faux"></span>
+                                                    <span class="slds-form-element__label slds-assistive-text">Select All</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th class="slds-text-align_right slds-cell_action-mode" scope="col" style="width:4.25rem">
+                                        <a class="slds-th__action slds-text-link_reset" href="#" role="button" tabindex="0">
+                                            <span class="slds-assistive-text">Sort by: </span>
+                                            <div class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate">
+                                                <span class="slds-truncate" title="Name">Profile</span>
+                                            </div>
+                                        </a>
+                                        <div class="slds-resizable">
+                                            <input type="range" aria-label="Name column width" class="slds-resizable__input slds-assistive-text"
+                                                id="cell-resize-handle-540" max="1000" min="10" tabindex="0" />
+                                            <span class="slds-resizable__handle">
+                                                <span class="slds-resizable__divider"></span>
+                                            </span>
+                                        </div>
+                                    </th>
+                                    <th class="slds-text-align_right slds-cell_action-mode" scope="col" style="width:8rem">
+                                        <a class="slds-th__action slds-text-link_reset" href="#" role="button" tabindex="0">
+                                            <span class="slds-assistive-text">Sort by: </span>
+                                            <div class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate">
+                                                <span class="slds-truncate" title="Name">Name</span>
+                                                <span class="slds-icon_container slds-icon-utility-arrowdown">
+                                                    <svg class="slds-icon slds-icon-text-default slds-is-sortable__icon " aria-hidden="true">
+                                                        <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#arrowdown"></use>
+                                                    </svg>
+                                                </span>
+                                            </div>
+                                        </a>
+                                        <div class="slds-resizable">
+                                            <input type="range" aria-label="Account Name column width"
+                                                class="slds-resizable__input slds-assistive-text"  max="1000"
+                                                min="20" tabindex="0" />
+                                            <span class="slds-resizable__handle">
+                                                <span class="slds-resizable__divider"></span>
+                                            </span>
+                                        </div>
+                                    </th>
+                                    <th class="slds-text-align_right slds-cell_action-mode" scope="col" style="width:10rem">
+                                        <a class="slds-th__action slds-text-link_reset" href="#" role="button" tabindex="0">
+                                            <span class="slds-assistive-text">Sort by: </span>
+                                            <div class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate">
+                                                <span class="slds-truncate" title="Email">Email</span>
+                                                <span class="slds-icon_container slds-icon-utility-arrowdown">
+                                                    <svg class="slds-icon slds-icon-text-default slds-is-sortable__icon " aria-hidden="true">
+                                                        <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#arrowdown"></use>
+                                                    </svg>
+                                                </span>
+                                            </div>
+                                        </a>
+                                        <div class="slds-resizable">
+                                            <input type="range" aria-label="Account Name column width" class="slds-resizable__input slds-assistive-text"
+                                                 max="1000" min="20" tabindex="0" />
+                                            <span class="slds-resizable__handle">
+                                                <span class="slds-resizable__divider"></span>
+                                            </span>
+                                        </div>
+                                    </th>
+                                    <th class="slds-text-align_right slds-cell_action-mode" scope="col" style="width:5rem">
+                                        <a class="slds-th__action slds-text-link_reset" href="#" role="button" tabindex="0">
+                                            <span class="slds-assistive-text">Sort by: </span>
+                                            <div class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate">
+                                                <span class="slds-truncate" title="Phone">Phone</span>
+                                                <span class="slds-icon_container slds-icon-utility-arrowdown">
+                                                    <svg class="slds-icon slds-icon-text-default slds-is-sortable__icon " aria-hidden="true">
+                                                        <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#arrowdown"></use>
+                                                    </svg>
+                                                </span>
+                                            </div>
+                                        </a>
+                                        <div class="slds-resizable">
+                                            <input type="range" aria-label="Account Name column width" class="slds-resizable__input slds-assistive-text"
+                                                max="1000" min="20" tabindex="0" />
+                                            <span class="slds-resizable__handle">
+                                                <span class="slds-resizable__divider"></span>
+                                            </span>
+                                        </div>
+                                    </th>
+                                    <th class="slds-text-align_right slds-cell_action-mode" scope="col" style="width:6.5rem">
+                                        <a class="slds-th__action slds-text-link_reset" href="#" role="button" tabindex="0">
+                                            <span class="slds-assistive-text">Sort by: </span>
+                                            <div class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate">
+                                                <span class="slds-truncate" title="Duration">Duration</span>
+                                                <span class="slds-icon_container slds-icon-utility-arrowdown">
+                                                    <svg class="slds-icon slds-icon-text-default slds-is-sortable__icon " aria-hidden="true">
+                                                        <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#arrowdown"></use>
+                                                    </svg>
+                                                </span>
+                                            </div>
+                                        </a>
+                                        <div class="slds-resizable">
+                                            <input type="range" aria-label="Close Date column width"
+                                                class="slds-resizable__input slds-assistive-text"  max="1000"
+                                                min="20" tabindex="0" />
+                                            <span class="slds-resizable__handle">
+                                                <span class="slds-resizable__divider"></span>
+                                            </span>
+                                        </div>
+                                    </th>
+
+                                    <th class="slds-text-align_right slds-cell_action-mode" scope="col" style="width:3.5rem">
+                                        <a class="slds-th__action slds-text-link_reset" href="#" role="button" tabindex="0">
+                                            <span class="slds-assistive-text">Sort by: </span>
+                                            <div class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate">
+                                                <span class="slds-truncate" title="Shift">Shift</span>
+                                                <span class="slds-icon_container slds-icon-utility-arrowdown">
+                                                    <svg class="slds-icon slds-icon-text-default slds-is-sortable__icon " aria-hidden="true">
+                                                        <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#arrowdown"></use>
+                                                    </svg>
+                                                </span>
+                                            </div>
+                                        </a>
+                                        <div class="slds-resizable">
+                                            <input type="range" aria-label="Close Date column width" class="slds-resizable__input slds-assistive-text"
+                                                id="cell-resize-handle-542" max="1000" min="20" tabindex="0" />
+                                            <span class="slds-resizable__handle">
+                                                <span class="slds-resizable__divider"></span>
+                                            </span>
+                                        </div>
+                                    </th>
+                                    
+                                    <th class="slds-text-align_right slds-cell_action-mode" scope="col" style="width:6rem">
+                                        <a class="slds-th__action slds-text-link_reset" href="#" role="button" tabindex="0">
+                                            <span class="slds-assistive-text">Sort by: </span>
+                                            <div class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate">
+                                                <span class="slds-truncate" title="Status">Status</span>
+                                                <span class="slds-icon_container slds-icon-utility-arrowdown">
+                                                    <svg class="slds-icon slds-icon-text-default slds-is-sortable__icon " aria-hidden="true">
+                                                        <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#arrowdown"></use>
+                                                    </svg>
+                                                </span>
+                                            </div>
+                                        </a>
+                                        <div class="slds-resizable">
+                                            <input type="range" aria-label="Confidence column width"
+                                                class="slds-resizable__input slds-assistive-text" max="1000"
+                                                min="20" tabindex="0" />
+                                            <span class="slds-resizable__handle">
+                                                <span class="slds-resizable__divider"></span>
+                                            </span>
+                                        </div>
+                                    </th>
+                                    <th class="slds-text-align_right slds-cell_action-mode" scope="col" style="width:3rem">
+                                        <a class="slds-th__action slds-text-link_reset" href="#" role="button" tabindex="0">
+                                            <span class="slds-assistive-text">Sort by: </span>
+                                            <div class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate">
+                                                <span class="slds-truncate" title="Status">Type</span>
+                                                <span class="slds-icon_container slds-icon-utility-arrowdown">
+                                                    <svg class="slds-icon slds-icon-text-default slds-is-sortable__icon " aria-hidden="true">
+                                                        <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#arrowdown"></use>
+                                                    </svg>
+                                                </span>
+                                            </div>
+                                        </a>
+                                        <div class="slds-resizable">
+                                            <input type="range" aria-label="Confidence column width" class="slds-resizable__input slds-assistive-text"
+                                                id="cell-resize-handle-544" max="1000" min="20" tabindex="0" />
+                                            <span class="slds-resizable__handle">
+                                                <span class="slds-resizable__divider"></span>
+                                            </span>
+                                        </div>
+                                    </th>
+                                    <th class="slds-text-align_right slds-cell_action-mode" scope="col" style="width:4rem">
+                                        <a class="slds-th__action slds-text-link_reset" href="#" role="button" tabindex="0">
+                                            <span class="slds-assistive-text">Sort by: </span>
+                                            <div class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate">
+                                                <span class="slds-truncate" title="Submutted">Submitted</span>
+                                                <span class="slds-icon_container slds-icon-utility-arrowdown">
+                                                    <svg class="slds-icon slds-icon-text-default slds-is-sortable__icon " aria-hidden="true">
+                                                        <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#arrowdown"></use>
+                                                    </svg>
+                                                </span>
+                                            </div>
+                                        </a>
+                                        <div class="slds-resizable">
+                                            <input type="range" aria-label="Confidence column width" class="slds-resizable__input slds-assistive-text"
+                                                 max="1000" min="20" tabindex="0" />
+                                            <span class="slds-resizable__handle">
+                                                <span class="slds-resizable__divider"></span>
+                                            </span>
+                                        </div>
+                                    </th>
+                                    <th class="slds-text-align_right slds-cell_action-mode" scope="col" style="width:5rem">
+                                        <a class="slds-th__action slds-text-link_reset" href="#" role="button" tabindex="0">
+                                            <span class="slds-assistive-text">Sort by: </span>
+                                            <div class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate">
+                                                <span class="slds-truncate" title="Actions">Action</span>
+                                                <span class="slds-icon_container slds-icon-utility-arrowdown">
+                                                    <svg class="slds-icon slds-icon-text-default slds-is-sortable__icon " aria-hidden="true">
+                                                        <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#arrowdown"></use>
+                                                    </svg>
+                                                </span>
+                                            </div>
+                                        </a>
+                                        <div class="slds-resizable">
+                                            <input type="range" aria-label="Confidence column width" class="slds-resizable__input slds-assistive-text"
+                                                max="1000" min="20" tabindex="0" />
+                                            <span class="slds-resizable__handle">
+                                                <span class="slds-resizable__divider"></span>
+                                            </span>
+                                        </div>
+                                    </th>
+                                </tr>
+                            </thead>
+                        
+                            <tbody class="slds-table slds-table_cell-buffer slds-table_bordered">
+                                <template for:each={recordsToDisplay} for:item="con">
+                                    <tr class="slds-table slds-table_cell-buffer slds-table_bordered" key={con.Id}>
+                                        <th class="slds-cell_action-mode" scope="col">
+                                            <div>
+                                                <lightning-input type="checkbox" data-id={con.Id} checked={con.isChecked} onchange={tableIndexChange}></lightning-input>
+                                            </div>
+                                        </th>
+                                        <th class="slds-cell_action-mode" scope="col">
+                                            <div onclick={openSendSmSPopup} data-id={con.contactId}>
+                                                <img style="width: 40px; height:40px; border-radius: 50%;" src={con.profile}>
+                                            </div>
+                                        </th>
+                                        <th class="slds-cell_action-mode" scope="col">
+                                            <a data-id={con.contactId} onclick={openCanidateDetailPage}>{con.name}</a>
+                                        </th>
+
+                                        <th class="slds-cell_action-mode" scope="col">
+                                            <div>{con.email}</div>
+                                        </th>
+                                        <th class="slds-cell_action-mode" scope="col">
+                                            <lightning-click-to-dial value={con.phone} record-id={con.contactId}></lightning-click-to-dial>
+                                        </th>
+                                        <th class="slds-cell_action-mode" scope="col">
+                                            <div>{con.sDate} - {con.eDate}</div>
+                                        </th>
+                                        <th class="slds-cell_action-mode" scope="col">
+                                            <a data-id={con.Id} onclick={openShift}>{con.shiftName}</a>
+                                        </th>
+                                        <th class="slds-cell_action-mode" scope="col">
+                                            <h2 class={con.class}>{con.Status__c}</h2>
+                                        </th>
+                                        <th class="slds-cell_action-mode" scope="col">
+                                            <h2>{con.Type__c}</h2>
+                                        </th>
+                                        <th class="slds-cell_action-mode" scope="col">
+                                            <div style="display: flex; justify-content: center;">
+                                                <lightning-input type="checkbox" data-id={con.Id} checked={con.isSubmitted} disabled>
+                                                </lightning-input>
+                                            </div>
+                                        </th>
+                                        <th class="slds-cell_action-mode" scope="col">
+                                            <div style="display: flex; justify-content: space-between;">
+                                                <lightning-button-icon icon-name="utility:sms" onclick={openSendSmSPopup} data-id={con.contactId} alternative-text="Settings" title="Send SMS" 
+                                                    class="slds-m-left_xx-small"  variant="brand">
+                                                </lightning-button-icon>
+
+                                                <lightning-button-icon icon-name="utility:cancel_transfer" title="Not Available" onclick={handleAction} data-id={con.Id} data-action="Not Available" data-status={con.Status__c} 
+                                                    class="slds-m-left_xx-small" variant="inverse">
+                                                </lightning-button-icon>
+
+                                                <lightning-button-icon icon-name="utility:edit_form" title="Edit Shift" onclick={openCandidateEditShiftModal} data-id={con.contactId}
+                                                    data-action="openEditShift" data-status={con.Status__c} class="slds-m-left_xx-small" variant="inverse">
+                                                </lightning-button-icon>
+
+                                                <!-- <lightning-icon title="Send SMS" onclick={openSendSmSPopup} data-id={con.contactId} icon-name="utility:sms"
+                                                    alternative-text="close" size="small"
+                                                    style="cursor: pointer; --sds-c-icon-color-foreground-default: #355D96"></lightning-icon> -->
+                                                <!-- <lightning-icon title="Not Available" onclick={handleAction} data-id={con.Id} data-action="Not Available" data-status={con.Status__c} icon-name="utility:cancel_transfer" alternative-text="close"
+                                                        size="small" style="cursor: pointer;"></lightning-icon> -->
+                                            </div>
+                                        </th>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+
+                        <!-- <lightning-datatable key-field="id" data={childShiftList} columns={childShiftcolumns} onrowselection={selectCandidatesHanlder}>
+                        </lightning-datatable> -->
+                    </div>
+                </template>
+            </div>
+            
+            <!-- <template if:true={hasLoaded}>
+                <div style="padding: 1%;">
+                    <h3 class="slds-text-heading_large" style="display: flex; justify-content: start;">
+                        <b style="color: slategrey; font-size:15px; "> Application submitted {createApplication.length}
+                        </b>
+                    </h3>
+                    <div style="margin-top: 2%;">
+                        <lightning-datatable key-field="id" data={createApplication} columns={columns}
+                            onrowaction={handleRowAction}>
+                        </lightning-datatable>
+                    </div>
+                </div>
+            </template> -->
+
+          
+
+            <p class="slds-p-horizontal_small"></p>
+            <div slot="footer">
+
+            </div>
+        </div>
+    </template>
+    </template>
+    <template if:false={loaded}>
+        <lightning-spinner alternative-text="Loading"></lightning-spinner>
+    </template>
+</template>

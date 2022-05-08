@@ -1,0 +1,127 @@
+<template>
+
+    <div>
+        <!-- Modal/Popup Box LWC header here -->
+        <header class="">
+            <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">List of all fields in Resume</h2>
+        </header>
+        <!-- Modal/Popup Box LWC body starts here -->
+        <div class="slds-modal__content slds-var-p-around_medium" id="modal-content-id-1">
+            <lightning-card>
+
+                <lightning-accordion allow-multiple-sections-open active-section-name=""
+                    onsectiontoggle={handleaccordion}>
+
+
+                    <lightning-accordion-section key={Personaldetails} name={Personaldetails} label="Personal Details">
+                        <div class="demo-only demo-only--sizing slds-grid slds-wrap">
+                            <div class="slds-size_1-of-2">
+                                <lightning-input
+                                    class="slds-box slds-box_x-small slds-text-align_center slds-m-around_x-small"
+                                    key={FirstName} label="First Name" value="Ajeet">
+                                </lightning-input>
+                            </div>
+                                
+                            <div class="slds-size_1-of-2">
+                                <lightning-input
+                                    class="slds-box slds-box_x-small slds-text-align_center slds-m-around_x-small"
+                                    key={LastName} label="Last Name" value="Kumar">
+                                </lightning-input>
+                            </div>
+                                
+
+                            <div class="slds-size_1-of-2">
+                                <lightning-input
+                                    class="slds-box slds-box_x-small slds-text-align_center slds-m-around_x-small"
+                                    type={phone} key={Phone} label="Phone" value="123456789">
+                                </lightning-input>
+                            </div>
+                        </div>
+                    </lightning-accordion-section>
+
+                    <lightning-accordion-section key={EducationDetails} name={EducationDetails} label="Education Details">
+                        <div class="demo-only demo-only--sizing slds-grid slds-wrap">
+                            <div class="slds-size_1-of-2">
+                                <lightning-input
+                                    class="slds-box slds-box_x-small slds-text-align_center slds-m-around_x-small"
+                                    key={candidate} label="candidate" value="Candidate1">
+                                </lightning-input>
+                            </div>
+                                
+                            <div class="slds-size_1-of-2">
+                                <lightning-input
+                                    class="slds-box slds-box_x-small slds-text-align_center slds-m-around_x-small"
+                                    key={Course} label="Course" value="Networking">
+                                </lightning-input>
+                            </div>
+                                
+                            <div class="slds-size_1-of-2">
+                                <lightning-input
+                                    class="slds-box slds-box_x-small slds-text-align_center slds-m-around_x-small"
+                                     key={StartYear} label="start Year" value="2011">
+                                </lightning-input>
+                            </div>
+                                
+
+                            <div class="slds-size_1-of-2"> 
+                                <lightning-input
+                                    class="slds-box slds-box_x-small slds-text-align_center slds-m-around_x-small"
+                                     key={EndYear} label="End Year" value="2015">
+                                </lightning-input>
+                            </div>
+                        </div>
+                    </lightning-accordion-section>
+
+                    <lightning-accordion-section key={ExperienceDetails} name={ExperienceDetails} label="Experience Details">
+                        <div class="demo-only demo-only--sizing slds-grid slds-wrap">
+                            <div class="slds-size_1-of-2">
+                                <lightning-input
+                                    class="slds-box slds-box_x-small slds-text-align_center slds-m-around_x-small"
+                                    key={EmployerName} label="Employer Name" value="UtilitarianLAbs">
+                                </lightning-input>
+
+                            </div>
+                                
+                            <div class="slds-size_1-of-2">
+                                <lightning-input
+                                    class="slds-box slds-box_x-small slds-text-align_center slds-m-around_x-small"
+                                    key={JobTitle} label="Job Title" value="developer">
+                                </lightning-input>
+                            </div>
+                                
+                            <div class="slds-size_1-of-2">
+                                <lightning-input
+                                    class="slds-box slds-box_x-small slds-text-align_center slds-m-around_x-small"
+                                    key={Duration} label="Duration" value="2 year 10 month">
+                                </lightning-input>
+                            </div>
+                                
+                            <div class="slds-size_1-of-2">
+                                <lightning-input
+                                    class="slds-box slds-box_x-small slds-text-align_center slds-m-around_x-small"
+                                     key={StartYear} label="start Year" value="2011">
+                                </lightning-input>
+                            </div>
+                                
+
+                            <div class="slds-size_1-of-2">    
+                                <lightning-input
+                                    class="slds-box slds-box_x-small slds-text-align_center slds-m-around_x-small"
+                                     key={EndYear} label="End Year" value="2015">
+                                </lightning-input>
+                            </div>
+                        </div>
+                    </lightning-accordion-section>
+
+
+                </lightning-accordion>
+
+            </lightning-card>
+        </div>
+
+        <footer class="">
+            <!-- sldsValidatorIgnoreNextLine -->
+            <button class="slds-button slds-button_success slds-align_absolute-center" onclick={closeModalPop} title="Save Details">Save Details</button>
+        </footer>
+    </div>
+</template>
